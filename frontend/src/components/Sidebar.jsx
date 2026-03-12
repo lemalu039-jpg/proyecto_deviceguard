@@ -105,16 +105,7 @@ function Sidebar({ onLogout }) {
           }}>
             <span style={{ fontSize: '1.1rem' }}>⚙️</span> Ajustes
         </button>
-        <button
-          onClick={onLogout}
-          style={{
-            display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.75rem 1rem',
-            background: 'transparent', border: 'none', color: 'var(--text-muted)',
-            fontWeight: 500, cursor: 'pointer', textAlign: 'left', borderRadius: 'var(--radius-sm)'
-          }}
-        >
-          <span style={{ fontSize: '1.1rem' }}>🚪</span> Cerrar Sesión
-        </button>
+        
       </div>
     </aside>
   );

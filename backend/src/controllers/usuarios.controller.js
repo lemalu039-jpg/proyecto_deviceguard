@@ -87,3 +87,27 @@ exports.login = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+exports.cambiarCorreo = async (req, res) => {
+    try {
+
+        const { id, correo } = req.body;
+
+        const affectedRows = await UsuarioModel.update(id, {
+            nombre: "",
+            correo: correo,
+            rol: "usuario"
+        });
+
+        if (affectedRows > 0) {
+            res.json({ message: "Correo actualizado correctamente" });
+        } else {
+            res.status(404).json({ error: "Usuario no encontrado" });
+        }
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
