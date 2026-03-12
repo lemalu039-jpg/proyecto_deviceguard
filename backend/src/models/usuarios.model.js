@@ -38,6 +38,15 @@ class UsuarioModel {
         const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
         return rows[0];
     }
+    
+    static async cambiarCorreo(id, correo) {
+    const [result] = await pool.query(
+        'UPDATE usuarios SET correo = ? WHERE id = ?',
+        [correo, id]
+    );
+
+    return result.affectedRows;
+}
 }
 
 module.exports = UsuarioModel;

@@ -11,6 +11,8 @@ import Dispositivos from './pages/Dispositivos';
 import Prestamos from './pages/Prestamos';
 import Mantenimiento from './pages/Mantenimiento';
 import Usuarios from './pages/Usuarios';
+import CambiarCorreo from './pages/CambiarCorreo';
+
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -52,7 +54,7 @@ function App() {
       <div className="app-container">
         <Sidebar onLogout={handleLogout} usuario={usuario} />
         <div className="main-content">
-          <Navbar />
+          <Navbar onLogout={handleLogout} />
           <div className="page-container">
             {children}
           </div>
@@ -102,8 +104,16 @@ function App() {
             <Usuarios />
           </ProtectedRoute>
         } />
+
+        <Route path="/cambiar-correo" element={
+      <ProtectedRoute>
+    <CambiarCorreo />
+    </ProtectedRoute>
+  } />
       </Routes>
     </Router>
+
+  
   );
 }
 
