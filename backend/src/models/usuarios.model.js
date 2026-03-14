@@ -47,6 +47,14 @@ class UsuarioModel {
 
     return result.affectedRows;
 }
+static async cambiarContrasena(id, contrasena) {
+    const [result] = await pool.query(
+        'UPDATE usuarios SET contrasena = ? WHERE id = ?',
+        [contrasena, id]
+    );
+
+    return result.affectedRows;
+}
 }
 
 module.exports = UsuarioModel;

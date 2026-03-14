@@ -66,7 +66,7 @@ function Navbar({ onLogout }) {
     
     <p style={{ padding: '8px', cursor: 'pointer' }}>👤 Perfil</p>
     <p style={{ padding: '8px', cursor: 'pointer' }} onClick={() => navigate("/cambiar-correo")}>📧 Cambiar correo</p>
-    <p style={{ padding: '8px', cursor: 'pointer' }}>🔒 Cambiar contraseña</p>
+    <p style={{ padding: '8px', cursor: 'pointer' }} onClick={() => navigate("/cambiar-contrasena")}>🔒 Cambiar contraseña</p>
     <hr/>
     <p style={{ padding: '8px', cursor: 'pointer', color: 'red' }} onClick={onLogout}>🚪 Cerrar sesión</p>
 
