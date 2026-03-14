@@ -71,12 +71,10 @@ exports.login = async (req, res) => {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
-        // Comparación simple de contraseña (en producción usar bcrypt)
         if (usuario.contrasena !== contrasena) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
-        // No enviar la contraseña en la respuesta
         const { contrasena: _, ...usuarioSinContrasena } = usuario;
 
         res.json({
@@ -88,16 +86,23 @@ exports.login = async (req, res) => {
     }
 };
 
-
 exports.cambiarCorreo = async (req, res) => {
     try {
 
         const { id, correo } = req.body;
 
+        
+        const usuario = await UsuarioModel.findById(id);
+
+        if (!usuario) {
+            return res.status(404).json({ error: "Usuario no encontrado" });
+        }
+
+      
         const affectedRows = await UsuarioModel.update(id, {
-            nombre: "",
+            nombre: usuario.nombre,
             correo: correo,
-            rol: "usuario"
+            rol: usuario.rol
         });
 
         if (affectedRows > 0) {
@@ -110,4 +115,60 @@ exports.cambiarCorreo = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+exports.registro = async (req, res) => {
+    try {
+        const { nombre, correo, contrasena, rol } = req.body;
+
+     
+        if (!nombre || !correo || !contrasena) {
+            return res.status(400).json({ error: 'Nombre, correo y contraseña son requeridos' });
+        }
+
+        
+        const usuarioExistente = await UsuarioModel.findByEmail(correo);
+        if (usuarioExistente) {
+            return res.status(409).json({ error: 'Este correo ya está registrado' });
+        }
+
+       
+        const insertId = await UsuarioModel.create({
+            nombre,
+            correo,
+            contrasena,
+            rol: rol || 'usuario'
+        });
+
+        res.status(201).json({
+            message: 'Usuario registrado exitosamente',
+            id: insertId
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+    exports.cambiarContrasena = async (req, res) => {
+    try {
+
+        const { id, contrasena } = req.body;
+
+        if (!id || !contrasena) {
+            return res.status(400).json({ error: "Datos incompletos" });
+        }
+
+        const affectedRows = await UsuarioModel.cambiarContrasena(id, contrasena);
+
+        if (affectedRows > 0) {
+            res.json({ message: "Contraseña actualizada correctamente" });
+        } else {
+            res.status(404).json({ error: "Usuario no encontrado" });
+        }
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 

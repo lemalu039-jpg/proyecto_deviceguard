@@ -12,7 +12,7 @@ import Prestamos from './pages/Prestamos';
 import Mantenimiento from './pages/Mantenimiento';
 import Usuarios from './pages/Usuarios';
 import CambiarCorreo from './pages/CambiarCorreo';
-
+import CambiarContrasena from './pages/CambiarContrasena';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -110,6 +110,12 @@ function App() {
     <CambiarCorreo />
     </ProtectedRoute>
   } />
+<Route path="/cambiar-contrasena" element={
+  <ProtectedRoute>
+    <CambiarContrasena />
+  </ProtectedRoute>
+} />
+
       </Routes>
     </Router>
 
