@@ -74,7 +74,7 @@ function CambiarCorreo() {
             padding: "12px",
             borderRadius: "8px",
             border: "none",
-            background: "#6c5ce7",
+            background: "#2563eb",
             color: "white",
             fontWeight: "bold",
             cursor: "pointer",

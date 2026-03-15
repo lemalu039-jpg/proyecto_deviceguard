@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import logo from '../assets/icons/logo-deviceguard.svg';  
+import ajustes from '../assets/icons/ajustes.svg';
+import candado from '../assets/icons/candado.svg';
+import correo from '../assets/icons/correo.svg';
+import usuario from '../assets/icons/usuario.svg';
 
 function Login({ onLogin }) {
   const [vista, setVista] = useState('login');
@@ -14,6 +19,7 @@ function Login({ onLogin }) {
   const [errorReg, setErrorReg] = useState('');
   const [exitoReg, setExitoReg] = useState('');
   const [loadingReg, setLoadingReg] = useState(false);
+  const [mostrarPassword, setMostrarPassword] = useState(false);
 
   const irRegistro = () => {
     setPanelSlide(true);
@@ -148,7 +154,8 @@ function Login({ onLogin }) {
     alertOk: { background: '#e8f5e9', border: '1px solid #a5d6a7', color: '#1b5e20', borderRadius: '6px', padding: '.55rem .75rem', fontSize: '.78rem', marginBottom: '.7rem' },
     forgot: { textAlign: 'right', fontSize: '.72rem', color: '#E91E63', cursor: 'pointer', marginTop: '-.35rem', marginBottom: '.75rem', fontWeight: 500 },
     row2: { display: 'flex', gap: '8px' },
-    iconWrap: { width: '44px', height: '44px', background: '#e8eaf6', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto .8rem' },
+    iconWrap: { width: '90px', height: '90px', background: '#e8eaf6', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem'
+},
     panelLogo: { fontSize: '.73rem', fontWeight: 700, letterSpacing: '1.5px', color: '#52b2b7', marginBottom: '.55rem', textTransform: 'uppercase' },
     panelBadge: { display: 'inline-block', background: '#52b2b7', color: '#fff', fontSize: '.61rem', fontWeight: 700, padding: '2px 10px', borderRadius: '20px', letterSpacing: '.5px', marginBottom: '.85rem', textTransform: 'uppercase' },
     panelTitle: { color: '#fff', fontSize: '1.35rem', fontWeight: 700, marginBottom: '.4rem' },
@@ -165,21 +172,22 @@ function Login({ onLogin }) {
           {vista === 'login' ? (
             <form onSubmit={handleLogin}>
               <div style={s.iconWrap}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3949AB" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
+               <img 
+                   src={logo} 
+                   alt="DeviceGuard Logo"
+                   style={{ width: '120px', height: '120px', objectFit: 'contain' }}
+                />
               </div>
               <div style={s.title}>Iniciar sesión</div>
               {errorLogin && <div style={s.alertErr}>{errorLogin}</div>}
               <div style={s.field}>
-                <span style={s.icon}>✉</span>
+                <img src={correo} alt="correo" style={{ width: "16px", marginRight: "6px" }} />
                 <input style={s.input} type="email" placeholder="correo@deviceguard.com"
                   value={email} onChange={e => setEmail(e.target.value)} disabled={loadingLogin} />
               </div>
               <div style={s.field}>
-                <span style={s.icon}>🔒</span>
-                <input style={s.input} type="password" placeholder="••••••••••"
+                <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
+                <input style={s.input} type={mostrarPassword ? "text" : "password"} placeholder="••••••••••"
                   value={password} onChange={e => setPassword(e.target.value)} disabled={loadingLogin} />
               </div>
               <div style={s.forgot}>¿Olvidaste tu contraseña?</div>
@@ -195,14 +203,14 @@ function Login({ onLogin }) {
               <div style={s.row2}>
                 <div style={{ flex: 1 }}>
                   <div style={s.field}>
-                    <span style={s.icon}>👤</span>
+                    <img src={usuario} alt="usuario" style={{ width: "14px", marginRight: "6px" }} />
                     <input style={s.input} type="text" placeholder="Nombre completo"
                       value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} disabled={loadingReg} />
                   </div>
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={s.field}>
-                    <span style={s.icon}>⚙</span>
+                    <img src={ajustes} alt="ajustes" style={{ width: "14px", marginRight: "6px" }} />
                     <select style={s.select} value={form.rol}
                       onChange={e => setForm({ ...form, rol: e.target.value })} disabled={loadingReg}>
                       <option value="usuario">Usuario</option>
@@ -213,17 +221,17 @@ function Login({ onLogin }) {
                 </div>
               </div>
               <div style={s.field}>
-                <span style={s.icon}>✉</span>
+                <img src={correo} alt="correo" style={{ width: "16px", marginRight: "6px" }} />
                 <input style={s.input} type="email" placeholder="Correo electrónico"
                   value={form.correo} onChange={e => setForm({ ...form, correo: e.target.value })} disabled={loadingReg} />
               </div>
               <div style={s.field}>
-                <span style={s.icon}>🔒</span>
+                <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
                 <input style={s.input} type="password" placeholder="Contraseña (mín. 6 caracteres)"
                   value={form.contrasena} onChange={e => setForm({ ...form, contrasena: e.target.value })} disabled={loadingReg} />
               </div>
               <div style={s.field}>
-                <span style={s.icon}>🔒</span>
+                <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
                 <input style={s.input} type="password" placeholder="Confirmar contraseña"
                   value={form.confirmar} onChange={e => setForm({ ...form, confirmar: e.target.value })} disabled={loadingReg} />
               </div>
