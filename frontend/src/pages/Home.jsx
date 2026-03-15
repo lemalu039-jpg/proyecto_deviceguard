@@ -1,175 +1,238 @@
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
+import candado from '../assets/icons/logo-deviceguard.svg';
 
 function Home() {
   const navigate = useNavigate();
+  const pageRef = useRef(null);
+
+  useEffect(() => {
+    const page = pageRef.current;
+    if (!page) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    page.querySelectorAll('.anim-up, .anim-left, .anim-right').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Activar hero inmediatamente
+    page.querySelectorAll('.hero .anim-up').forEach(el => {
+      el.classList.add('visible');
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
-    <div className="home-container">
-      {/* Header */}
-      <header className="home-header">
-        <div className="header-content">
-          <div className="logo">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-              <path d="M20 5C15 5 11 9 11 14V18H9C7.9 18 7 18.9 7 20V33C7 34.1 7.9 35 9 35H31C32.1 35 33 34.1 33 33V20C33 18.9 32.1 18 31 18H29V14C29 9 25 5 20 5ZM20 8C23.3 8 26 10.7 26 14V18H14V14C14 10.7 16.7 8 20 8ZM20 23C21.1 23 22 23.9 22 25C22 25.7 21.6 26.4 21 26.7V29C21 29.6 20.6 30 20 30C19.4 30 19 29.6 19 29V26.7C18.4 26.4 18 25.7 18 25C18 23.9 18.9 23 20 23Z" fill="#E91E63"/>
+    <div className="home-page" ref={pageRef}>
+
+      {/* NAV */}
+      <nav className="nav">
+        <div className="nav-logo">
+          <div className="nav-icon">
+            <img src={candado} alt="logo" style={{ width: '80px', height: '80px' }} />
+          </div>
+          <span className="nav-brand">Device<span>Guard</span></span>
+        </div>
+        <div className="nav-links">
+          <button className="nav-link" onClick={() => scrollTo('hero')}>Inicio</button>
+          <button className="nav-link" onClick={() => scrollTo('features')}>Módulos</button>
+          <button className="nav-link" onClick={() => scrollTo('about')}>Nosotros</button>
+          <button className="nav-link" onClick={() => scrollTo('contact')}>Contacto</button>
+        </div>
+        <button className="nav-btn" onClick={() => navigate('/login')}>Ingresar</button>
+      </nav>
+
+      {/* HERO */}
+      <div className="hero" id="hero">
+        <div className="hero-glow"></div>
+        <div className="hero-tag anim-up">
+          <div className="pulse-dot"></div>
+          Control inteligente de equipos
+        </div>
+        <h1 className="hero-title anim-up d1">
+          Gestión de<br />
+          <span className="grad">dispositivos electrónicos</span><br />
+          sin complicaciones
+        </h1>
+        <p className="hero-sub anim-up d2">
+          Registra, monitorea y programa el mantenimiento de todos los equipos
+          de tu institución desde un solo lugar, de forma rápida y segura.
+        </p>
+        <div className="hero-btns anim-up d3">
+          <button className="btn-p" onClick={() => navigate('/login')}>Comenzar ahora ↗</button>
+          <button className="btn-s" onClick={() => scrollTo('features')}>Conocer más</button>
+        </div>
+      </div>
+
+      <div className="divider"></div>
+
+      {/* MÓDULOS */}
+      <div className="section" id="features">
+        <div className="sec-tag anim-left">¿Qué hace DeviceGuard?</div>
+        <div className="sec-title anim-left d1">Todo lo que necesitas<br />en un solo lugar</div>
+        <div className="sec-sub anim-left d2">Cada módulo está diseñado para facilitar la gestión diaria de equipos en tu institución.</div>
+        <div className="feat-grid">
+          <div className="feat anim-up">
+            <div className="feat-icon feat-icon-blue">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#82EEFD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+              </svg>
+            </div>
+            <div className="feat-title">Registro y control</div>
+            <div className="feat-desc">Registra todos los equipos con su tipo, serial, estado y ubicación con historial automático de uso.</div>
+          </div>
+          <div className="feat anim-up d1">
+            <div className="feat-icon feat-icon-pink">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f48fb1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+            </div>
+            <div className="feat-title">Mantenimiento</div>
+            <div className="feat-desc">Programa mantenimientos preventivos y correctivos con historial completo de cada equipo.</div>
+          </div>
+          <div className="feat anim-up d2">
+            <div className="feat-icon feat-icon-cyan">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#82EEFD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div className="feat-title">Préstamos</div>
+            <div className="feat-desc">Controla quién tiene cada equipo y genera alertas automáticas de vencimiento.</div>
+          </div>
+          <div className="feat anim-up d3">
+            <div className="feat-icon feat-icon-green">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#81c784" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div className="feat-title">Roles y accesos</div>
+            <div className="feat-desc">Administrador, técnico y usuario con permisos diferenciados para mayor seguridad.</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="divider"></div>
+
+      {/* NOSOTROS */}
+      <div className="section" id="about">
+        <div className="sec-tag anim-left">Nosotros</div>
+        <div className="sec-title anim-left d1">¿Quiénes somos?</div>
+        <div className="about-grid">
+          <p className="sec-sub anim-left d2">
+            DeviceGuard es una solución digital diseñada para mejorar el control,
+            monitoreo y gestión de dispositivos tecnológicos en entornos educativos
+            e institucionales.<br /><br />
+            Nuestro propósito es ofrecer una plataforma clara, rápida y útil que
+            ayude a mantener todo organizado y bajo control, sin procesos
+            complicados ni papeleo extra.
+          </p>
+          <div className="about-list anim-right">
+            <div className="about-item">
+              <div className="about-item-icon feat-icon-blue">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#82EEFD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+              </div>
+              <div>
+                <div className="about-item-title">Monitoreo en tiempo real</div>
+                <div className="about-item-desc">Consulta el estado de cada equipo al instante desde cualquier dispositivo.</div>
+              </div>
+            </div>
+            <div className="about-item">
+              <div className="about-item-icon feat-icon-green">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#81c784" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div>
+                <div className="about-item-title">Fácil de usar</div>
+                <div className="about-item-desc">Interfaz intuitiva sin curva de aprendizaje para cualquier usuario.</div>
+              </div>
+            </div>
+            <div className="about-item">
+              <div className="about-item-icon feat-icon-pink">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f48fb1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </div>
+              <div>
+                <div className="about-item-title">Seguro y confiable</div>
+                <div className="about-item-desc">Acceso por roles con autenticación segura para proteger la información.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="divider"></div>
+
+      {/* MISIÓN */}
+      <div className="section">
+        <div className="mission-grid">
+          <div className="mission-card anim-left">
+            <div className="mission-icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0a0f1e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div className="mission-card-title">Nuestro objetivo</div>
+            <div className="mission-card-sub">Brindar una herramienta que facilite la gestión tecnológica institucional de forma eficiente, segura y accesible para todos.</div>
+          </div>
+          <div className="anim-right">
+            <div className="sec-tag">Misión</div>
+            <div className="sec-title d1">Tecnología al servicio<br />de la educación</div>
+            <div className="sec-sub d2">Automatizamos el control de inventario y mantenimiento para que los equipos estén siempre disponibles y en óptimas condiciones.</div>
+          </div>
+        </div>
+      </div>
+
+      {/* CONTACTO */}
+      <div className="contact-section" id="contact">
+        <div className="sec-tag">Contacto</div>
+        <div className="sec-title" style={{ marginTop: '.3rem' }}>¿Tienes alguna pregunta?</div>
+        <div className="sec-sub contact-sub">Estamos disponibles para apoyarte en el uso del sistema</div>
+        <div className="contact-items">
+          <div className="contact-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#82EEFD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
             </svg>
-            <h1>DeviceGuard</h1>
+            deviceguard@correo.com
           </div>
-          <nav className="nav-menu">
-            <a href="#inicio">Inicio</a>
-            <a href="#nosotros">Nosotros</a>
-            <a href="#contacto">Contacto</a>
-            <button className="btn-login" onClick={() => navigate('/login')}>
-              Únete a nosotros
-            </button>
-          </nav>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-content">
-          <p className="hero-subtitle">Somos</p>
-          <h2 className="hero-title">La mejor empresa<br/>de seguridad que vas a<br/>encontrar</h2>
-          <button className="btn-hero" onClick={() => navigate('/login')}>
-            Escríbenos
-          </button>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section className="about-section" id="nosotros">
-        <div className="about-content">
-          <div className="about-card">
-            <h3>¿Quienes Somos?</h3>
-          </div>
-          <div className="about-text">
-            <p>
-              <strong>DeviceGuard</strong> es una solución digital diseñada para mejorar el control,
-              monitoreo y gestión de dispositivos tecnológicos en entornos educativos o
-              institucionales.
-            </p>
-            <p>
-              El sistema permite registrar y organizar el inventario de equipos como
-              Computadores, tabletas y proyectores, facilitando su préstamo, devolución,
-              mantenimiento y seguimiento en tiempo
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Mission Section */}
-      <section className="mission-section">
-        <div className="mission-content">
-          <div className="mission-text">
-            <p>
-              Entendemos que el control de Muchos recursos tecnológicos es una necesidad
-              Real, y muchas veces no se tiene una solución práctica para manejarlo.
-            </p>
-            <p>
-              <strong>Nuestro Propósito</strong> es ofrecer una plataforma clara, rápida y útil, que ayude a
-              Mantener todo Organizado y Bajo Control, sin Necesidad de procesos complicados
-              o Papeleo Extra
-            </p>
-          </div>
-          <div className="mission-card">
-            <h3>Nuestro Objetivo</h3>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="features-section">
-        <h2 className="features-title">¿Que hace DeviceGuard?</h2>
-        <div className="features-grid">
-          <div className="feature-card">
-            <div className="feature-icon">
-              <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-                <rect x="15" y="20" width="50" height="35" rx="3" stroke="white" strokeWidth="2"/>
-                <rect x="25" y="30" width="30" height="15" rx="2" stroke="white" strokeWidth="2"/>
-                <path d="M40 45V50" stroke="white" strokeWidth="2"/>
-                <circle cx="40" cy="35" r="3" fill="white"/>
-              </svg>
-            </div>
-            <h4>Registro y Control<br/>de Equipos.</h4>
-            <p>
-              Permitimos registrar todos los equipos con sus datos: Tipo, Serial,
-              Estado, Ubicación, Accesorios. Ayuda a asignar y Devolver
-              dispositivos fácilmente, con historial automático de quién lo usó y cuándo
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-icon">
-              <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-                <rect x="20" y="35" width="40" height="20" rx="2" stroke="white" strokeWidth="2"/>
-                <circle cx="30" cy="45" r="2" fill="white"/>
-                <circle cx="40" cy="45" r="2" fill="white"/>
-              </svg>
-            </div>
-            <h4>Monitoreo y<br/>Mantenimiento en Tiempo<br/>Real</h4>
-            <p>
-              Facilitamos la consulta en tiempo Real de la disponibilidad de cada
-              equipo, permitiendo registrar Mantenimientos, observaciones
-              y fallas con todo el historial guardado
-            </p>
-          </div>
-
-          <div className="feature-card feature-card-wide">
-            <div className="feature-icon">
-              <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-                <rect x="25" y="20" width="30" height="40" rx="3" stroke="white" strokeWidth="2"/>
-                <line x1="30" y1="30" x2="45" y2="30" stroke="white" strokeWidth="2"/>
-                <line x1="30" y1="37" x2="45" y2="37" stroke="white" strokeWidth="2"/>
-                <line x1="30" y1="44" x2="40" y2="44" stroke="white" strokeWidth="2"/>
-              </svg>
-            </div>
-            <h4>Reportes y Análisis de Datos</h4>
-            <p>
-              Genera reportes claros para hacer seguimiento, exportarlos y tomar
-              decisiones informadas
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="home-footer">
-        <div className="footer-content">
-          <div className="footer-brand">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-              <path d="M20 5C15 5 11 9 11 14V18H9C7.9 18 7 18.9 7 20V33C7 34.1 7.9 35 9 35H31C32.1 35 33 34.1 33 33V20C33 18.9 32.1 18 31 18H29V14C29 9 25 5 20 5ZM20 8C23.3 8 26 10.7 26 14V18H14V14C14 10.7 16.7 8 20 8ZM20 23C21.1 23 22 23.9 22 25C22 25.7 21.6 26.4 21 26.7V29C21 29.6 20.6 30 20 30C19.4 30 19 29.6 19 29V26.7C18.4 26.4 18 25.7 18 25C18 23.9 18.9 23 20 23Z" fill="#E91E63"/>
+          <div className="contact-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#82EEFD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
             </svg>
-            <h3>DeviceGuard</h3>
-            <div className="social-icons">
-              <a href="#" aria-label="Twitter">𝕏</a>
-              <a href="#" aria-label="Instagram">📷</a>
-              <a href="#" aria-label="YouTube">▶</a>
-              <a href="#" aria-label="LinkedIn">in</a>
-            </div>
+            Colombia
           </div>
-
-          <div className="footer-links">
-            <h4>Links</h4>
-            <a href="#">Instagram</a>
-            <a href="#">Twitter</a>
-            <a href="#">Youtube</a>
-          </div>
-
-          <div className="footer-project">
-            <h4>Resumen proyecto</h4>
-            <p>
-              Se necesita un sistema web con NFC para monitorear en tiempo real computadores
-              y televisores del primer piso de la Nave 4. Debe mostrar estado, uso y ubicación,
-              generar alertas y reportes, y funcionar desde celular.
-            </p>
-            <p>
-              El contrato dura 6 meses e incluye desarrollo, pruebas,
-              capacitación y soporte por 12 meses.
-            </p>
+          <div className="contact-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#82EEFD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            +57 (1) 596-2000
           </div>
         </div>
-      </footer>
+        <button className="btn-p contact-cta" onClick={() => navigate('/login')}>
+          Ingresar al sistema ↗
+        </button>
+      </div>
+
+      
+
     </div>
   );
 }
