@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import usuarioIcon from '../assets/icons/usuario.svg';
+import correo from '../assets/icons/correo.svg';
+import candado from '../assets/icons/candado.svg';
+import cerrarsesion from '../assets/icons/cerrarsesion.svg';
 
 function Navbar({ onLogout }) {
   const [menuAbierto, setMenuAbierto] = useState(false)
@@ -64,11 +68,11 @@ function Navbar({ onLogout }) {
     boxShadow: '0 5px 10px rgba(0,0,0,0.1)'
   }}>
     
-    <p style={{ padding: '8px', cursor: 'pointer' }}>👤 Perfil</p>
-    <p style={{ padding: '8px', cursor: 'pointer' }} onClick={() => navigate("/cambiar-correo")}>📧 Cambiar correo</p>
-    <p style={{ padding: '8px', cursor: 'pointer' }} onClick={() => navigate("/cambiar-contrasena")}>🔒 Cambiar contraseña</p>
+    <p style={{ padding: '8px', cursor: 'pointer' }}><img src={usuarioIcon} alt="usuario" style={{ width: "14px", marginRight: "6px" }} /> Perfil</p>
+    <p style={{ padding: '8px', cursor: 'pointer' }} onClick={() => navigate("/cambiar-correo")}><img src={correo} alt="correo" style={{ width: "14px", marginRight: "6px" }} /> Cambiar correo</p>
+    <p style={{ padding: '8px', cursor: 'pointer' }} onClick={() => navigate("/cambiar-contrasena")}><img src={candado} alt="candado" style={{ width: "16px", marginRight: "6px" }} /> Cambiar contraseña</p>
     <hr/>
-    <p style={{ padding: '8px', cursor: 'pointer', color: 'red' }} onClick={onLogout}>🚪 Cerrar sesión</p>
+    <p style={{ padding: '8px', cursor: 'pointer', color: 'red' }} onClick={onLogout}><img src={cerrarsesion} alt="cerrar sesión" style={{ width: "16px", marginRight: "6px" }} /> Cerrar sesión</p>
 
   </div>
 )}

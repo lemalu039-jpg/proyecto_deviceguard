@@ -3,7 +3,7 @@
   height="50px">
     <defs>
   <linearGradient id="ajustesGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-    <stop offset="0%" stop-color="#696f75"/>
+    <stop offset="0%" stop-color="#756e69"/>
     <stop offset="50%" stop-color="#787b80"/>
   </linearGradient>
 </defs>
