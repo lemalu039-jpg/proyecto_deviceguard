@@ -76,8 +76,20 @@ function Sidebar({ onLogout }) {
                 fontSize: '0.9rem'
               })}
             >
-              <img  src={item.icon} alt={item.label} style={{ width: '35px', height: '22px', objectFit: 'contain' }} />
-              {item.label}
+              {({isActive}) => (
+                  <>
+                    <img  
+                    src={item.icon} 
+                    alt={item.label} 
+                    style={{ 
+                      width: '35px', 
+                      height: '22px', 
+                      objectFit: 'contain' , 
+                      filter: isActive ? 'brightness(0) invert(1)' : 'none'}} 
+                      />
+                    {item.label}
+                  </>
+              )}
             </NavLink>
           ))}
         </nav>
