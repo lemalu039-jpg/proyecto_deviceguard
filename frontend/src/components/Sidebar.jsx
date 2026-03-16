@@ -1,25 +1,39 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import dashboard_ from '../assets/icons/dashboard_.svg';
+import dispositivos_ from '../assets/icons/dispositivos_.svg';
+import favoritos_ from '../assets/icons/favoritos_.svg';
+import correo_ from '../assets/icons/correo_.svg';
+import registrodispositivos_ from '../assets/icons/registrodispositivos_.svg';
+import consultafiltros_ from '../assets/icons/consultafiltros_.svg';
+import generar_reportes_ from '../assets/icons/generar_reportes_.svg';
+import registrarsalida_ from '../assets/icons/registrarsalida_.svg';
+import calendario_ from '../assets/icons/calendario_.svg';
+import estadisticas_ from '../assets/icons/estadisticas_.svg';
+import equipo_ from '../assets/icons/equipo_.svg';
+import notificaciones_ from '../assets/icons/notificaciones_.svg';
+import ajustes from '../assets/icons/ajustes.svg';
+import logo from '../assets/icons/logo-deviceguard.svg';
 
 function Sidebar({ onLogout }) {
   const navigate = useNavigate();
   
   const menuItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: '⏱️' },
-    { path: '/dispositivos', label: 'Dispositivos', icon: '💻' },
-    { path: '/favoritos', label: 'Favoritos', icon: '❤️' },
-    { path: '/correo', label: 'Correo', icon: '✉️' },
-    { path: '/registro', label: 'Registro de Dispositivos', icon: '📋' },
-    { path: '/rutas', label: 'Consulta con Filtros', icon: '🔍' },
+    { path: '/dashboard', label: 'Dashboard', icon: dashboard_ },
+    { path: '/dispositivos', label: 'Dispositivos', icon: dispositivos_ },
+    { path: '/favoritos', label: 'Favoritos', icon: favoritos_ },
+    { path: '/correo', label: 'Correo', icon: correo_ },
+    { path: '/registro', label: 'Registro de Dispositivos', icon: registrodispositivos_ },
+    { path: '/rutas', label: 'Consulta con Filtros', icon: consultafiltros_ },
   ];
 
   const pageItems = [
-    { path: '/reportes', label: 'Generar Reportes', icon: '📄' },
-    { path: '/prestamos', label: 'Registrar Salida', icon: '📤' },
-    { path: '/calendario', label: 'Calendario', icon: '📅' },
-    { path: '/estadisticas', label: 'Estadísticas', icon: '📉' },
-    { path: '/usuarios', label: 'Equipo', icon: '👥' },
-    { path: '/mantenimiento', label: 'Notificaciones', icon: '🔔' },
+    { path: '/reportes', label: 'Generar Reportes', icon: generar_reportes_ },
+    { path: '/prestamos', label: 'Registrar Salida', icon: registrarsalida_ },
+    { path: '/calendario', label: 'Calendario', icon: calendario_ },
+    { path: '/estadisticas', label: 'Estadísticas', icon: estadisticas_ },
+    { path: '/usuarios', label: 'Equipo', icon: equipo_ },
+    { path: '/mantenimiento', label: 'Notificaciones', icon: notificaciones_ },
   ];
 
   return (
@@ -36,10 +50,9 @@ function Sidebar({ onLogout }) {
     }}>
       <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', borderBottom: '1px solid var(--border)' }}>
         <div style={{
-          width: '36px', height: '36px', borderRadius: '50%', background: '#fce2e5',
           display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}>
-           <span style={{color: '#e84393', fontWeight: 'bold', fontSize: '1.2rem'}}>🔒</span>
+           <span style={{color: '#e84393', fontWeight: 'bold', fontSize: '1.2rem'}}></span>
         </div>
         <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: 'var(--text-main)', letterSpacing: '-0.5px' }}>DeviceGuard</h1>
       </div>
@@ -63,7 +76,7 @@ function Sidebar({ onLogout }) {
                 fontSize: '0.9rem'
               })}
             >
-              <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
+              <img  src={item.icon} alt={item.label} style={{ width: '35px', height: '22px', objectFit: 'contain' }} />
               {item.label}
             </NavLink>
           ))}
@@ -90,7 +103,7 @@ function Sidebar({ onLogout }) {
                 fontSize: '0.9rem'
               })}
             >
-              <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
+              <img  src={item.icon} alt={item.label}  style={{ width: '35px', height: '22px', objectFit: 'contain' }}/>
               {item.label}
             </NavLink>
           ))}
@@ -103,7 +116,7 @@ function Sidebar({ onLogout }) {
             background: 'transparent', border: 'none', color: 'var(--text-muted)',
             fontWeight: 500, cursor: 'pointer', textAlign: 'left', borderRadius: 'var(--radius-sm)'
           }}>
-            <span style={{ fontSize: '1.1rem' }}>⚙️</span> Ajustes
+            <span style={{ fontSize: '1.1rem' }}><img src={ajustes} alt="ajustes" style={{ width: "16px", marginRight: "6px" }} /></span> Ajustes
         </button>
         
       </div>
