@@ -20,10 +20,10 @@ function Sidebar({ onLogout }) {
   
   const menuItems = [
     { path: '/dashboard', label: 'Dashboard', icon: dashboard_ },
-    { path: '/dispositivos', label: 'Dispositivos', icon: dispositivos_ },
+    { path: '/dispositivos', label: 'Registro de Dispositivos', icon: dispositivos_ },
     { path: '/favoritos', label: 'Favoritos', icon: favoritos_ },
     { path: '/correo', label: 'Correo', icon: correo_ },
-    { path: '/registro', label: 'Registro de Dispositivos', icon: registrodispositivos_ },
+   
     { path: '/rutas', label: 'Consulta con Filtros', icon: consultafiltros_ },
   ];
 
@@ -48,16 +48,33 @@ function Sidebar({ onLogout }) {
       position: 'sticky',
       top: 0
     }}>
-      <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ 
+        padding: '1.5rem', 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: '0.75rem', 
+        borderBottom: '1px solid var(--border)' }}>
         <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center'
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center'
         }}>
-           <span style={{color: '#e84393', fontWeight: 'bold', fontSize: '1.2rem'}}></span>
+           <span style={{
+            color: '#e84393', 
+            fontWeight: 'bold', 
+            fontSize: '1.2rem'}}></span>
         </div>
-        <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: 'var(--text-main)', letterSpacing: '-0.5px' }}>DeviceGuard</h1>
+        <h1 style={{ 
+          fontSize: '1.25rem', 
+          fontWeight: 700, 
+          margin: 0, color: 'var(--text-main)', 
+          letterSpacing: '-0.5px' }}>DeviceGuard</h1>
       </div>
       
-      <div style={{ flexGrow: 1, overflowY: 'auto', padding: '1rem 0' }}>
+      <div style={{ 
+        flexGrow: 1, 
+        overflowY: 'auto', 
+        padding: '1rem 0' }}>
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', padding: '0 1rem' }}>
           {menuItems.map(item => (
             <NavLink
@@ -124,9 +141,17 @@ function Sidebar({ onLogout }) {
 
       <div style={{ padding: '1.5rem', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
          <button style={{
-            display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.75rem 1rem',
-            background: 'transparent', border: 'none', color: 'var(--text-muted)',
-            fontWeight: 500, cursor: 'pointer', textAlign: 'left', borderRadius: 'var(--radius-sm)'
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '1rem', 
+            padding: '0.75rem 1rem',
+            background: 'transparent', 
+            border: 'none', 
+            color: 'var(--text-muted)',
+            fontWeight: 500, 
+            cursor: 'pointer', 
+            textAlign: 'left', 
+            borderRadius: 'var(--radius-sm)'
           }}>
             <span style={{ fontSize: '1.1rem' }}><img src={ajustes} alt="ajustes" style={{ width: "16px", marginRight: "6px" }} /></span> Ajustes
         </button>
