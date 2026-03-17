@@ -67,7 +67,7 @@ function Dashboard() {
             <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Dispositivos en Uso</p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <h2 style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0 }}>{stats.enUso}</h2>
-              <div style={{ background: '#eff6ff', color: '#3b82f6', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>🖥️</div>
+             
             </div>
             <p style={{ fontSize: '0.8rem', margin: 0, marginTop: '1rem', color: '#10b981', fontWeight: 600 }}>↗ 8.5% <span style={{color: 'var(--text-muted)', fontWeight: 400}}>Mas que ayer</span></p>
           </div>
@@ -76,7 +76,7 @@ function Dashboard() {
             <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Total Equipos</p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <h2 style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0 }}>{stats.totalDispositivos}</h2>
-              <div style={{ background: '#fef3c7', color: '#f59e0b', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>📦</div>
+              
             </div>
              <p style={{ fontSize: '0.8rem', margin: 0, marginTop: '1rem', color: '#10b981', fontWeight: 600 }}>↗ 1.3% <span style={{color: 'var(--text-muted)', fontWeight: 400}}>Mas que el año Pasado</span></p>
           </div>
@@ -85,7 +85,7 @@ function Dashboard() {
             <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.5rem' }}>En Mantenimiento</p>
              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <h2 style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0 }}>{stats.enMantenimiento}</h2>
-              <div style={{ background: '#dcfce7', color: '#10b981', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>📋</div>
+             
             </div>
             <p style={{ fontSize: '0.8rem', margin: 0, marginTop: '1rem', color: '#ef4444', fontWeight: 600 }}>↙ 4.3% <span style={{color: 'var(--text-muted)', fontWeight: 400}}>Mas que la semana Pasada</span></p>
           </div>
@@ -94,7 +94,7 @@ function Dashboard() {
             <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Fichas de Soporte</p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <h2 style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0 }}>15</h2>
-              <div style={{ background: '#ffedd5', color: '#f97316', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>⏱️</div>
+             
             </div>
             <p style={{ fontSize: '0.8rem', margin: 0, marginTop: '1rem', color: '#10b981', fontWeight: 600 }}>↗ 1.8% <span style={{color: 'var(--text-muted)', fontWeight: 400}}>Mas que la semana pasada</span></p>
           </div>
@@ -121,9 +121,7 @@ function Dashboard() {
               {dispositivos.map((d, i) => (
                 <tr key={d.id} style={{ background: i % 2 === 0 ? 'white' : '#f8fafc' }}>
                   <td style={{ width: '60px' }}>
-                    <div style={{ width: '40px', height: '40px', background: '#e2e8f0', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {d.tipo === 'Computadora' ? '💻' : d.tipo === 'Tablet' ? '📱' : d.tipo === 'Pantalla' ? '🖥️' : '🔧'}
-                    </div>
+                    
                   </td>
                   <td>
                     <span style={{ fontWeight: 500, color: 'var(--text-main)', fontSize: '0.9rem' }}>{d.nombre}</span>
