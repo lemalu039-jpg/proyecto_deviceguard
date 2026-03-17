@@ -1,18 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { getDispositivos, createDispositivo, updateDispositivo, deleteDispositivo } from '../services/api';
+import './CSS/Dispositivos.css';
 
 function Dispositivos() {
   const [dispositivos, setDispositivos] = useState([]);
-  const [form, setForm] = useState({ nombre: '', tipo: '', serial: '', marca: '', modelo: '', ubicacion: '' });
+  const [form, setForm] = useState({
+    nombre: '',
+    tipo: '',
+    serial: '',
+    marca: '',
+    modelo: '',
+    ubicacion: '',
+    estado: 'Disponible'
+  });
   const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
-    const res = await getDispositivos();
-    setDispositivos(res.data);
+    try {
+      const res = await getDispositivos();
+      setDispositivos(res.data);
+    } catch (err) {
+      console.error('Error cargando dispositivos:', err);
+    }
   };
 
   const handleChange = (e) => {
@@ -21,19 +35,34 @@ function Dispositivos() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingId) {
-      await updateDispositivo(editingId, form);
-    } else {
-      await createDispositivo(form);
+    setLoading(true);
+    try {
+      if (editingId) {
+        await updateDispositivo(editingId, form);
+      } else {
+        await createDispositivo(form);
+      }
+      resetForm();
+      loadData();
+    } catch (err) {
+      console.error('Error guardando dispositivo:', err);
+    } finally {
+      setLoading(false);
     }
-    setForm({ nombre: '', tipo: '', serial: '', marca: '', modelo: '', ubicacion: '' });
-    setEditingId(null);
-    loadData();
   };
 
-  const handleEdit = (dispositivo) => {
-    setForm(dispositivo);
-    setEditingId(dispositivo.id);
+  const handleEdit = (d) => {
+    setForm({
+      nombre: d.nombre || '',
+      tipo: d.tipo || '',
+      serial: d.serial || '',
+      marca: d.marca || '',
+      modelo: d.modelo || '',
+      ubicacion: d.ubicacion || '',
+      estado: d.estado || 'Disponible'
+    });
+    setEditingId(d.id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id) => {
@@ -43,68 +72,104 @@ function Dispositivos() {
     }
   };
 
+  const resetForm = () => {
+    setForm({ nombre: '', tipo: '', serial: '', marca: '', modelo: '', ubicacion: '', estado: 'Disponible' });
+    setEditingId(null);
+  };
+
   const getBadgeClass = (estado) => {
     switch (estado) {
-      case 'Disponible': return 'badge-success';
-      case 'En Prestamo': return 'badge-warning';
-      case 'En Mantenimiento': return 'badge-danger';
-      default: return 'badge-secondary';
+      case 'Disponible':        return 'badge-disponible';
+      case 'En Prestamo':       return 'badge-prestamo';
+      case 'En Mantenimiento':  return 'badge-mantenimiento';
+      default:                  return 'badge-inactivo';
     }
   };
 
   return (
-    <div>
-      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.875rem' }}>Gestión de Dispositivos</h1>
+    <div className="disp-wrap">
+      <h1 className="disp-title">Gestión de Dispositivos</h1>
 
-      <div className="card" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ marginBottom: '1rem' }}>{editingId ? 'Editar Dispositivo' : 'Registrar Nuevo Dispositivo'}</h3>
-        <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div>
-            <label>Nombre:</label>
-            <input type="text" name="nombre" value={form.nombre} onChange={handleChange} className="form-control" required />
+      <div className="disp-card">
+        <div className="disp-card-title">
+          <div className="disp-card-dot"></div>
+          <span>{editingId ? 'Editar dispositivo' : 'Registrar nuevo dispositivo'}</span>
+        </div>
+
+        <form onSubmit={handleSubmit} className="disp-form-grid">
+
+          <div className="disp-group">
+            <label>Nombre</label>
+            <input type="text" name="nombre" value={form.nombre} onChange={handleChange} placeholder="Ej: Portátil HP ProBook" required />
           </div>
-          <div>
-            <label>Tipo:</label>
-            <input type="text" name="tipo" value={form.tipo} onChange={handleChange} className="form-control" required />
+
+          <div className="disp-group">
+            <label>Tipo</label>
+            <input type="text" name="tipo" value={form.tipo} onChange={handleChange} placeholder="Ej: Portátil, Proyector..." required />
           </div>
-          <div>
-            <label>Serial:</label>
-            <input type="text" name="serial" value={form.serial} onChange={handleChange} className="form-control" required disabled={editingId != null} />
+
+          <div className="disp-group">
+            <label>Serial</label>
+            <input type="text" name="serial" value={form.serial} onChange={handleChange} placeholder="Ej: ABC-123456" required disabled={editingId != null} />
           </div>
-          <div>
-            <label>Marca:</label>
-            <input type="text" name="marca" value={form.marca} onChange={handleChange} className="form-control" required />
+
+          <div className="disp-group">
+            <label>Marca</label>
+            <input type="text" name="marca" value={form.marca} onChange={handleChange} placeholder="Ej: HP, Dell, Epson..." required />
           </div>
-          <div>
-            <label>Modelo:</label>
-            <input type="text" name="modelo" value={form.modelo} onChange={handleChange} className="form-control" required />
+
+          <div className="disp-group">
+            <label>Modelo</label>
+            <input type="text" name="modelo" value={form.modelo} onChange={handleChange} placeholder="Ej: ProBook 450 G8" required />
           </div>
-          <div>
-            <label>Ubicación:</label>
-            <input type="text" name="ubicacion" value={form.ubicacion || ''} onChange={handleChange} className="form-control" />
+
+          <div className="disp-group">
+            <label>Ubicación</label>
+            <input type="text" name="ubicacion" value={form.ubicacion} onChange={handleChange} placeholder="Ej: Aula 101" />
           </div>
-          <div style={{ gridColumn: 'span 2' }}>
-            <button type="submit" className="btn btn-primary">
-              {editingId ? 'Actualizar Dispositivo' : 'Registrar Dispositivo'}
-            </button>
-            {editingId && (
-              <button type="button" className="btn" onClick={() => { setEditingId(null); setForm({ nombre: '', tipo: '', serial: '', marca: '', modelo: '', ubicacion: '' }); }} style={{ marginLeft: '1rem' }}>
-                Cancelar
+
+          {editingId && (
+            <div className="disp-group">
+              <label>Estado</label>
+              <select name="estado" value={form.estado} onChange={handleChange}>
+                <option value="Disponible">Disponible</option>
+                <option value="En Prestamo">En Préstamo</option>
+                <option value="En Mantenimiento">En Mantenimiento</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
+            </div>
+          )}
+
+          <div className="disp-span2">
+            <div className="disp-btn-row">
+              <button type="submit" className="disp-btn-primary" disabled={loading}>
+                {loading ? 'Guardando...' : editingId ? 'Actualizar dispositivo' : 'Registrar dispositivo'}
               </button>
-            )}
+              {editingId && (
+                <button type="button" className="disp-btn-cancel" onClick={resetForm}>
+                  Cancelar
+                </button>
+              )}
+            </div>
           </div>
+
         </form>
       </div>
 
-      <div className="card">
-        <h3 style={{ marginBottom: '1rem' }}>Lista de Dispositivos</h3>
-        <div className="table-container">
-          <table>
+      <div className="disp-card">
+        <div className="disp-card-title">
+          <div className="disp-card-dot"></div>
+          <span>Lista de dispositivos</span>
+          <span className="disp-count">{dispositivos.length} registrados</span>
+        </div>
+
+        <div className="disp-table-wrap">
+          <table className="disp-table">
             <thead>
               <tr>
-                <th>Nombre</th>
+                <th>Dispositivo</th>
                 <th>Serial</th>
-                <th>Marca/Modelo</th>
+                <th>Marca / Modelo</th>
                 <th>Ubicación</th>
                 <th>Estado</th>
                 <th>Acciones</th>
@@ -113,19 +178,28 @@ function Dispositivos() {
             <tbody>
               {dispositivos.map(d => (
                 <tr key={d.id}>
-                  <td><strong>{d.nombre}</strong><br/><span style={{fontSize: '0.8rem', color: 'var(--text-muted)'}}>{d.tipo}</span></td>
+                  <td>
+                    <div className="disp-dev-name">{d.nombre}</div>
+                    <div className="disp-dev-type">{d.tipo}</div>
+                  </td>
                   <td>{d.serial}</td>
                   <td>{d.marca} {d.modelo}</td>
                   <td>{d.ubicacion || 'N/A'}</td>
-                  <td><span className={`badge ${getBadgeClass(d.estado)}`}>{d.estado}</span></td>
                   <td>
-                    <button className="btn" style={{ padding: '0.25rem 0.5rem', background: '#e2e8f0', marginRight: '0.5rem' }} onClick={() => handleEdit(d)}>Editar</button>
-                    <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem' }} onClick={() => handleDelete(d.id)}>Eliminar</button>
+                    <span className={`disp-badge ${getBadgeClass(d.estado)}`}>
+                      {d.estado}
+                    </span>
+                  </td>
+                  <td>
+                    <button className="disp-btn-edit" onClick={() => handleEdit(d)}>Editar</button>
+                    <button className="disp-btn-del" onClick={() => handleDelete(d.id)}>Eliminar</button>
                   </td>
                 </tr>
               ))}
               {dispositivos.length === 0 && (
-                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No hay dispositivos registrados</td></tr>
+                <tr>
+                  <td colSpan="6" className="disp-empty">No hay dispositivos registrados</td>
+                </tr>
               )}
             </tbody>
           </table>

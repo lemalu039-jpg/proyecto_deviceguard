@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Home.css';
+import './CSS/Home.css';
 import candado from '../assets/icons/logo-deviceguard.svg';
 
 function Home() {
@@ -24,7 +24,7 @@ function Home() {
       observer.observe(el);
     });
 
-    // Activar hero inmediatamente
+    
     page.querySelectorAll('.hero .anim-up').forEach(el => {
       el.classList.add('visible');
     });
@@ -39,7 +39,7 @@ function Home() {
   return (
     <div className="home-page" ref={pageRef}>
 
-      {/* NAV */}
+    
       <nav className="nav">
         <div className="nav-logo">
           <div className="nav-icon">
@@ -56,7 +56,7 @@ function Home() {
         <button className="nav-btn" onClick={() => navigate('/login')}>Ingresar</button>
       </nav>
 
-      {/* HERO */}
+   
       <div className="hero" id="hero">
         <div className="hero-glow"></div>
         <div className="hero-tag anim-up">
@@ -80,7 +80,7 @@ function Home() {
 
       <div className="divider"></div>
 
-      {/* MÓDULOS */}
+    
       <div className="section" id="features">
         <div className="sec-tag anim-left">¿Qué hace DeviceGuard?</div>
         <div className="sec-title anim-left d1">Todo lo que necesitas<br />en un solo lugar</div>
@@ -128,7 +128,7 @@ function Home() {
 
       <div className="divider"></div>
 
-      {/* NOSOTROS */}
+
       <div className="section" id="about">
         <div className="sec-tag anim-left">Nosotros</div>
         <div className="sec-title anim-left d1">¿Quiénes somos?</div>
@@ -201,7 +201,7 @@ function Home() {
         </div>
       </div>
 
-      {/* CONTACTO */}
+   
       <div className="contact-section" id="contact">
         <div className="sec-tag">Contacto</div>
         <div className="sec-title" style={{ marginTop: '.3rem' }}>¿Tienes alguna pregunta?</div>

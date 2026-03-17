@@ -5,7 +5,7 @@
 @keyframes shimmer   { 0% { left: -100%; } 100% { left: 200%; } }
 @keyframes glow      { 0%,100% { box-shadow: 0 0 10px rgba(4,146,194,.2); } 50% { box-shadow: 0 0 28px rgba(4,146,194,.55); } }
 
-/* Animaciones */
+
 .anim-up    { animation: fadeUp   .6s ease both paused; }
 .anim-left  { animation: fadeLeft  .6s ease both paused; }
 .anim-right { animation: fadeRight .6s ease both paused; }
@@ -14,7 +14,7 @@
 .d3 { animation-delay: .3s; }
 .visible { animation-play-state: running !important; animation-fill-mode: both !important; }
 
-/* Reset y base */
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 .home-page {
@@ -24,7 +24,7 @@
   min-height: 100vh;
 }
 
-/* NAV */
+
 .nav {
   display: flex;
   justify-content: space-between;
@@ -82,7 +82,7 @@
 }
 .nav-btn:hover { opacity: .85 !important; }
 
-/* HERO */
+
 .hero {
   padding: 5rem 2rem 3.5rem;
   text-align: center;
@@ -163,7 +163,7 @@
   z-index: 1;
 }
 
-/* BOTONES HERO */
+
 .btn-p {
   background: linear-gradient(135deg, #0492C2, #82EEFD) !important;
   color: #fff !important;
@@ -205,14 +205,13 @@
 }
 .btn-s:hover { background: rgba(130, 238, 253, .2) !important; }
 
-/* DIVISOR */
+
 .divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(130,238,253,.15), transparent);
   margin: 0 2rem;
 }
 
-/* SECCIONES */
 .section { padding: 3rem 2rem; }
 
 .sec-tag {
@@ -238,7 +237,7 @@
   line-height: 1.8;
 }
 
-/* FEATURES */
+
 .feat-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -276,7 +275,7 @@
 .feat-title { font-size: .88rem; font-weight: 700; color: #fff !important; margin-bottom: .3rem; }
 .feat-desc  { font-size: .76rem; color: #c8e6f5 !important; line-height: 1.65; }
 
-/* NOSOTROS */
+
 .about-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -303,7 +302,7 @@
 .about-item-title { font-size: .83rem; font-weight: 700; color: #fff !important; margin-bottom: 2px; }
 .about-item-desc  { font-size: .74rem; color: #c8e6f5 !important; line-height: 1.6; }
 
-/* MISIÓN */
+
 .mission-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -333,7 +332,7 @@
 .mission-card-title { font-size: 1.1rem; font-weight: 800; color: #fff !important; margin-bottom: .6rem; }
 .mission-card-sub   { font-size: .8rem; color: #c8e6f5 !important; line-height: 1.75; }
 
-/* CONTACTO */
+
 .contact-section {
   padding: 3rem 2rem;
   text-align: center;
@@ -371,7 +370,7 @@
 
 .contact-cta { margin-top: .5rem; }
 
-/* FOOTER */
+
 .footer {
   display: flex;
   justify-content: space-between;
