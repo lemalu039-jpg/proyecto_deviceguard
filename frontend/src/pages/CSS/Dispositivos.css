@@ -3,12 +3,67 @@
   font-family: system-ui, -apple-system, sans-serif;
 }
 
-.disp-title {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #1a1a2e;
+
+.disp-banner {
+  position: relative;
+  background: #151E3D;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.disp-banner-lines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 18px,
+      rgba(130, 238, 253, 0.04) 18px,
+      rgba(130, 238, 253, 0.04) 19px
+    );
+  pointer-events: none;
+}
+
+.disp-banner-content {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+}
+
+.disp-banner-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: .6rem;
+}
+
+.disp-banner-sub {
+  font-size: .85rem;
+  color: rgba(255, 255, 255, .6);
   margin-bottom: 1.25rem;
 }
+
+.disp-banner-btn {
+  background: linear-gradient(135deg, #0492C2, #82EEFD);
+  color: #fff;
+  border: none;
+  padding: .6rem 1.4rem;
+  border-radius: 8px;
+  font-size: .85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+
+.disp-banner-btn:hover {
+  opacity: .88;
+}
+
+
 
 .disp-card {
   background: #fff;
@@ -272,16 +327,16 @@
 /* responsive */
 
 @media (max-width: 640px) {
+  .disp-banner-title {
+    font-size: 1.4rem;
+  }
+
   .disp-form-grid {
     grid-template-columns: 1fr;
   }
 
   .disp-span2 {
     grid-column: span 1;
-  }
-
-  .disp-title {
-    font-size: 1.3rem;
   }
 
   .disp-table th,
