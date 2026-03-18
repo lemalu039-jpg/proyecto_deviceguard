@@ -12,19 +12,19 @@ class DispositivoModel {
     }
 
     static async create(data) {
-        const { nombre, tipo, serial, marca, modelo, estado, ubicacion } = data;
+        const { nombre, tipo, serial, marca, estado, ubicacion } = data;
         const [result] = await pool.query(
-            'INSERT INTO dispositivos (nombre, tipo, serial, marca, modelo, estado, ubicacion) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [nombre, tipo, serial, marca, modelo, estado || 'Disponible', ubicacion]
+            'INSERT INTO dispositivos (nombre, tipo, serial, marca, estado, ubicacion) VALUES (?, ?, ?, ?, ?, ?)',
+            [nombre, tipo, serial, marca, estado || 'Disponible', ubicacion]
         );
         return result.insertId;
     }
 
     static async update(id, data) {
-        const { nombre, tipo, serial, marca, modelo, estado, ubicacion } = data;
+        const { nombre, tipo, serial, marca, estado, ubicacion } = data;
         const [result] = await pool.query(
-            'UPDATE dispositivos SET nombre = ?, tipo = ?, serial = ?, marca = ?, modelo = ?, estado = ?, ubicacion = ? WHERE id = ?',
-            [nombre, tipo, serial, marca, modelo, estado, ubicacion, id]
+            'UPDATE dispositivos SET nombre = ?, tipo = ?, serial = ?, marca = ?, estado = ?, ubicacion = ? WHERE id = ?',
+            [nombre, tipo, serial, marca, estado, ubicacion, id]
         );
         return result.affectedRows;
     }

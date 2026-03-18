@@ -4,14 +4,15 @@ import './CSS/Dispositivos.css';
 
 function Dispositivos() {
   const [dispositivos, setDispositivos] = useState([]);
+  const [mostrarForm, setMostrarForm] = useState(false);
   const [form, setForm] = useState({
     nombre: '',
     tipo: '',
     serial: '',
     marca: '',
-    modelo: '',
     ubicacion: '',
-    estado: 'Disponible'
+    estado: 'Disponible',
+    fecha_registro: new Date().toISOString().split('T')[0]
   });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -57,12 +58,15 @@ function Dispositivos() {
       tipo: d.tipo || '',
       serial: d.serial || '',
       marca: d.marca || '',
-      modelo: d.modelo || '',
       ubicacion: d.ubicacion || '',
-      estado: d.estado || 'Disponible'
+      estado: d.estado || 'Disponible',
+      fecha_registro: d.fecha_registro ? d.fecha_registro.split('T')[0] : new Date().toISOString().split('T')[0]
     });
     setEditingId(d.id);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setMostrarForm(true);
+    setTimeout(() => {
+      document.getElementById('disp-form-section')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
 
   const handleDelete = async (id) => {
@@ -73,8 +77,17 @@ function Dispositivos() {
   };
 
   const resetForm = () => {
-    setForm({ nombre: '', tipo: '', serial: '', marca: '', modelo: '', ubicacion: '', estado: 'Disponible' });
+    setForm({
+      nombre: '',
+      tipo: '',
+      serial: '',
+      marca: '',
+      ubicacion: '',
+      estado: 'Disponible',
+      fecha_registro: new Date().toISOString().split('T')[0]
+    });
     setEditingId(null);
+    setMostrarForm(false);
   };
 
   const getBadgeClass = (estado) => {
@@ -86,76 +99,109 @@ function Dispositivos() {
     }
   };
 
+  const formatFecha = (fecha) => {
+    if (!fecha) return 'N/A';
+    const d = new Date(fecha);
+    return d.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+  };
+
   return (
     <div className="disp-wrap">
-      <h1 className="disp-title">Gestión de Dispositivos</h1>
 
-      <div className="disp-card">
-        <div className="disp-card-title">
-          <div className="disp-card-dot"></div>
-          <span>{editingId ? 'Editar dispositivo' : 'Registrar nuevo dispositivo'}</span>
+     
+      <div className="disp-banner">
+        <div className="disp-banner-lines"></div>
+        <div className="disp-banner-content">
+          <h1 className="disp-banner-title">
+            Registra<br />Nuevos Dispositivos
+          </h1>
+          <p className="disp-banner-sub">Registra y guarda nuevos dispositivos en el sistema</p>
+          <button
+            className="disp-banner-btn"
+            onClick={() => {
+              setMostrarForm(true);
+              setEditingId(null);
+              setForm({
+                nombre: '', tipo: '', serial: '', marca: '',
+                ubicacion: '', estado: 'Disponible',
+                fecha_registro: new Date().toISOString().split('T')[0]
+              });
+              setTimeout(() => {
+                document.getElementById('disp-form-section')?.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }}
+          >
+            Registrar Dispositivo
+          </button>
         </div>
+      </div>
 
-        <form onSubmit={handleSubmit} className="disp-form-grid">
-
-          <div className="disp-group">
-            <label>Nombre</label>
-            <input type="text" name="nombre" value={form.nombre} onChange={handleChange} placeholder="Ej: Portátil HP ProBook" required />
+    
+      {mostrarForm && (
+        <div className="disp-card" id="disp-form-section">
+          <div className="disp-card-title">
+            <div className="disp-card-dot"></div>
+            <span>{editingId ? 'Editar dispositivo' : 'Registrar nuevo dispositivo'}</span>
           </div>
 
-          <div className="disp-group">
-            <label>Tipo</label>
-            <input type="text" name="tipo" value={form.tipo} onChange={handleChange} placeholder="Ej: Portátil, Proyector..." required />
-          </div>
+          <form onSubmit={handleSubmit} className="disp-form-grid">
 
-          <div className="disp-group">
-            <label>Serial</label>
-            <input type="text" name="serial" value={form.serial} onChange={handleChange} placeholder="Ej: ABC-123456" required disabled={editingId != null} />
-          </div>
-
-          <div className="disp-group">
-            <label>Marca</label>
-            <input type="text" name="marca" value={form.marca} onChange={handleChange} placeholder="Ej: HP, Dell, Epson..." required />
-          </div>
-
-          <div className="disp-group">
-            <label>Modelo</label>
-            <input type="text" name="modelo" value={form.modelo} onChange={handleChange} placeholder="Ej: ProBook 450 G8" required />
-          </div>
-
-          <div className="disp-group">
-            <label>Ubicación</label>
-            <input type="text" name="ubicacion" value={form.ubicacion} onChange={handleChange} placeholder="Ej: Aula 101" />
-          </div>
-
-          {editingId && (
             <div className="disp-group">
-              <label>Estado</label>
-              <select name="estado" value={form.estado} onChange={handleChange}>
-                <option value="Disponible">Disponible</option>
-                <option value="En Prestamo">En Préstamo</option>
-                <option value="En Mantenimiento">En Mantenimiento</option>
-                <option value="Inactivo">Inactivo</option>
-              </select>
+              <label>Nombre</label>
+              <input type="text" name="nombre" value={form.nombre} onChange={handleChange} placeholder="Ej: Portátil HP ProBook" required />
             </div>
-          )}
 
-          <div className="disp-span2">
-            <div className="disp-btn-row">
-              <button type="submit" className="disp-btn-primary" disabled={loading}>
-                {loading ? 'Guardando...' : editingId ? 'Actualizar dispositivo' : 'Registrar dispositivo'}
-              </button>
-              {editingId && (
+            <div className="disp-group">
+              <label>Tipo</label>
+              <input type="text" name="tipo" value={form.tipo} onChange={handleChange} placeholder="Ej: Portátil, Proyector..." required />
+            </div>
+
+            <div className="disp-group">
+              <label>Serial</label>
+              <input type="text" name="serial" value={form.serial} onChange={handleChange} placeholder="Ej: ABC-123456" required disabled={editingId != null} />
+            </div>
+
+            <div className="disp-group">
+              <label>Marca</label>
+              <input type="text" name="marca" value={form.marca} onChange={handleChange} placeholder="Ej: HP, Dell, Epson..." required />
+            </div>
+
+            <div className="disp-group">
+              <label>Ubicación</label>
+              <input type="text" name="ubicacion" value={form.ubicacion} onChange={handleChange} placeholder="Ej: Aula 101" />
+            </div>
+
+            <div className="disp-group">
+              <label>Fecha de registro</label>
+              <input type="date" name="fecha_registro" value={form.fecha_registro} onChange={handleChange} required />
+            </div>
+
+           <div className="disp-group">
+  <label>Estado</label>
+  <select name="estado" value={form.estado} onChange={handleChange}>
+    <option value="Disponible">Disponible</option>
+    <option value="En Prestamo">En Préstamo</option>
+    <option value="En Mantenimiento">En Mantenimiento</option>
+    <option value="Inactivo">Inactivo</option>
+  </select>
+</div>
+
+            <div className="disp-span2">
+              <div className="disp-btn-row">
+                <button type="submit" className="disp-btn-primary" disabled={loading}>
+                  {loading ? 'Guardando...' : editingId ? 'Actualizar dispositivo' : 'Registrar dispositivo'}
+                </button>
                 <button type="button" className="disp-btn-cancel" onClick={resetForm}>
                   Cancelar
                 </button>
-              )}
+              </div>
             </div>
-          </div>
 
-        </form>
-      </div>
+          </form>
+        </div>
+      )}
 
+   
       <div className="disp-card">
         <div className="disp-card-title">
           <div className="disp-card-dot"></div>
@@ -169,8 +215,9 @@ function Dispositivos() {
               <tr>
                 <th>Dispositivo</th>
                 <th>Serial</th>
-                <th>Marca / Modelo</th>
+                <th>Marca</th>
                 <th>Ubicación</th>
+                <th>Fecha registro</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>
@@ -183,8 +230,9 @@ function Dispositivos() {
                     <div className="disp-dev-type">{d.tipo}</div>
                   </td>
                   <td>{d.serial}</td>
-                  <td>{d.marca} {d.modelo}</td>
+                  <td>{d.marca}</td>
                   <td>{d.ubicacion || 'N/A'}</td>
+                  <td>{formatFecha(d.fecha_registro)}</td>
                   <td>
                     <span className={`disp-badge ${getBadgeClass(d.estado)}`}>
                       {d.estado}
@@ -198,13 +246,14 @@ function Dispositivos() {
               ))}
               {dispositivos.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="disp-empty">No hay dispositivos registrados</td>
+                  <td colSpan="7" className="disp-empty">No hay dispositivos registrados</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
+
     </div>
   );
 }

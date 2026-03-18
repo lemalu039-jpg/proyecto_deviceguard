@@ -4,9 +4,10 @@ import { getDispositivos, getUsuarios } from '../services/api';
 function Dashboard() {
   const [stats, setStats] = useState({
     totalDispositivos: 0,
-    enUso: 0,
+    disponibles: 0,
+    enPrestamo: 0,
     enMantenimiento: 0,
-    fichasSoporte: 15,
+    inactivos: 0,
     usuarios: 0
   });
 
@@ -22,22 +23,20 @@ function Dashboard() {
         ]);
 
         const allDevices = devicesRes.data;
-        const totalDispositivos = allDevices.length;
-        const enUso = allDevices.filter(d => d.estado === 'En Prestamo').length;
-        const enMantenimiento = allDevices.filter(d => d.estado === 'En Mantenimiento').length;
-        
-        setStats(prev => ({
-          ...prev,
-          totalDispositivos,
-          enUso,
-          enMantenimiento,
-          usuarios: usuariosRes.data.length
-        }));
 
-        setDispositivos(allDevices.slice(0, 5)); // Just show top 5 in dashboard
+        setStats({
+          totalDispositivos: allDevices.length,
+          disponibles: allDevices.filter(d => d.estado === 'Disponible').length,
+          enPrestamo: allDevices.filter(d => d.estado === 'En Prestamo').length,
+          enMantenimiento: allDevices.filter(d => d.estado === 'En Mantenimiento').length,
+          inactivos: allDevices.filter(d => d.estado === 'Inactivo').length,
+          usuarios: usuariosRes.data.length
+        });
+
+        setDispositivos(allDevices.slice(0, 5));
 
       } catch (error) {
-        console.error("Error fetching dashboard data", error);
+        console.error('Error fetching dashboard data', error);
       } finally {
         setLoading(false);
       }
@@ -45,93 +44,279 @@ function Dashboard() {
     fetchData();
   }, []);
 
-  const getStatusBadge = (estado) => {
+  const getBadgeStyle = (estado) => {
+    const base = {
+      display: 'inline-block',
+      fontSize: '.68rem',
+      fontWeight: 700,
+      padding: '3px 10px',
+      borderRadius: '20px',
+      letterSpacing: '.3px'
+    };
     switch (estado) {
-      case 'Disponible': return <span className="badge badge-success" style={{padding: '0.4rem 1rem'}}>Activo</span>;
-      case 'En Prestamo': return <span className="badge badge-info" style={{padding: '0.4rem 1rem'}}>Devuelto</span>;
-      case 'En Mantenimiento': return <span className="badge badge-danger" style={{padding: '0.4rem 1rem'}}>En Reparación</span>;
-      default: return <span className="badge badge-secondary" style={{padding: '0.4rem 1rem'}}>{estado}</span>;
+      case 'Disponible':        return { ...base, background: '#dcfce7', color: '#15803d' };
+      case 'En Prestamo':       return { ...base, background: '#fef9c3', color: '#854d0e' };
+      case 'En Mantenimiento':  return { ...base, background: '#fee2e2', color: '#b91c1c' };
+      default:                  return { ...base, background: '#f1f5f9', color: '#64748b' };
     }
   };
 
+  const formatFecha = (fecha) => {
+    if (!fecha) return 'N/A';
+    return new Date(fecha).toLocaleDateString('es-CO', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    });
+  };
+
+  const thStyle = {
+    padding: '.6rem .85rem',
+    textAlign: 'left',
+    fontSize: '.71rem',
+    fontWeight: 700,
+    color: '#64748b',
+    textTransform: 'uppercase',
+    letterSpacing: '.04em',
+    whiteSpace: 'nowrap'
+  };
+
+  const tdStyle = {
+    padding: '.65rem .85rem',
+    borderBottom: '1px solid #f1f5f9',
+    color: '#334155',
+    verticalAlign: 'middle'
+  };
+
+  const IconoTotal = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0492C2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="3" width="20" height="14" rx="2"/>
+      <path d="M8 21h8M12 17v4"/>
+    </svg>
+  );
+
+
+  const IconoDisponible = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+  );
+
+  
+  const IconoPrestamo = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#854d0e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+  );
+
+
+  const IconoMantenimiento = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+    </svg>
+  );
+
+ 
+  const IconoInactivo = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="10" y1="15" x2="10" y2="9"/>
+      <line x1="14" y1="15" x2="14" y2="9"/>
+    </svg>
+  );
+
+  const cards = [
+    {
+      label: 'Total equipos',
+      value: stats.totalDispositivos,
+      accentColor: 'linear-gradient(135deg, #0492C2, #82EEFD)',
+      textColor: '#0492C2',
+      iconBg: 'rgba(4, 146, 194, .1)',
+      icono: <IconoTotal />,
+      badge: null,
+      sub: `${stats.usuarios} usuarios registrados`,
+      subColor: '#10b981'
+    },
+    {
+      label: 'Disponibles',
+      value: stats.disponibles,
+      accentColor: '#15803d',
+      textColor: '#15803d',
+      iconBg: 'rgba(21, 128, 61, .1)',
+      icono: <IconoDisponible />,
+      badge: { label: 'Disponible', bg: '#dcfce7', color: '#15803d' }
+    },
+    {
+      label: 'En préstamo',
+      value: stats.enPrestamo,
+      accentColor: '#854d0e',
+      textColor: '#854d0e',
+      iconBg: 'rgba(133, 77, 14, .1)',
+      icono: <IconoPrestamo />,
+      badge: { label: 'En Prestamo', bg: '#fef9c3', color: '#854d0e' }
+    },
+    {
+      label: 'En mantenimiento',
+      value: stats.enMantenimiento,
+      accentColor: '#b91c1c',
+      textColor: '#b91c1c',
+      iconBg: 'rgba(185, 28, 28, .1)',
+      icono: <IconoMantenimiento />,
+      badge: { label: 'En Mantenimiento', bg: '#fee2e2', color: '#b91c1c' }
+    },
+    {
+      label: 'Inactivos',
+      value: stats.inactivos,
+      accentColor: '#64748b',
+      textColor: '#64748b',
+      iconBg: 'rgba(100, 116, 139, .1)',
+      icono: <IconoInactivo />,
+      badge: { label: 'Inactivo', bg: '#f1f5f9', color: '#64748b' }
+    }
+  ];
+
   return (
     <div>
-      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>Dashboard</h1>
+      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>
+        Dashboard
+      </h1>
 
       {loading ? (
         <p>Cargando información...</p>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-          
-          <div className="card-light" style={{ position: 'relative', overflow: 'hidden' }}>
-            <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Dispositivos en Uso</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0 }}>{stats.enUso}</h2>
-             
-            </div>
-            <p style={{ fontSize: '0.8rem', margin: 0, marginTop: '1rem', color: '#10b981', fontWeight: 600 }}>↗ 8.5% <span style={{color: 'var(--text-muted)', fontWeight: 400}}>Mas que ayer</span></p>
-          </div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(5, 1fr)',
+          gap: '1rem',
+          marginBottom: '2rem'
+        }}>
+          {cards.map((card, i) => (
+            <div key={i} style={{
+              background: '#fff',
+              borderRadius: '12px',
+              border: '1px solid #e2e8f0',
+              padding: '1.1rem 1rem 1rem 1.3rem',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: 0, left: 0,
+                width: '4px',
+                height: '100%',
+                background: card.accentColor,
+                borderRadius: '12px 0 0 12px'
+              }}></div>
 
-          <div className="card-light" style={{ position: 'relative', overflow: 'hidden' }}>
-            <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Total Equipos</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0 }}>{stats.totalDispositivos}</h2>
-              
-            </div>
-             <p style={{ fontSize: '0.8rem', margin: 0, marginTop: '1rem', color: '#10b981', fontWeight: 600 }}>↗ 1.3% <span style={{color: 'var(--text-muted)', fontWeight: 400}}>Mas que el año Pasado</span></p>
-          </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '.5rem' }}>
+                <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '.8rem', margin: 0 }}>
+                  {card.label}
+                </p>
+                <div style={{
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '9px',
+                  background: card.iconBg,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  {card.icono}
+                </div>
+              </div>
 
-          <div className="card-light" style={{ position: 'relative', overflow: 'hidden' }}>
-            <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.5rem' }}>En Mantenimiento</p>
-             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0 }}>{stats.enMantenimiento}</h2>
-             
-            </div>
-            <p style={{ fontSize: '0.8rem', margin: 0, marginTop: '1rem', color: '#ef4444', fontWeight: 600 }}>↙ 4.3% <span style={{color: 'var(--text-muted)', fontWeight: 400}}>Mas que la semana Pasada</span></p>
-          </div>
+              <h2 style={{ fontSize: '2rem', fontWeight: 700, margin: '0 0 .65rem 0', color: card.textColor }}>
+                {card.value}
+              </h2>
 
-          <div className="card-light" style={{ position: 'relative', overflow: 'hidden' }}>
-            <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Fichas de Soporte</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0 }}>15</h2>
-             
+              <div>
+                {card.badge ? (
+                  <span style={{
+                    display: 'inline-block',
+                    background: card.badge.bg,
+                    color: card.badge.color,
+                    padding: '2px 8px',
+                    borderRadius: '20px',
+                    fontWeight: 700,
+                    fontSize: '.65rem'
+                  }}>
+                    {card.badge.label}
+                  </span>
+                ) : (
+                  <p style={{ fontSize: '.75rem', margin: 0, color: card.subColor, fontWeight: 600 }}>
+                    {card.sub}
+                  </p>
+                )}
+              </div>
             </div>
-            <p style={{ fontSize: '0.8rem', margin: 0, marginTop: '1rem', color: '#10b981', fontWeight: 600 }}>↗ 1.8% <span style={{color: 'var(--text-muted)', fontWeight: 400}}>Mas que la semana pasada</span></p>
-          </div>
-
+          ))}
         </div>
       )}
 
-      {/* Tabla Dashboard */}
-      <h3 style={{ marginBottom: '1rem', fontWeight: 600, color: 'var(--text-main)' }}>Lista Dispositivos</h3>
-      <div className="card-light" style={{ padding: 0, overflow: 'hidden' }}>
-        <div className="table-container" style={{ border: 'none', borderRadius: 0 }}>
-          <table>
+      <h3 style={{ marginBottom: '1rem', fontWeight: 600, color: 'var(--text-main)' }}>
+        Lista de dispositivos recientes
+      </h3>
+
+      <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.81rem' }}>
             <thead>
-              <tr style={{ background: 'white' }}>
-                <th style={{ background: 'white', color: 'var(--text-main)', fontWeight: 600, borderBottom: '2px solid #f1f5f9' }}>Imagen</th>
-                <th style={{ background: 'white', color: 'var(--text-main)', fontWeight: 600, borderBottom: '2px solid #f1f5f9' }}>Nombre</th>
-                <th style={{ background: 'white', color: 'var(--text-main)', fontWeight: 600, borderBottom: '2px solid #f1f5f9' }}>Ubicación</th>
-                <th style={{ background: 'white', color: 'var(--text-main)', fontWeight: 600, borderBottom: '2px solid #f1f5f9' }}>Fecha - Hora Entrada</th>
-                <th style={{ background: 'white', color: 'var(--text-main)', fontWeight: 600, borderBottom: '2px solid #f1f5f9' }}>Serial</th>
-                <th style={{ background: 'white', color: 'var(--text-main)', fontWeight: 600, borderBottom: '2px solid #f1f5f9' }}>Estado</th>
+              <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+                <th style={thStyle}>Imagen</th>
+                <th style={thStyle}>Nombre</th>
+                <th style={thStyle}>Ubicación</th>
+                <th style={thStyle}>Serial</th>
+                <th style={thStyle}>Fecha registro</th>
+                <th style={thStyle}>Estado</th>
               </tr>
             </thead>
             <tbody>
               {dispositivos.map((d, i) => (
-                <tr key={d.id} style={{ background: i % 2 === 0 ? 'white' : '#f8fafc' }}>
-                  <td style={{ width: '60px' }}>
-                    
+                <tr key={d.id} style={{ background: i % 2 === 0 ? '#fff' : '#f8fafc' }}>
+                  <td style={tdStyle}>
+                    <div style={{
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '8px',
+                      background: '#f1f5f9',
+                      border: '1px solid #e2e8f0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden'
+                    }}>
+                      {d.imagen
+                        ? <img
+                            src={`http://localhost:5000/${d.imagen}`}
+                            alt={d.nombre}
+                            style={{ width: '38px', height: '38px', objectFit: 'cover' }}
+                          />
+                        : null
+                      }
+                    </div>
                   </td>
-                  <td>
-                    <span style={{ fontWeight: 500, color: 'var(--text-main)', fontSize: '0.9rem' }}>{d.nombre}</span>
+                  <td style={tdStyle}>
+                    <div style={{ fontWeight: 600, color: '#1a1a2e', fontSize: '.82rem' }}>{d.nombre}</div>
+                    <div style={{ fontSize: '.71rem', color: '#94a3b8', marginTop: '1px' }}>{d.tipo}</div>
                   </td>
-                  <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{d.ubicacion || 'Ambiente 4110'}</td>
-                  <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>25- SEP - 2025 6:29</td>
-                  <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>{d.serial}</td>
-                  <td>{getStatusBadge(d.estado)}</td>
+                  <td style={{ ...tdStyle, fontSize: '.8rem', color: '#64748b' }}>{d.ubicacion || 'N/A'}</td>
+                  <td style={{ ...tdStyle, fontSize: '.8rem', color: '#64748b', fontFamily: 'monospace' }}>{d.serial}</td>
+                  <td style={{ ...tdStyle, fontSize: '.8rem', color: '#64748b' }}>{formatFecha(d.fecha_registro)}</td>
+                  <td style={tdStyle}>
+                    <span style={getBadgeStyle(d.estado)}>{d.estado}</span>
+                  </td>
                 </tr>
               ))}
+              {dispositivos.length === 0 && (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '2.5rem', color: '#94a3b8', fontSize: '.82rem' }}>
+                    No hay dispositivos registrados
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
