@@ -24,6 +24,9 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
+        console.log("data WILMAR", req.files)
+        return
+        res.status(201).json({id: 1000, name: "Test Wilmar" })
         const insertId = await DispositivoModel.create(req.body);
         res.status(201).json({ id: insertId, ...req.body });
     } catch (error) {
