@@ -1,7 +1,8 @@
+const ExcelJS = require("exceljs");
 const PDFDocument = require("pdfkit");
 const db = require("../database/connection");
 
-const generarReporteDispositivos = async (req, res) => {
+const generarExcelDispositivos = async (req, res) => {
   try {
     const [dispositivos] = await db.query("SELECT * FROM dispositivos");
 
@@ -9,122 +10,166 @@ const generarReporteDispositivos = async (req, res) => {
       return res.status(404).send("No hay dispositivos en la base de datos");
     }
 
-    const doc = new PDFDocument();
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Dispositivos");
 
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=dispositivos.pdf");
+    // 🧠 TITULO
+    worksheet.addRow(["DEVICEGUARD"]);
+    worksheet.addRow(["Reporte de Dispositivos"]);
+    worksheet.addRow([`Fecha: ${new Date().toLocaleDateString()}`]);
+    worksheet.addRow([]);
 
-    doc.pipe(res);
+    // 📊 COLUMNAS (ajústalas si tu tabla es diferente)
+    worksheet.columns = [
+      { header: "ID", key: "id", width: 10 },
+      { header: "Nombre", key: "nombre", width: 25 },
+      { header: "Estado", key: "estado", width: 20 }
+    ];
 
-    // 🧠 ENCABEZADO
-    doc.fontSize(25).text("DEVICEGUARD", { align: "center" });
-    doc.moveDown();
-    doc.fontSize(18).text("Reporte de Dispositivos", { align: "center" });
-    doc.moveDown();
-
-    doc.fontSize(10).text(`Fecha: ${new Date().toLocaleDateString()}`, {
-      align: "right"
+    // 📥 DATOS
+    dispositivos.forEach(d => {
+      worksheet.addRow({
+        id: d.id,
+        nombre: d.nombre,
+        estado: d.estado
+      });
     });
 
-    doc.moveDown();
-    doc.text("----------------------------------------");
-    doc.moveDown();
+    worksheet.getRow(5).font = { bold: true };
 
-    // 🔁 DATOS
-    dispositivos.forEach((d, index) => {
-      doc.fontSize(12).text(
-        `${index + 1}. ${d.nombre || "Sin nombre"} - ${d.estado || "N/A"}`
-      );
-      doc.moveDown();
-    });
+    // 📤 RESPUESTA
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
 
-    doc.end();
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=dispositivos.xlsx"
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
 
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error al generar el reporte");
+    res.status(500).send("Error al generar Excel");
   }
 };
 
-const generarReporteBD = async (req, res) => {
+const generarExcelBD = async (req, res) => {
   try {
     const [usuarios] = await db.query("SELECT COUNT(*) as total FROM usuarios");
     const [dispositivos] = await db.query("SELECT COUNT(*) as total FROM dispositivos");
 
-    const doc = new PDFDocument();
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Resumen");
 
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=bd.pdf");
+    // 🧠 TITULO
+    worksheet.addRow(["DEVICEGUARD"]);
+    worksheet.addRow(["Reporte General del Sistema"]);
+    worksheet.addRow([`Fecha: ${new Date().toLocaleDateString()}`]);
+    worksheet.addRow([]);
 
-    doc.pipe(res);
+    // 📊 COLUMNAS
+    worksheet.columns = [
+      { header: "Descripción", key: "descripcion", width: 30 },
+      { header: "Cantidad", key: "cantidad", width: 15 }
+    ];
 
-    doc.fontSize(25).text("DEVICEGUARD", { align: "center" });
-    doc.moveDown();
-
-    doc.fontSize(18).text("Reporte General del Sistema", { align: "center" });
-    doc.moveDown();
-
-    doc.fontSize(10).text(`Fecha: ${new Date().toLocaleDateString()}`, {
-      align: "right"
+    // 📥 DATOS
+    worksheet.addRow({
+      descripcion: "Total de usuarios",
+      cantidad: usuarios[0].total
     });
 
-    doc.moveDown();
-    doc.text("----------------------------------------");
-    doc.moveDown();
+    worksheet.addRow({
+      descripcion: "Total de dispositivos",
+      cantidad: dispositivos[0].total
+    });
 
-    doc.fontSize(12).text(`Total de usuarios: ${usuarios[0].total}`);
-    doc.text(`Total de dispositivos: ${dispositivos[0].total}`);
+    worksheet.getRow(5).font = { bold: true };
 
-    doc.end();
+    // 📤 RESPUESTA
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=bd.xlsx"
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
 
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error al generar el reporte");
+    res.status(500).send("Error al generar Excel");
   }
 };
 
-const generarReporteUsuarios = async (req, res) => {
+const generarExcelUsuarios = async (req, res) => {
   try {
-
     const [usuarios] = await db.query("SELECT * FROM usuarios");
 
     if (!usuarios || usuarios.length === 0) {
       return res.status(404).send("No hay usuarios en la base de datos");
     }
 
-    const doc = new PDFDocument();
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Usuarios");
 
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=usuarios.pdf");
+    // 🧠 TÍTULO
+    worksheet.addRow(["DEVICEGUARD"]);
+    worksheet.addRow(["Reporte de Usuarios"]);
+    worksheet.addRow([`Fecha: ${new Date().toLocaleDateString()}`]);
+    worksheet.addRow([]); // espacio
 
-    doc.pipe(res);
+    // 📊 ENCABEZADOS
+    worksheet.columns = [
+      { header: "ID", key: "id", width: 10 },
+      { header: "Nombre", key: "nombre", width: 25 },
+      { header: "Correo", key: "correo", width: 30 },
+      { header: "Rol", key: "rol", width: 15 }
+    ];
 
-    doc.fontSize(25).text("DEVICEGUARD", { align: "center" });
-    doc.moveDown();
-    doc.fontSize(20).text("Reporte de Usuarios", { align: "center" });
-    doc.moveDown();
-    doc.text(`Fecha: ${new Date().toLocaleDateString()}`);
-    doc.moveDown();
-    doc.moveDown();
-    doc.moveDown();
-
-    usuarios.forEach((usuario, index) => {
-      doc.text(
-        `${index + 1}. ${usuario.nombre} - ${usuario.correo} (${usuario.rol})`
-      );
-      doc.moveDown();
+    // 📥 DATOS
+    usuarios.forEach(usuario => {
+      worksheet.addRow({
+        id: usuario.id,
+        nombre: usuario.nombre,
+        correo: usuario.correo,
+        rol: usuario.rol
+      });
     });
 
-    doc.end();
+    // 🎨 ESTILO
+    worksheet.getRow(5).font = { bold: true };
+
+    // 📤 RESPUESTA
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=usuarios.xlsx"
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
 
   } catch (error) {
-    console.error("❌ ERROR REAL:", error);
-    res.status(500).send("Error al generar el reporte");
+    console.error("ERROR:", error);
+    res.status(500).send("Error al generar Excel");
   }
 };
 
 module.exports = {
-  generarReporteUsuarios,
-  generarReporteDispositivos,
-  generarReporteBD
+  generarExcelUsuarios,
+  generarExcelDispositivos,
+  generarExcelBD
 };

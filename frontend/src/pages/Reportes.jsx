@@ -6,43 +6,55 @@ import bdIcon from "../assets/icons/reportes_bd.svg"
 
 function Reportes() {
 
-  const generarUsuarios = async () => {
-    const res = await axios.get("http://localhost:5000/api/reportes/usuarios", {
-      responseType: "blob"
-    });
+ const generarUsuarios = async () => {
+  try {
+    const res = await axios.get(
+      "http://localhost:5000/api/reportes/usuarios-excel",
+      { responseType: "blob" }
+    );
 
     const url = window.URL.createObjectURL(new Blob([res.data]));
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", "usuarios.pdf");
-    document.body.appendChild(link);
+    link.download = "usuarios.xlsx";
     link.click();
-  };
-
-  const generarDispositivos = async () => {
-  const res = await axios.get("http://localhost:5000/api/reportes/dispositivos", {
-    responseType: "blob"
-  });
-
-  const url = window.URL.createObjectURL(new Blob([res.data]));
-  const link = document.createElement("a");
-  link.href = url;
-  link.setAttribute("download", "dispositivos.pdf");
-  document.body.appendChild(link);
-  link.click();
+  } catch (error) {
+    console.error("Error al descargar usuarios:", error);
+  }
 };
 
-  const generarBD = async () => {
-  const res = await axios.get("http://localhost:5000/api/reportes/bd", {
-    responseType: "blob"
-  });
+const generarDispositivos = async () => {
+  try {
+    const res = await axios.get(
+      "http://localhost:5000/api/reportes/dispositivos-excel",
+      { responseType: "blob" }
+    );
 
-  const url = window.URL.createObjectURL(new Blob([res.data]));
-  const link = document.createElement("a");
-  link.href = url;
-  link.setAttribute("download", "bd.pdf");
-  document.body.appendChild(link);
-  link.click();
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "dispositivos.xlsx";
+    link.click();
+  } catch (error) {
+    console.error("Error al descargar dispositivos:", error);
+  }
+};
+
+const generarBD = async () => {
+  try {
+    const res = await axios.get(
+      "http://localhost:5000/api/reportes/bd-excel",
+      { responseType: "blob" }
+    );
+
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "bd.xlsx";
+    link.click();
+  } catch (error) {
+    console.error("Error al descargar BD:", error);
+  }
 };
 
   return (
