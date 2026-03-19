@@ -17,17 +17,22 @@ app.get('/', (req, res) => {
     res.json({ message: 'Welcome to DeviceGuard API' });
 });
 
+
 // Import Routes
 const usuariosRoutes = require('./src/routes/usuarios.routes');
 const dispositivosRoutes = require('./src/routes/dispositivos.routes');
 const prestamosRoutes = require('./src/routes/prestamos.routes');
 const mantenimientoRoutes = require('./src/routes/mantenimiento.routes');
+const reportesRoutes = require('./src/routes/reportes.routes.js');
+
 
 // Use Routes
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/dispositivos', dispositivosRoutes);
 app.use('/api/prestamos', prestamosRoutes);
 app.use('/api/mantenimiento', mantenimientoRoutes);
+app.use('/api/reportes', reportesRoutes);
+
 
 app.use((err, req, res, next) => {
   if (err.code === 'LIMIT_FILE_SIZE') {
@@ -37,6 +42,7 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
