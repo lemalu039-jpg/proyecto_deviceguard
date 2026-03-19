@@ -13,6 +13,8 @@ import Mantenimiento from './pages/Mantenimiento';
 import Usuarios from './pages/Usuarios';
 import CambiarCorreo from './pages/CambiarCorreo';
 import CambiarContrasena from './pages/CambiarContrasena';
+import Reportes from "./pages/Reportes";
+
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -113,6 +115,12 @@ function App() {
 <Route path="/cambiar-contrasena" element={
   <ProtectedRoute>
     <CambiarContrasena />
+  </ProtectedRoute>
+} />
+
+<Route path="/reportes" element={
+  <ProtectedRoute>
+    <Reportes />
   </ProtectedRoute>
 } />
 
