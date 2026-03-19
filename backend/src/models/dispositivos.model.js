@@ -12,23 +12,22 @@ class DispositivoModel {
     }
 
     static async create(data) {
-        const { nombre, tipo, serial, marca, estado, ubicacion } = data;
-        const [result] = await pool.query(
-            'INSERT INTO dispositivos (nombre, tipo, serial, marca, estado, ubicacion) VALUES (?, ?, ?, ?, ?, ?)',
-            [nombre, tipo, serial, marca, estado || 'Disponible', ubicacion]
-        );
-        return result.insertId;
-    }
+    const { nombre, tipo, serial, marca, estado, ubicacion, archivo } = data;
+    const [result] = await pool.query(
+        'INSERT INTO dispositivos (nombre, tipo, serial, marca, estado, ubicacion, archivo) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [nombre, tipo, serial, marca, estado || 'Disponible', ubicacion, archivo || null]
+    );
+    return result.insertId;
+}
 
-    static async update(id, data) {
-        const { nombre, tipo, serial, marca, estado, ubicacion } = data;
-        const [result] = await pool.query(
-            'UPDATE dispositivos SET nombre = ?, tipo = ?, serial = ?, marca = ?, estado = ?, ubicacion = ? WHERE id = ?',
-            [nombre, tipo, serial, marca, estado, ubicacion, id]
-        );
-        return result.affectedRows;
-    }
-
+static async update(id, data) {
+    const { nombre, tipo, serial, marca, estado, ubicacion, archivo } = data;
+    const [result] = await pool.query(
+        'UPDATE dispositivos SET nombre = ?, tipo = ?, serial = ?, marca = ?, estado = ?, ubicacion = ?, archivo = ? WHERE id = ?',
+        [nombre, tipo, serial, marca, estado, ubicacion, archivo || null, id]
+    );
+    return result.affectedRows;
+}
     static async delete(id) {
         const [result] = await pool.query('DELETE FROM dispositivos WHERE id = ?', [id]);
         return result.affectedRows;
