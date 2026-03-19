@@ -38,10 +38,18 @@ function Dispositivos() {
     e.preventDefault();
     setLoading(true);
     try {
+      let formData = new FormData();
+      //map form to formData
+      Object.keys(form).forEach(key =>{
+        console.log("Key",key, form[key])
+        formData.append(key, form[key])
+      })
+      let archivo = document.getElementById("archivo")
+      formData.append("archivo", archivo.files[0])
       if (editingId) {
-        await updateDispositivo(editingId, form);
+        // await updateDispositivo(editingId, form);
       } else {
-        await createDispositivo(form);
+        await createDispositivo(formData);
       }
       resetForm();
       loadData();
@@ -177,14 +185,18 @@ function Dispositivos() {
             </div>
 
            <div className="disp-group">
-  <label>Estado</label>
-  <select name="estado" value={form.estado} onChange={handleChange}>
-    <option value="Disponible">Disponible</option>
-    <option value="En Prestamo">En Préstamo</option>
-    <option value="En Mantenimiento">En Mantenimiento</option>
-    <option value="Inactivo">Inactivo</option>
-  </select>
-</div>
+            <label>Estado</label>
+            <select name="estado" value={form.estado} onChange={handleChange}>
+              <option value="Disponible">Disponible</option>
+              <option value="En Prestamo">En Préstamo</option>
+              <option value="En Mantenimiento">En Mantenimiento</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </div>
+
+          <div className="disp-group">
+            <input type="file" id='archivo'/>
+          </div>
 
             <div className="disp-span2">
               <div className="disp-btn-row">
