@@ -1,4 +1,6 @@
 const DispositivoModel = require('../models/dispositivos.model');
+const upload = require("../middlewares/upload");
+// const { uploadFile, uploadMultipleFiles } = require("../controllers/file.controller");
 
 exports.getAll = async (req, res) => {
     try {
@@ -24,11 +26,9 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        console.log("data WILMAR", req.files)
-        return
-        res.status(201).json({id: 1000, name: "Test Wilmar" })
-        const insertId = await DispositivoModel.create(req.body);
-        res.status(201).json({ id: insertId, ...req.body });
+        let data = {...req.body , archivo: req.file ? req.file.filename : null};
+        const insertId = await DispositivoModel.create(data);
+        res.status(201).json({ id: insertId, ...data });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

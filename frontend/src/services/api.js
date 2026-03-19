@@ -20,8 +20,11 @@ export const deleteUsuario = (id) => api.delete(`/usuarios/${id}`);
 export const getDispositivos = () => api.get('/dispositivos');
 export const getDispositivo = (id) => api.get(`/dispositivos/${id}`);
 export const createDispositivo = (data) => {
-    // api.defaults.headers.post['Content-Type'] = 'multipart/form-data';
-    return api.post('/dispositivos', data)
+    return axios.post(`${API_URL}/dispositivos`, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
 };
 export const updateDispositivo = (id, data) => api.put(`/dispositivos/${id}`, data);
 export const deleteDispositivo = (id) => api.delete(`/dispositivos/${id}`);
