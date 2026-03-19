@@ -16,7 +16,6 @@ const generarReporteDispositivos = async (req, res) => {
 
     doc.pipe(res);
 
-    // 🧠 ENCABEZADO
     doc.fontSize(25).text("DEVICEGUARD", { align: "center" });
     doc.moveDown();
     doc.fontSize(18).text("Reporte de Dispositivos", { align: "center" });
@@ -27,10 +26,9 @@ const generarReporteDispositivos = async (req, res) => {
     });
 
     doc.moveDown();
-    doc.text("----------------------------------------");
+    doc.moveDown();
     doc.moveDown();
 
-    // 🔁 DATOS
     dispositivos.forEach((d, index) => {
       doc.fontSize(12).text(
         `${index + 1}. ${d.nombre || "Sin nombre"} - ${d.estado || "N/A"}`
@@ -69,7 +67,7 @@ const generarReporteBD = async (req, res) => {
     });
 
     doc.moveDown();
-    doc.text("----------------------------------------");
+    doc.moveDown();
     doc.moveDown();
 
     doc.fontSize(12).text(`Total de usuarios: ${usuarios[0].total}`);
@@ -118,7 +116,7 @@ const generarReporteUsuarios = async (req, res) => {
     doc.end();
 
   } catch (error) {
-    console.error("❌ ERROR REAL:", error);
+    console.error("ERROR:", error);
     res.status(500).send("Error al generar el reporte");
   }
 };
