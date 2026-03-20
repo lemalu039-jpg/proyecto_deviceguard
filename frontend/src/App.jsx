@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Dispositivos from './pages/Dispositivos';
+import Registrarsalida from './pages/Registrarsalida';
 import Prestamos from './pages/Prestamos';
 import Mantenimiento from './pages/Mantenimiento';
 import Usuarios from './pages/Usuarios';
@@ -86,6 +87,12 @@ function App() {
         <Route path="/dispositivos" element={
           <ProtectedRoute>
             <Dispositivos />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/Registrarsalida" element={
+          <ProtectedRoute>
+            <Registrarsalida />
           </ProtectedRoute>
         } />
         

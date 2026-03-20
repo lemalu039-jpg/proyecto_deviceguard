@@ -3,6 +3,8 @@ const router = express.Router();
 const dispositivosController = require('../controllers/dispositivos.controller');
 const upload = require("../middlewares/upload");
 
+
+router.get('/serial/:serial', dispositivosController.getBySerial);
 router.get('/', dispositivosController.getAll);
 router.get('/:id', dispositivosController.getById);
 router.post('/', upload.single('archivo'), dispositivosController.create);

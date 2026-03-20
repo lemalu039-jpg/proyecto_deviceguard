@@ -1,4 +1,5 @@
 const DispositivoModel = require('../models/dispositivos.model');
+const pool = require('../database/connection'); // 👈 ARRIBA
 const upload = require("../middlewares/upload");
 // const { uploadFile, uploadMultipleFiles } = require("../controllers/file.controller");
 
@@ -60,3 +61,25 @@ exports.delete = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.getBySerial = async (req, res) => {
+  try {
+    const { serial } = req.params;
+
+    const [rows] = await pool.query(
+      "SELECT * FROM dispositivos WHERE serial = ?",
+      [serial]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No encontrado" });
+    }
+
+    res.json(rows[0]);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error servidor" });
+  }
+};
+

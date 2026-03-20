@@ -29,6 +29,14 @@ export const createDispositivo = (data) => {
 export const updateDispositivo = (id, data) => api.put(`/dispositivos/${id}`, data);
 export const deleteDispositivo = (id) => api.delete(`/dispositivos/${id}`);
 
+// Salidas
+export const getSalidas = () => api.get('/salidas');
+export const createSalida = (data) => api.post('/salidas', data);
+export const deleteSalida = (id) => api.delete(`/salidas/${id}`);
+// Buscar dispositivo por serial
+export const getDispositivoBySerial = (serial) => 
+  api.get(`/dispositivos/serial/${serial}`);
+
 // Prestamos
 export const getPrestamos = () => api.get('/prestamos');
 export const getPrestamo = (id) => api.get(`/prestamos/${id}`);
