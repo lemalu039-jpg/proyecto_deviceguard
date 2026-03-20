@@ -12,19 +12,19 @@ class DispositivoModel {
     }
 
     static async create(data) {
-        const { nombre, tipo, serial, marca, estado, ubicacion } = data;
+        const { nombre, tipo, serial, marca, estado, ubicacion, fecha_registro, hora_registro } = data;
         const [result] = await pool.query(
-            'INSERT INTO dispositivos (nombre, tipo, serial, marca, estado, ubicacion) VALUES (?, ?, ?, ?, ?, ?)',
-            [nombre, tipo, serial, marca, estado || 'Disponible', ubicacion]
+            'INSERT INTO dispositivos (nombre, tipo, serial, marca, estado, ubicacion, fecha_registro, hora_registro) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [nombre, tipo, serial, marca, estado || 'Disponible', ubicacion, fecha_registro, hora_registro]
         );
         return result.insertId;
     }
 
     static async update(id, data) {
-        const { nombre, tipo, serial, marca, estado, ubicacion } = data;
+        const { nombre, tipo, serial, marca, estado, ubicacion, fecha_registro, hora_registro } = data;
         const [result] = await pool.query(
-            'UPDATE dispositivos SET nombre = ?, tipo = ?, serial = ?, marca = ?, estado = ?, ubicacion = ? WHERE id = ?',
-            [nombre, tipo, serial, marca, estado, ubicacion, id]
+            'UPDATE dispositivos SET nombre = ?, tipo = ?, serial = ?, marca = ?, estado = ?, ubicacion = ?, fecha_registro = ?, hora_registro = ? WHERE id = ?',
+            [nombre, tipo, serial, marca, estado, ubicacion, fecha_registro, hora_registro, id]
         );
         return result.affectedRows;
     }
@@ -33,6 +33,15 @@ class DispositivoModel {
         const [result] = await pool.query('DELETE FROM dispositivos WHERE id = ?', [id]);
         return result.affectedRows;
     }
+
+    // Buscar dispositivo por serial
+static async findBySerial(serial) {
+  const [rows] = await pool.query(
+    'SELECT * FROM dispositivos WHERE serial = ?',
+    [serial]
+  );
+  return rows[0];
+}
 }
 
 module.exports = DispositivoModel;

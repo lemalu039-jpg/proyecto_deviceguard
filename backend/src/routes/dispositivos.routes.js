@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const dispositivosController = require('../controllers/dispositivos.controller');
 
+
+router.get('/serial/:serial', dispositivosController.getBySerial);
 router.get('/', dispositivosController.getAll);
 router.get('/:id', dispositivosController.getById);
 router.post('/', dispositivosController.create);

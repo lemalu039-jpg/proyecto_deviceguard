@@ -29,7 +29,7 @@ function Sidebar({ onLogout }) {
 
   const pageItems = [
     { path: '/reportes', label: 'Generar Reportes', icon: generar_reportes_ },
-    { path: '/prestamos', label: 'Registrar Salida', icon: registrarsalida_ },
+    { path: '/registrarsalida', label: 'Registrar Salida', icon: registrarsalida_ },
     { path: '/calendario', label: 'Calendario', icon: calendario_ },
     { path: '/estadisticas', label: 'Estadísticas', icon: estadisticas_ },
     { path: '/usuarios', label: 'Equipo', icon: equipo_ },

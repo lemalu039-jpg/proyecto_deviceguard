@@ -12,7 +12,8 @@ function Dispositivos() {
     marca: '',
     ubicacion: '',
     estado: 'Disponible',
-    fecha_registro: new Date().toISOString().split('T')[0]
+    fecha_registro: new Date().toISOString().split('T')[0],
+    hora_registro: new Date().toTimeString().slice(0, 5) 
   });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -60,8 +61,11 @@ function Dispositivos() {
       marca: d.marca || '',
       ubicacion: d.ubicacion || '',
       estado: d.estado || 'Disponible',
-      fecha_registro: d.fecha_registro ? d.fecha_registro.split('T')[0] : new Date().toISOString().split('T')[0]
-    });
+      fecha_registro: d.fecha_registro 
+      ? d.fecha_registro.split('T')[0] 
+      : new Date().toISOString().split('T')[0],
+      hora_registro: d.hora_registro || new Date().toTimeString().slice(0, 5) // 👈 AÑADE ESTO
+  });
     setEditingId(d.id);
     setMostrarForm(true);
     setTimeout(() => {
@@ -84,7 +88,8 @@ function Dispositivos() {
       marca: '',
       ubicacion: '',
       estado: 'Disponible',
-      fecha_registro: new Date().toISOString().split('T')[0]
+      fecha_registro: new Date().toISOString().split('T')[0],
+      hora_registro: new Date().toTimeString().slice(0, 5) // 👈 AÑADE
     });
     setEditingId(null);
     setMostrarForm(false);
@@ -124,7 +129,8 @@ function Dispositivos() {
               setForm({
                 nombre: '', tipo: '', serial: '', marca: '',
                 ubicacion: '', estado: 'Disponible',
-                fecha_registro: new Date().toISOString().split('T')[0]
+                fecha_registro: new Date().toISOString().split('T')[0],
+                hora_registro: new Date().toTimeString().slice(0, 5) // 👈 AÑADE
               });
               setTimeout(() => {
                 document.getElementById('disp-form-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -175,6 +181,17 @@ function Dispositivos() {
               <label>Fecha de registro</label>
               <input type="date" name="fecha_registro" value={form.fecha_registro} onChange={handleChange} required />
             </div>
+            
+            <div className="disp-group">
+  <label>Hora de registro</label>
+  <input
+    type="time"
+    name="hora_registro"
+    value={form.hora_registro}
+    onChange={handleChange}
+    required
+  />
+</div>
 
            <div className="disp-group">
   <label>Estado</label>
@@ -217,7 +234,7 @@ function Dispositivos() {
                 <th>Serial</th>
                 <th>Marca</th>
                 <th>Ubicación</th>
-                <th>Fecha registro</th>
+                <th>Fecha / Hora</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>
@@ -232,7 +249,12 @@ function Dispositivos() {
                   <td>{d.serial}</td>
                   <td>{d.marca}</td>
                   <td>{d.ubicacion || 'N/A'}</td>
-                  <td>{formatFecha(d.fecha_registro)}</td>
+                  <td>
+  {formatFecha(d.fecha_registro)} <br />
+  <span style={{ fontSize: "0.75rem", color: "#64748b" }}>
+    {d.hora_registro || "—"}
+  </span>
+</td>
                   <td>
                     <span className={`disp-badge ${getBadgeClass(d.estado)}`}>
                       {d.estado}
