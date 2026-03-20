@@ -278,25 +278,22 @@ function Dashboard() {
                 <tr key={d.id} style={{ background: i % 2 === 0 ? '#fff' : '#f8fafc' }}>
                   <td style={tdStyle}>
                     <div style={{
-                      width: '38px',
-                      height: '38px',
-                      borderRadius: '8px',
-                      background: '#f1f5f9',
-                      border: '1px solid #e2e8f0',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      overflow: 'hidden'
-                    }}>
-                      {d.imagen
-                        ? <img
-                            src={`http://localhost:5000/${d.imagen}`}
-                            alt={d.nombre}
-                            style={{ width: '38px', height: '38px', objectFit: 'cover' }}
-                          />
-                        : null
-                      }
-                    </div>
+                   width: '42px',
+                   height: '42px',
+                   borderRadius: '8px',
+                   background: '#f1f5f9',
+                    border: '1px solid #e2e8f0',
+                   overflow: 'hidden',
+                   flexShrink: 0
+            }}>
+                   {d.archivo
+                  ? <img
+                    src={`http://localhost:5000/uploads/${d.archivo}`}
+                   alt={d.nombre}
+                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}/>
+                   : <span style={{ fontSize: '.6rem', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>N/A</span>
+                  }
+                   </div>
                   </td>
                   <td style={tdStyle}>
                     <div style={{ fontWeight: 600, color: '#1a1a2e', fontSize: '.82rem' }}>{d.nombre}</div>
