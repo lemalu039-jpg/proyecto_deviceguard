@@ -5,9 +5,9 @@ function Dashboard() {
   const [stats, setStats] = useState({
     totalDispositivos: 0,
     disponibles: 0,
-    enPrestamo: 0,
+    enRevision: 0,
     enMantenimiento: 0,
-    inactivos: 0,
+    dadoDeBaja: 0,
     usuarios: 0
   });
 
@@ -21,20 +21,16 @@ function Dashboard() {
           getDispositivos(),
           getUsuarios()
         ]);
-
         const allDevices = devicesRes.data;
-
         setStats({
           totalDispositivos: allDevices.length,
-          disponibles: allDevices.filter(d => d.estado === 'Disponible').length,
-          enPrestamo: allDevices.filter(d => d.estado === 'En Prestamo').length,
+          disponibles:     allDevices.filter(d => d.estado === 'Disponible').length,
+          enRevision:      allDevices.filter(d => d.estado === 'En Revision').length,
           enMantenimiento: allDevices.filter(d => d.estado === 'En Mantenimiento').length,
-          inactivos: allDevices.filter(d => d.estado === 'Inactivo').length,
-          usuarios: usuariosRes.data.length
+          dadoDeBaja:      allDevices.filter(d => d.estado === 'Dado de Baja').length,
+          usuarios:        usuariosRes.data.length
         });
-
         setDispositivos(allDevices.slice(0, 5));
-
       } catch (error) {
         console.error('Error fetching dashboard data', error);
       } finally {
@@ -54,10 +50,11 @@ function Dashboard() {
       letterSpacing: '.3px'
     };
     switch (estado) {
-      case 'Disponible':        return { ...base, background: '#dcfce7', color: '#15803d' };
-      case 'En Prestamo':       return { ...base, background: '#fef9c3', color: '#854d0e' };
-      case 'En Mantenimiento':  return { ...base, background: '#fee2e2', color: '#b91c1c' };
-      default:                  return { ...base, background: '#f1f5f9', color: '#64748b' };
+      case 'Disponible':       return { ...base, background: '#dcfce7', color: '#15803d' };
+      case 'En Revision':      return { ...base, background: '#f3e8ff', color: '#7e22ce' };
+      case 'En Mantenimiento': return { ...base, background: '#ffedd5', color: '#c2410c' };
+      case 'Dado de Baja':     return { ...base, background: '#fef2f2', color: '#991b1b' };
+      default:                 return { ...base, background: '#f1f5f9', color: '#64748b' };
     }
   };
 
@@ -86,44 +83,32 @@ function Dashboard() {
     verticalAlign: 'middle'
   };
 
+  
   const IconoTotal = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0492C2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="3" width="20" height="14" rx="2"/>
-      <path d="M8 21h8M12 17v4"/>
+      <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
     </svg>
   );
-
-
   const IconoDisponible = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-      <polyline points="22 4 12 14.01 9 11.01"/>
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
     </svg>
   );
-
-  
-  const IconoPrestamo = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#854d0e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-      <circle cx="9" cy="7" r="4"/>
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+  const IconoRevision = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7e22ce" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
     </svg>
   );
-
-
   const IconoMantenimiento = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c2410c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
     </svg>
   );
-
- 
-  const IconoInactivo = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <line x1="10" y1="15" x2="10" y2="9"/>
-      <line x1="14" y1="15" x2="14" y2="9"/>
+  const IconoBaja = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#991b1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+      <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
     </svg>
   );
 
@@ -149,33 +134,87 @@ function Dashboard() {
       badge: { label: 'Disponible', bg: '#dcfce7', color: '#15803d' }
     },
     {
-      label: 'En préstamo',
-      value: stats.enPrestamo,
-      accentColor: '#854d0e',
-      textColor: '#854d0e',
-      iconBg: 'rgba(133, 77, 14, .1)',
-      icono: <IconoPrestamo />,
-      badge: { label: 'En Prestamo', bg: '#fef9c3', color: '#854d0e' }
+      label: 'En revisión',
+      value: stats.enRevision,
+      accentColor: '#7e22ce',
+      textColor: '#7e22ce',
+      iconBg: 'rgba(126, 34, 206, .1)',
+      icono: <IconoRevision />,
+      badge: { label: 'En Revision', bg: '#f3e8ff', color: '#7e22ce' }
     },
+    
     {
       label: 'En mantenimiento',
       value: stats.enMantenimiento,
-      accentColor: '#b91c1c',
-      textColor: '#b91c1c',
-      iconBg: 'rgba(185, 28, 28, .1)',
+      accentColor: '#c2410c',
+      textColor: '#c2410c',
+      iconBg: 'rgba(194, 65, 12, .1)',
       icono: <IconoMantenimiento />,
-      badge: { label: 'En Mantenimiento', bg: '#fee2e2', color: '#b91c1c' }
+      badge: { label: 'En Mantenimiento', bg: '#ffedd5', color: '#c2410c' }
     },
     {
-      label: 'Inactivos',
-      value: stats.inactivos,
-      accentColor: '#64748b',
-      textColor: '#64748b',
-      iconBg: 'rgba(100, 116, 139, .1)',
-      icono: <IconoInactivo />,
-      badge: { label: 'Inactivo', bg: '#f1f5f9', color: '#64748b' }
+      label: 'Dados de baja',
+      value: stats.dadoDeBaja,
+      accentColor: '#991b1b',
+      textColor: '#991b1b',
+      iconBg: 'rgba(153, 27, 27, .1)',
+      icono: <IconoBaja />,
+      badge: { label: 'Dado de Baja', bg: '#fef2f2', color: '#991b1b' }
     }
   ];
+
+
+  const cardW = 'calc(25% - 0.75rem)';
+
+  const renderCard = (card, i) => (
+    <div key={i} style={{
+      background: '#fff',
+      borderRadius: '12px',
+      border: '1px solid #e2e8f0',
+      padding: '1.1rem 1rem 1rem 1.3rem',
+      position: 'relative',
+      overflow: 'hidden',
+      flex: `0 1 ${cardW}`
+    }}>
+      <div style={{
+        position: 'absolute', top: 0, left: 0,
+        width: '4px', height: '100%',
+        background: card.accentColor,
+        borderRadius: '12px 0 0 12px'
+      }} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '.5rem' }}>
+        <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '.8rem', margin: 0 }}>
+          {card.label}
+        </p>
+        <div style={{
+          width: '34px', height: '34px', borderRadius: '9px',
+          background: card.iconBg,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+        }}>
+          {card.icono}
+        </div>
+      </div>
+      <h2 style={{ fontSize: '2rem', fontWeight: 700, margin: '0 0 .65rem 0', color: card.textColor }}>
+        {card.value}
+      </h2>
+      <div>
+        {card.badge ? (
+          <span style={{
+            display: 'inline-block',
+            background: card.badge.bg, color: card.badge.color,
+            padding: '2px 8px', borderRadius: '20px',
+            fontWeight: 700, fontSize: '.65rem'
+          }}>
+            {card.badge.label}
+          </span>
+        ) : (
+          <p style={{ fontSize: '.75rem', margin: 0, color: card.subColor, fontWeight: 600 }}>
+            {card.sub}
+          </p>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div>
@@ -186,73 +225,17 @@ function Dashboard() {
       {loading ? (
         <p>Cargando información...</p>
       ) : (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
+        <div style={{ marginBottom: '2rem' }}>
+
+          <div style={{
+          display: 'flex',
           gap: '1rem',
-          marginBottom: '2rem'
-        }}>
-          {cards.map((card, i) => (
-            <div key={i} style={{
-              background: '#fff',
-              borderRadius: '12px',
-              border: '1px solid #e2e8f0',
-              padding: '1.1rem 1rem 1rem 1.3rem',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: 0, left: 0,
-                width: '4px',
-                height: '100%',
-                background: card.accentColor,
-                borderRadius: '12px 0 0 12px'
-              }}></div>
+          flexWrap: 'nowrap',
+         overflowX: 'auto'   
+          }}>
+          {cards.map((card, i) => renderCard(card, i))}
+         </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '.5rem' }}>
-                <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '.8rem', margin: 0 }}>
-                  {card.label}
-                </p>
-                <div style={{
-                  width: '34px',
-                  height: '34px',
-                  borderRadius: '9px',
-                  background: card.iconBg,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0
-                }}>
-                  {card.icono}
-                </div>
-              </div>
-
-              <h2 style={{ fontSize: '2rem', fontWeight: 700, margin: '0 0 .65rem 0', color: card.textColor }}>
-                {card.value}
-              </h2>
-
-              <div>
-                {card.badge ? (
-                  <span style={{
-                    display: 'inline-block',
-                    background: card.badge.bg,
-                    color: card.badge.color,
-                    padding: '2px 8px',
-                    borderRadius: '20px',
-                    fontWeight: 700,
-                    fontSize: '.65rem'
-                  }}>
-                    {card.badge.label}
-                  </span>
-                ) : (
-                  <p style={{ fontSize: '.75rem', margin: 0, color: card.subColor, fontWeight: 600 }}>
-                    {card.sub}
-                  </p>
-                )}
-              </div>
-            </div>
-          ))}
         </div>
       )}
 
@@ -278,22 +261,16 @@ function Dashboard() {
                 <tr key={d.id} style={{ background: i % 2 === 0 ? '#fff' : '#f8fafc' }}>
                   <td style={tdStyle}>
                     <div style={{
-                   width: '42px',
-                   height: '42px',
-                   borderRadius: '8px',
-                   background: '#f1f5f9',
-                    border: '1px solid #e2e8f0',
-                   overflow: 'hidden',
-                   flexShrink: 0
-            }}>
-                   {d.archivo
-                  ? <img
-                    src={`http://localhost:5000/uploads/${d.archivo}`}
-                   alt={d.nombre}
-                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}/>
-                   : <span style={{ fontSize: '.6rem', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>N/A</span>
-                  }
-                   </div>
+                      width: '42px', height: '42px', borderRadius: '8px',
+                      background: '#f1f5f9', border: '1px solid #e2e8f0',
+                      overflow: 'hidden', flexShrink: 0
+                    }}>
+                      {d.archivo
+                        ? <img src={`http://localhost:5000/uploads/${d.archivo}`} alt={d.nombre}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        : <span style={{ fontSize: '.6rem', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>N/A</span>
+                      }
+                    </div>
                   </td>
                   <td style={tdStyle}>
                     <div style={{ fontWeight: 600, color: '#1a1a2e', fontSize: '.82rem' }}>{d.nombre}</div>
