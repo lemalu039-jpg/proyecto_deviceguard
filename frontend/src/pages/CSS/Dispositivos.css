@@ -4,6 +4,8 @@
 }
 
 
+
+
 .disp-banner {
   position: relative;
   background: #151E3D;
@@ -62,6 +64,7 @@
 .disp-banner-btn:hover {
   opacity: .88;
 }
+
 
 
 
@@ -198,6 +201,7 @@
 
 
 
+
 .disp-table-wrap {
   overflow-x: auto;
 }
@@ -267,20 +271,24 @@
   color: #15803d;
 }
 
-.badge-prestamo {
-  background: #fef9c3;
-  color: #854d0e;
+.badge-revision {
+  background: #f3e8ff;
+  color: #7e22ce;
 }
+
 
 .badge-mantenimiento {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: #ffedd5;
+  color: #c2410c;
 }
 
-.badge-inactivo {
-  background: #f1f5f9;
-  color: #64748b;
+
+
+.badge-baja {
+  background: #fef2f2;
+  color: #991b1b;
 }
+
 
 
 
@@ -324,7 +332,8 @@
   font-size: .82rem;
 }
 
-/* responsive */
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
 
 @media (max-width: 640px) {
   .disp-banner-title {

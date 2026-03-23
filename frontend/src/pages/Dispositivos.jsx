@@ -13,7 +13,7 @@ function Dispositivos() {
     ubicacion: '',
     estado: 'Disponible',
     fecha_registro: new Date().toISOString().split('T')[0],
-    hora_registro: new Date().toTimeString().slice(0, 5) 
+    hora_registro: new Date().toTimeString().slice(0, 5)
   });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -40,15 +40,13 @@ function Dispositivos() {
     setLoading(true);
     try {
       let formData = new FormData();
-      //map form to formData
-      Object.keys(form).forEach(key =>{
-        console.log("Key",key, form[key])
-        formData.append(key, form[key])
-      })
-      let archivo = document.getElementById("archivo")
-      formData.append("archivo", archivo.files[0])
+      Object.keys(form).forEach(key => {
+        formData.append(key, form[key]);
+      });
+      let archivo = document.getElementById('archivo');
+      formData.append('archivo', archivo.files[0]);
       if (editingId) {
-        // await updateDispositivo(editingId, form);
+        await updateDispositivo(editingId, formData);
       } else {
         await createDispositivo(formData);
       }
@@ -69,11 +67,11 @@ function Dispositivos() {
       marca: d.marca || '',
       ubicacion: d.ubicacion || '',
       estado: d.estado || 'Disponible',
-      fecha_registro: d.fecha_registro 
-      ? d.fecha_registro.split('T')[0] 
-      : new Date().toISOString().split('T')[0],
-      hora_registro: d.hora_registro || new Date().toTimeString().slice(0, 5) // 👈 AÑADE ESTO
-  });
+      fecha_registro: d.fecha_registro
+        ? d.fecha_registro.split('T')[0]
+        : new Date().toISOString().split('T')[0],
+      hora_registro: d.hora_registro || new Date().toTimeString().slice(0, 5)
+    });
     setEditingId(d.id);
     setMostrarForm(true);
     setTimeout(() => {
@@ -97,7 +95,7 @@ function Dispositivos() {
       ubicacion: '',
       estado: 'Disponible',
       fecha_registro: new Date().toISOString().split('T')[0],
-      hora_registro: new Date().toTimeString().slice(0, 5) // 👈 AÑADE
+      hora_registro: new Date().toTimeString().slice(0, 5)
     });
     setEditingId(null);
     setMostrarForm(false);
@@ -105,10 +103,11 @@ function Dispositivos() {
 
   const getBadgeClass = (estado) => {
     switch (estado) {
-      case 'Disponible':        return 'badge-disponible';
-      case 'En Prestamo':       return 'badge-prestamo';
-      case 'En Mantenimiento':  return 'badge-mantenimiento';
-      default:                  return 'badge-inactivo';
+      case 'Disponible':       return 'badge-disponible';
+      case 'En Revision':      return 'badge-revision';
+      case 'En Mantenimiento': return 'badge-mantenimiento';
+      case 'Dado de Baja':     return 'badge-baja';
+      default:                 return 'badge-inactivo';
     }
   };
 
@@ -121,7 +120,6 @@ function Dispositivos() {
   return (
     <div className="disp-wrap">
 
-     
       <div className="disp-banner">
         <div className="disp-banner-lines"></div>
         <div className="disp-banner-content">
@@ -138,7 +136,7 @@ function Dispositivos() {
                 nombre: '', tipo: '', serial: '', marca: '',
                 ubicacion: '', estado: 'Disponible',
                 fecha_registro: new Date().toISOString().split('T')[0],
-                hora_registro: new Date().toTimeString().slice(0, 5) // 👈 AÑADE
+                hora_registro: new Date().toTimeString().slice(0, 5)
               });
               setTimeout(() => {
                 document.getElementById('disp-form-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -150,7 +148,6 @@ function Dispositivos() {
         </div>
       </div>
 
-    
       {mostrarForm && (
         <div className="disp-card" id="disp-form-section">
           <div className="disp-card-title">
@@ -189,31 +186,26 @@ function Dispositivos() {
               <label>Fecha de registro</label>
               <input type="date" name="fecha_registro" value={form.fecha_registro} onChange={handleChange} required />
             </div>
-            
+
             <div className="disp-group">
-  <label>Hora de registro</label>
-  <input
-    type="time"
-    name="hora_registro"
-    value={form.hora_registro}
-    onChange={handleChange}
-    required
-  />
-</div>
+              <label>Hora de registro</label>
+              <input type="time" name="hora_registro" value={form.hora_registro} onChange={handleChange} required />
+            </div>
 
-           <div className="disp-group">
-            <label>Estado</label>
-            <select name="estado" value={form.estado} onChange={handleChange}>
-              <option value="Disponible">Disponible</option>
-              <option value="En Prestamo">En Préstamo</option>
-              <option value="En Mantenimiento">En Mantenimiento</option>
-              <option value="Inactivo">Inactivo</option>
-            </select>
-          </div>
+            <div className="disp-group">
+              <label>Estado</label>
+              <select name="estado" value={form.estado} onChange={handleChange}>
+                <option value="Disponible">Disponible</option>
+                <option value="En Revision">En Revisión</option>
+                <option value="En Mantenimiento">En Mantenimiento</option>
+                <option value="Dado de Baja">Dado de Baja</option>
+              </select>
+            </div>
 
-          <div className="disp-group">
-            <input type="file" id='archivo'/>
-          </div>
+            <div className="disp-group">
+              <label>Imagen del dispositivo</label>
+              <input type="file" id="archivo" accept="image/*" />
+            </div>
 
             <div className="disp-span2">
               <div className="disp-btn-row">
@@ -230,7 +222,6 @@ function Dispositivos() {
         </div>
       )}
 
-   
       <div className="disp-card">
         <div className="disp-card-title">
           <div className="disp-card-dot"></div>
@@ -262,11 +253,11 @@ function Dispositivos() {
                   <td>{d.marca}</td>
                   <td>{d.ubicacion || 'N/A'}</td>
                   <td>
-  {formatFecha(d.fecha_registro)} <br />
-  <span style={{ fontSize: "0.75rem", color: "#64748b" }}>
-    {d.hora_registro || "—"}
-  </span>
-</td>
+                    {formatFecha(d.fecha_registro)}<br />
+                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                      {d.hora_registro || '—'}
+                    </span>
+                  </td>
                   <td>
                     <span className={`disp-badge ${getBadgeClass(d.estado)}`}>
                       {d.estado}
