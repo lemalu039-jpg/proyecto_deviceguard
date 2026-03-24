@@ -15,6 +15,7 @@ import Usuarios from './pages/Usuarios';
 import CambiarCorreo from './pages/CambiarCorreo';
 import CambiarContrasena from './pages/CambiarContrasena';
 import Reportes from "./pages/Reportes";
+import Estadisticas from './pages/Estadisticas';
 
 
 function App() {
@@ -130,7 +131,11 @@ function App() {
     <Reportes />
   </ProtectedRoute>
 } />
-
+<Route path="/estadisticas" element={
+  <ProtectedRoute>
+    <Estadisticas />
+  </ProtectedRoute>
+} />
       </Routes>
     </Router>
 
