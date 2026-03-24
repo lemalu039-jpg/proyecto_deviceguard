@@ -27,7 +27,7 @@ class DispositivoModel {
             ubicacion, 
             fecha_registro, 
             hora_registro,
-            archivo 
+            archivo
         } = data;
 
         const [result] = await pool.query(
@@ -50,47 +50,31 @@ class DispositivoModel {
         return result.insertId;
     }
 
-    static async update(id, data) {
-        const { 
-            nombre, 
-            tipo, 
-            serial, 
-            marca, 
-            estado, 
-            ubicacion, 
-            fecha_registro, 
-            hora_registro,
-            archivo 
-        } = data;
+static async update(id, data) {
+    const fields = [];
+    const values = [];
 
-        const [result] = await pool.query(
-            `UPDATE dispositivos SET 
-                nombre = ?, 
-                tipo = ?, 
-                serial = ?, 
-                marca = ?, 
-                estado = ?, 
-                ubicacion = ?, 
-                fecha_registro = ?, 
-                hora_registro = ?, 
-                archivo = ?
-            WHERE id = ?`,
-            [
-                nombre, 
-                tipo, 
-                serial, 
-                marca, 
-                estado, 
-                ubicacion, 
-                fecha_registro, 
-                hora_registro,
-                archivo || null,
-                id
-            ]
-        );
-
-        return result.affectedRows;
+    for (const key in data) {
+        if (data[key] !== undefined) {
+            fields.push(`${key} = ?`);
+            values.push(data[key]);
+        }
     }
+
+    if (fields.length === 0) return 0;
+
+    const query = `
+        UPDATE dispositivos 
+        SET ${fields.join(', ')}
+        WHERE id = ?
+    `;
+
+    values.push(id);
+
+    const [result] = await pool.query(query, values);
+
+    return result.affectedRows;
+}
 
     static async delete(id) {
         const [result] = await pool.query(

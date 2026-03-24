@@ -21,7 +21,6 @@ function Sidebar({ onLogout }) {
   const menuItems = [
     { path: '/dashboard', label: 'Dashboard', icon: dashboard_ },
     { path: '/dispositivos', label: 'Registro de Dispositivos', icon: dispositivos_ },
-    { path: '/favoritos', label: 'Favoritos', icon: favoritos_ },
     { path: '/correo', label: 'Correo', icon: correo_ },
    
     { path: '/rutas', label: 'Consulta con Filtros', icon: consultafiltros_ },
@@ -33,7 +32,7 @@ function Sidebar({ onLogout }) {
     { path: '/calendario', label: 'Calendario', icon: calendario_ },
     { path: '/estadisticas', label: 'Estadísticas', icon: estadisticas_ },
     { path: '/usuarios', label: 'Equipo', icon: equipo_ },
-    { path: '/mantenimiento', label: 'Notificaciones', icon: notificaciones_ },
+    { path: '/mantenimiento', label: 'Historial', icon: notificaciones_ },
   ];
 
   return (
