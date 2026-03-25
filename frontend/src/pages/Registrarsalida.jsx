@@ -9,6 +9,7 @@ import "./CSS/Registrarsalida.css";
 function SalidaDispositivos() {
   const [salidas, setSalidas] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
+  const [mostrarForm, setMostrarForm] = useState(false);
   const [form, setForm] = useState({
     serial: "",
     fecha: new Date().toISOString().split("T")[0],
@@ -149,51 +150,81 @@ function SalidaDispositivos() {
 
   return (
     <div className="salida-wrapper">
-      <h1>Salida de Dispositivos</h1>
+        <div className="salida-banner">
+  <div className="salida-banner-lines"></div>
 
-      {/* FORMULARIO */}
-      <form onSubmit={handleSubmit} className="salida-form">
-        <input
-          type="text"
-          name="serial"
-          placeholder="Serial del dispositivo"
-          value={form.serial}
-          onChange={handleChange}
-          onBlur={handleBuscar}
-          required
-        />
+  <div>
+    <h2>Registrar Salida de Dispositivos</h2>
+    <p>
+      Gestiona la salida de equipos cuando finalizan su proceso
+    </p>
 
-        <input
-          type="date"
-          name="fecha"
-          value={form.fecha}
-          onChange={handleChange}
-          required
-        />
+    <button onClick={() => {
+  console.log("CLICK");
+  setMostrarForm(true);
+}}>
+  Registrar Salida
+</button>
+  </div>
+</div>
 
-        <input
-          type="time"
-          name="hora"
-          value={form.hora}
-          onChange={handleChange}
-          required
-        />
-<select
-  name="estado"
-  value={form.estado}
-  onChange={handleChange}
-  required
+        <div className={`form-container ${mostrarForm ? "show" : ""}`}>
+      {mostrarForm && (
+  <form onSubmit={handleSubmit} className="salida-form">
+
+    <input
+      type="text"
+      name="serial"
+      placeholder="Serial del dispositivo"
+      value={form.serial}
+      onChange={handleChange}
+      onBlur={handleBuscar}
+      required
+    />
+
+    <input
+      type="date"
+      name="fecha"
+      value={form.fecha}
+      onChange={handleChange}
+      required
+    />
+
+    <input
+      type="time"
+      name="hora"
+      value={form.hora}
+      onChange={handleChange}
+      required
+    />
+
+    <select
+      name="estado"
+      value={form.estado}
+      onChange={handleChange}
+      required
+    >
+      <option value="">Seleccionar estado</option>
+      <option value="Disponible">Disponible</option>
+      <option value="En Mantenimiento">En Mantenimiento</option>
+      <option value="En Prestamo">En Prestamo</option>
+    </select>
+
+   <button type="submit" className="salida-btn-primary" disabled={loading}>
+  {loading ? "Guardando..." : "Registrar salida"}
+</button>
+
+<button
+  type="button"
+  className="salida-btn-cancel"
+  onClick={() => setMostrarForm(false)}
 >
-  <option value="">Seleccionar estado</option>
-  <option value="Disponible">Disponible</option>
-  <option value="En Mantenimiento">En Mantenimiento</option>
-  <option value="En Prestamo">En Prestamo</option>
-</select>
+  Cancelar
+</button>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Guardando..." : "Registrar salida"}
-        </button>
-      </form>
+  </form>
+)}
+</div>
 
       {/* TABLA */}
       <table className="salida-table">
@@ -231,7 +262,11 @@ function SalidaDispositivos() {
                   </span>
                 </td>
 
-                <td>{s.fecha_salida || "—"}</td>
+                <td>
+  {s.fecha_salida
+    ? s.fecha_salida.split("T")[0]
+    : "—"}
+</td>
 
                 <td>{s.hora_salida || "—"}</td>
 

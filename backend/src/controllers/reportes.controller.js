@@ -1,5 +1,4 @@
 const ExcelJS = require("exceljs");
-const PDFDocument = require("pdfkit");
 const db = require("../database/connection");
 
 const generarExcelDispositivos = async (req, res) => {
