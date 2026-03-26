@@ -23,7 +23,7 @@ function Sidebar({ onLogout }) {
     { path: '/dispositivos', label: 'Registro de Dispositivos', icon: dispositivos_ },
     { path: '/correo', label: 'Correo', icon: correo_ },
    
-    { path: '/rutas', label: 'Consulta con Filtros', icon: consultafiltros_ },
+    { path: '/consultarfiltros', label: 'Consulta con Filtros', icon: consultafiltros_ },
   ];
 
   const pageItems = [

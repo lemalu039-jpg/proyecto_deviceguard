@@ -86,18 +86,15 @@ function SalidaDispositivos() {
         setEditandoId(null);
       }
 
-      // 🔥 REGISTRAR SALIDA
+      // REGISTRAR SALIDA
       else {
-        // ✅ Validación correcta
-        if (dispositivoActual.estado !== "En Mantenimiento") {
-          alert(
-            "Solo puedes registrar salida de dispositivos en mantenimiento"
-          );
-          return;
-        }
-
+        // Validación correcta
+        if (dispositivoActual.estado !== "Disponible") {
+    alert("No puedes registrar salida. El dispositivo no está disponible.");
+    return;
+  }
         await updateDispositivo(dispositivo.id, {
-          estado: form.estado, // 🔥 más lógico
+          estado: "Disponible",
           fecha_salida: form.fecha,
           hora_salida: form.hora
         });
@@ -185,7 +182,7 @@ function SalidaDispositivos() {
     <input
       type="date"
       name="fecha"
-      value={form.fecha}
+      value={form.fecha.split("T")[0]}
       onChange={handleChange}
       required
     />
@@ -199,16 +196,17 @@ function SalidaDispositivos() {
     />
 
     <select
-      name="estado"
-      value={form.estado}
-      onChange={handleChange}
-      required
-    >
-      <option value="">Seleccionar estado</option>
-      <option value="Disponible">Disponible</option>
-      <option value="En Mantenimiento">En Mantenimiento</option>
-      <option value="En Prestamo">En Prestamo</option>
-    </select>
+  name="estado"
+  value={form.estado}
+  onChange={handleChange}
+  required
+>
+  <option value="">Seleccionar estado</option>
+  <option value="Disponible">Disponible</option>
+  <option value="En Revision">En Revisión</option>
+  <option value="En Mantenimiento">En Mantenimiento</option>
+  <option value="Dado de Baja">Dado de Baja</option>
+</select>
 
    <button type="submit" className="salida-btn-primary" disabled={loading}>
   {loading ? "Guardando..." : "Registrar salida"}
@@ -233,7 +231,7 @@ function SalidaDispositivos() {
             <th>Serial</th>
             <th>Fecha Entrada</th>
             <th>Fecha Salida</th>
-            <th>Hora Salida</th>
+        
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
@@ -266,9 +264,11 @@ function SalidaDispositivos() {
   {s.fecha_salida
     ? s.fecha_salida.split("T")[0]
     : "—"}
+     <br />
+  <span style={{ fontSize: "0.75rem", color: "#64748b" }}>
+    {s.hora_salida || "—"}
+  </span>
 </td>
-
-                <td>{s.hora_salida || "—"}</td>
 
                 <td>
                   <span
