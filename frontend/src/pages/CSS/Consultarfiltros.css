@@ -1,0 +1,110 @@
+.filtros-wrapper {
+  padding: 1.5rem;
+  font-family: system-ui;
+}
+
+/* TITULO */
+.filtros-title {
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1a1a2e;
+}
+
+/* BARRA */
+.filtros-bar {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: .6rem;
+  margin-bottom: 1rem;
+}
+
+.filtros-label {
+  font-size: .8rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.filtros-bar input {
+  padding: .4rem .6rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  font-size: .8rem;
+}
+
+/* BOTÓN BORRAR */
+.btn-clear {
+  margin-left: auto;
+  background: transparent;
+  color: #ef4444;
+  border: none;
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* CARD */
+.filtros-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+/* TABLA */
+.filtros-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .8rem;
+}
+
+.filtros-table th {
+  background: #f8fafc;
+  padding: .7rem;
+  text-align: left;
+  font-size: .7rem;
+  color: #64748b;
+}
+
+.filtros-table td {
+  padding: .7rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.hora {
+  font-size: .7rem;
+  color: #94a3b8;
+}
+
+/* BADGES */
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* COLORES */
+.badge.disponible {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge.en\ revisión {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.badge.en\ mantenimiento {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.badge.dado\ de\ baja {
+  background: #fee2e2;
+  color: #991b1b;
+}

@@ -16,7 +16,8 @@ import CambiarCorreo from './pages/CambiarCorreo';
 import CambiarContrasena from './pages/CambiarContrasena';
 import Reportes from "./pages/Reportes";
 import Estadisticas from './pages/Estadisticas';
-
+import ConsultarFiltros from "./pages/Consultarfiltros";
+import Correo from "./pages/Correo";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -131,6 +132,19 @@ function App() {
     <Reportes />
   </ProtectedRoute>
 } />
+
+<Route path="/consultarfiltros" element={
+  <ProtectedRoute>
+    <ConsultarFiltros />
+  </ProtectedRoute>
+} />
+
+<Route path="/correo" element={
+  <ProtectedRoute>
+    <Correo />
+  </ProtectedRoute>
+} />
+
 <Route path="/estadisticas" element={
   <ProtectedRoute>
     <Estadisticas />

@@ -1,0 +1,110 @@
+.correo-wrapper {
+  display: flex;
+  height: 90vh;
+  background: #f4f6fb;
+  gap: 1rem;
+}
+
+/* SIDEBAR */
+.correo-sidebar {
+  width: 250px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.btn-redactar {
+  width: 100%;
+  background: #2d3a8c;
+  color: #fff;
+  border: none;
+  padding: .6rem;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+.correo-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.correo-sidebar li {
+  padding: .5rem;
+  border-radius: 6px;
+  font-size: .85rem;
+  cursor: pointer;
+}
+
+.correo-sidebar li:hover {
+  background: #f1f5f9;
+}
+
+/* PANEL PRINCIPAL */
+.correo-main {
+  flex: 1;
+  background: #fff;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+.correo-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  font-weight: 600;
+}
+
+/* CHAT */
+.correo-chat {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+/* MENSAJES */
+.mensaje {
+  max-width: 60%;
+  padding: .8rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  font-size: .85rem;
+}
+
+.mensaje.recibido {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.mensaje.enviado {
+  background: #1e293b;
+  color: #fff;
+  margin-left: auto;
+}
+
+/* INPUT */
+.correo-input {
+  display: flex;
+  gap: .5rem;
+  padding: .8rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.correo-input input {
+  flex: 1;
+  padding: .5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: .85rem;
+}
+
+.correo-input button {
+  background: #2d3a8c;
+  color: #fff;
+  border: none;
+  padding: .5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}

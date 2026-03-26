@@ -237,15 +237,15 @@
 /* BADGES */
 .badge-disponible {
   background: #dcfce7;
-  color: #16a34a;
+  color: #15803d;
   padding: 4px 8px;
   border-radius: 8px;
   font-size: 12px;
 }
 
 .badge-prestamo {
-  background: #fef3c7;
-  color: #d97706;
+  background: #ffedd5;
+  color: #c2410c;
   padding: 4px 8px;
   border-radius: 8px;
   font-size: 12px;
