@@ -13,6 +13,7 @@ function Dashboard() {
 
   const [dispositivos, setDispositivos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [imagenActiva, setImagenActiva] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -266,8 +267,11 @@ function Dashboard() {
                       overflow: 'hidden', flexShrink: 0
                     }}>
                       {d.archivo
-                        ? <img src={`http://localhost:5000/uploads/${d.archivo}`} alt={d.nombre}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                       ? <img 
+                        src={`http://localhost:5000/uploads/${d.archivo}`} 
+                        alt={d.nombre}
+                        onClick={() => setImagenActiva(`http://localhost:5000/uploads/${d.archivo}`)}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block',cursor: 'pointer'}} />
                         : <span style={{ fontSize: '.6rem', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>N/A</span>
                       }
                     </div>
@@ -295,6 +299,16 @@ function Dashboard() {
           </table>
         </div>
       </div>
+      {imagenActiva && (
+  <div 
+    onClick={() => setImagenActiva(null)}
+    style={{position: 'fixed',top: 0,left: 0,width: '100%',height: '100%',background: 'rgba(0,0,0,0.85)',display: 'flex',alignItems: 'center',justifyContent: 'center',zIndex: 9999,backdropFilter: 'blur(6px)'}}>
+    <img 
+      src={imagenActiva}
+      alt="preview"
+      style={{maxWidth: '90%',maxHeight: '90%',borderRadius: '12px',boxShadow: '0 30px 80px rgba(0,0,0,0.7)'}}/>
+  </div>
+)}
     </div>
   );
 }

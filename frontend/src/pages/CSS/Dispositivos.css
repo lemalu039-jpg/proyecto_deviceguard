@@ -3,9 +3,6 @@
   font-family: system-ui, -apple-system, sans-serif;
 }
 
-
-
-
 .disp-banner {
   position: relative;
   background: #151E3D;
@@ -353,4 +350,98 @@
     padding: .5rem .6rem;
     font-size: .75rem;
   }
+}
+
+
+
+.modal-content {
+  border-radius: 16px !important;
+  border: none !important;
+  box-shadow: 0 25px 60px rgba(21, 30, 61, 0.35) !important;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #151E3D, #0492C2) !important;
+  border-bottom: none !important;
+  padding: 1.25rem 1.5rem !important;
+}
+
+.modal-title {
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  letter-spacing: .3px;
+}
+
+.modal-body {
+  padding: 1.75rem 1.5rem !important;
+  background: #fff;
+}
+
+.modal-footer {
+  border-top: 1px solid #f1f5f9 !important;
+  padding: 1rem 1.5rem !important;
+  background: #f8fafc;
+  border-radius: 0 0 16px 16px;
+}
+
+.modal-backdrop.show {
+  opacity: 0.88 !important;
+  background-color: #000 !important;
+}
+
+.modal {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  border-radius: 16px !important;
+  border: none !important;
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.25),
+    0 30px 80px rgba(0, 0, 0, 0.45);
+  transform: translateY(-5px); 
+  overflow: hidden;
+}
+
+.disp-modal-label {
+  display: block;
+  font-size: .74rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.disp-modal-input {
+  width: 100%;
+  padding: .55rem .8rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: .83rem;
+  color: #1a1a2e;
+  outline: none;
+  background: #f8fafc;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+}
+
+.disp-modal-input:focus {
+  border-color: #0492C2;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(4, 146, 194, 0.12);
+}
+
+.disp-modal-input:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+  border-color: #e2e8f0;
+}
+
+.disp-modal-input[type="file"] {
+  padding: .45rem .8rem;
+  cursor: pointer;
 }
