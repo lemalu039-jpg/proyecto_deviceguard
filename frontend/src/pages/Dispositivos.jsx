@@ -62,6 +62,10 @@ function Dispositivos() {
       Object.keys(form).forEach(key => {
         formData.append(key, form[key]);
       });
+      const ahora = new Date();
+      formData.set("fecha_registro", ahora.toISOString().split("T")[0]);
+      formData.set("hora_registro", ahora.toTimeString().slice(0, 5));
+      formData.set("estado", "En Revision"); // automático 
       const archivo = document.getElementById('archivo');
       if (archivo && archivo.files[0]) {
         formData.append('archivo', archivo.files[0]);
@@ -187,26 +191,14 @@ function Dispositivos() {
 
                   <div className="col-md-6">
                     <label className="disp-modal-label">Estado</label>
-                    <select name="estado" value={form.estado} onChange={handleChange} className="disp-modal-input">
-                      <option value="Disponible">Disponible</option>
-                      <option value="En Revision">En Revisión</option>
-                      <option value="En Mantenimiento">En Mantenimiento</option>
-                      <option value="Dado de Baja">Dado de Baja</option>
-                    </select>
+                    <input
+                      type="text"
+                      value="En Revisión"
+                      disabled
+                      className="disp-modal-input"
+                     />
                   </div>
-
-                  <div className="col-md-6">
-                    <label className="disp-modal-label">Fecha de registro</label>
-                    <input type="date" name="fecha_registro" value={form.fecha_registro}
-                      onChange={handleChange} required className="disp-modal-input" />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="disp-modal-label">Hora de registro</label>
-                    <input type="time" name="hora_registro" value={form.hora_registro}
-                      onChange={handleChange} required className="disp-modal-input" />
-                  </div>
-
+                  
                   <div className="col-12">
                     <label className="disp-modal-label">Imagen del dispositivo</label>
                     <input type="file" id="archivo" accept="image/*" className="disp-modal-input" />

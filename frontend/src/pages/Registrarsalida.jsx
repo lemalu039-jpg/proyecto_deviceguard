@@ -66,53 +66,46 @@ function SalidaDispositivos() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const res = await getDispositivoBySerial(form.serial);
-      const dispositivo = res.data;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-      if (!dispositivo) {
-        alert("El dispositivo no existe");
-        return;
-      }
+  try {
+    const res = await getDispositivoBySerial(form.serial);
+    const dispositivo = res.data;
 
-      const dispositivoActual = salidas.find(d => d.id === dispositivo.id);
-
-      if (!dispositivoActual) {
-        alert("Error: no se encontró el dispositivo en la lista");
-        return;
-      }
-
-      if (editandoId) {
-        await updateDispositivo(editandoId, {
-          fecha_salida: form.fecha,
-          hora_salida: form.hora,
-          estado: form.estado
-        });
-        setEditandoId(null);
-      } else {
-        if (dispositivoActual.estado !== "Disponible") {
-          alert("No puedes registrar salida. El dispositivo no está disponible.");
-          return;
-        }
-        await updateDispositivo(dispositivo.id, {
-          estado: "Disponible",
-          fecha_salida: form.fecha,
-          hora_salida: form.hora
-        });
-      }
-
-      cerrarModal();
-      loadData();
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.error || "Error al registrar salida");
-    } finally {
-      setLoading(false);
+    if (!dispositivo) {
+      alert("El dispositivo no existe");
+      return;
     }
-  };
+
+    // VALIDACIÓN CORRECTA
+    if (dispositivo.estado !== "En Mantenimiento") {
+      alert("Solo puedes registrar salida si el dispositivo está en mantenimiento.");
+      return;
+    }
+
+    // AUTOMÁTICO
+    const ahora = new Date();
+    const fecha = ahora.toISOString().split("T")[0];
+    const hora = ahora.toTimeString().slice(0, 5);
+
+    await updateDispositivo(dispositivo.id, {
+      estado: "Disponible",
+      fecha_salida: fecha,
+      hora_salida: hora
+    });
+
+    cerrarModal();
+    loadData();
+
+  } catch (err) {
+    console.error(err);
+    alert("Error al registrar salida");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleDelete = async (id) => {
     if (window.confirm("¿Finalizar proceso del dispositivo?")) {
@@ -191,51 +184,14 @@ function SalidaDispositivos() {
                       className="salida-modal-input"
                       disabled={editandoId != null}
                     />
-                    <small style={{ fontSize: '.71rem', color: '#94a3b8', marginTop: '3px', display: 'block' }}>
-                      Al salir del campo se cargará el estado actual del dispositivo
-                    </small>
-                  </div>
 
-                  <div className="col-md-6">
-                    <label className="salida-modal-label">Fecha de salida</label>
-                    <input
-                      type="date"
-                      name="fecha"
-                      value={form.fecha.split("T")[0]}
-                      onChange={handleChange}
-                      required
-                      className="salida-modal-input"
-                    />
                   </div>
-
-                  <div className="col-md-6">
-                    <label className="salida-modal-label">Hora de salida</label>
-                    <input
-                      type="time"
-                      name="hora"
-                      value={form.hora}
-                      onChange={handleChange}
-                      required
-                      className="salida-modal-input"
-                    />
-                  </div>
-
                   <div className="col-12">
-                    <label className="salida-modal-label">Estado</label>
-                    <select
-                      name="estado"
-                      value={form.estado}
-                      onChange={handleChange}
-                      required
-                      className="salida-modal-input"
-                    >
-                      <option value="">Seleccionar estado</option>
-                      <option value="Disponible">Disponible</option>
-                      <option value="En Revision">En Revisión</option>
-                      <option value="En Mantenimiento">En Mantenimiento</option>
-                      <option value="Dado de Baja">Dado de Baja</option>
-                    </select>
-                  </div>
+  <label className="salida-modal-label">Información</label>
+  <p className="salida-info-text">
+    La salida se registra automáticamente (fecha, hora y estado).
+  </p>
+</div>
 
                 </div>
               </form>
@@ -278,7 +234,9 @@ function SalidaDispositivos() {
                   <td colSpan="5" className="salida-empty">No hay registros</td>
                 </tr>
               ) : (
-                salidas.map(s => (
+                salidas
+                .filter(s => s.estado === "En Mantenimiento")
+                .map(s => (
                   <tr key={s.id}>
                     <td style={{ fontWeight: 700, color: '#1e293b' }}>{s.serial}</td>
                     <td>
@@ -301,7 +259,6 @@ function SalidaDispositivos() {
                       </span>
                     </td>
                     <td>
-                      <button className="salida-btn-edit" onClick={() => handleEdit(s)}>Editar</button>
                       <button className="salida-btn-del" onClick={() => handleDelete(s.id)}>Finalizar</button>
                     </td>
                   </tr>
