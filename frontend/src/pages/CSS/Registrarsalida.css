@@ -349,6 +349,15 @@
   font-weight: 700;
 }
 
+.salida-info-text {
+  background: #e3e5e72f;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #9198a0;
+  margin: 0;
+}
+
 /* responsive */
 
 @media (max-width: 640px) {
