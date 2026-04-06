@@ -39,7 +39,7 @@ class DispositivoModel {
                 tipo, 
                 serial, 
                 marca, 
-                estado || 'Disponible', 
+                estado || "En revision",
                 ubicacion, 
                 fecha_registro, 
                 hora_registro,

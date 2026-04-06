@@ -22,17 +22,29 @@ const generarExcelDispositivos = async (req, res) => {
     worksheet.columns = [
       { header: "ID", key: "id", width: 10 },
       { header: "Nombre", key: "nombre", width: 25 },
-      { header: "Estado", key: "estado", width: 20 }
+      { header: "Estado", key: "estado", width: 20 },
+      { header: "Fecha Entrada", key: "fecha_entrada", width: 25 },
+      { header: "Fecha Salida", key: "fecha_salida", width: 25 }
     ];
 
     // 📥 DATOS
     dispositivos.forEach(d => {
-      worksheet.addRow({
-        id: d.id,
-        nombre: d.nombre,
-        estado: d.estado
-      });
-    });
+  const fechaEntrada = d.fecha_registro
+    ? `${d.fecha_registro.toISOString().split("T")[0]} ${d.hora_registro || "00:00"}`
+    : "N/A";
+
+  const fechaSalida = d.fecha_salida
+    ? `${d.fecha_salida.toISOString().split("T")[0]} ${d.hora_salida || "00:00"}`
+    : "N/A";
+
+  worksheet.addRow({
+    id: d.id,
+    nombre: d.nombre,
+    estado: d.estado,
+    fecha_entrada: fechaEntrada,
+    fecha_salida: fechaSalida
+  });
+});
 
     worksheet.getRow(5).font = { bold: true };
 

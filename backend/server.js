@@ -2,8 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require("path");
 require('dotenv').config();
-
 const app = express();
+
 
 
 // Middlewares
@@ -25,7 +25,7 @@ const dispositivosRoutes = require('./src/routes/dispositivos.routes');
 const prestamosRoutes = require('./src/routes/prestamos.routes');
 const mantenimientoRoutes = require('./src/routes/mantenimiento.routes');
 const reportesRoutes = require('./src/routes/reportes.routes.js');
-
+const correoRoutes = require('./src/routes/correo.routes.js');
 
 // Use Routes
 app.use('/api/usuarios', usuariosRoutes);
@@ -33,7 +33,7 @@ app.use('/api/dispositivos', dispositivosRoutes);
 app.use('/api/prestamos', prestamosRoutes);
 app.use('/api/mantenimiento', mantenimientoRoutes);
 app.use('/api/reportes', reportesRoutes);
-
+app.use('/api/correo', correoRoutes);
 
 app.use((err, req, res, next) => {
   if (err.code === 'LIMIT_FILE_SIZE') {

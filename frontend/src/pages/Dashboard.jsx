@@ -4,10 +4,10 @@ import { getDispositivos, getUsuarios } from '../services/api';
 function Dashboard() {
   const [stats, setStats] = useState({
     totalDispositivos: 0,
-    disponibles: 0,
+    listoparaEntrega: 0,
     enRevision: 0,
     enMantenimiento: 0,
-    dadoDeBaja: 0,
+    entregado: 0,
     usuarios: 0
   });
 
@@ -25,10 +25,10 @@ function Dashboard() {
         const allDevices = devicesRes.data;
         setStats({
           totalDispositivos: allDevices.length,
-          disponibles:     allDevices.filter(d => d.estado === 'Disponible').length,
+          listoparaEntrega:     allDevices.filter(d => d.estado === 'Listo para Entrega').length,
           enRevision:      allDevices.filter(d => d.estado === 'En Revision').length,
           enMantenimiento: allDevices.filter(d => d.estado === 'En Mantenimiento').length,
-          dadoDeBaja:      allDevices.filter(d => d.estado === 'Dado de Baja').length,
+          entregado:      allDevices.filter(d => d.estado === 'Entregado').length,
           usuarios:        usuariosRes.data.length
         });
         setDispositivos(allDevices.slice(0, 5));
@@ -51,10 +51,10 @@ function Dashboard() {
       letterSpacing: '.3px'
     };
     switch (estado) {
-      case 'Disponible':       return { ...base, background: '#dcfce7', color: '#15803d' };
+      case 'Listo para Entrega':       return { ...base, background: '#fcfbdc', color: '#dacd1c' };
       case 'En Revision':      return { ...base, background: '#f3e8ff', color: '#7e22ce' };
       case 'En Mantenimiento': return { ...base, background: '#ffedd5', color: '#c2410c' };
-      case 'Dado de Baja':     return { ...base, background: '#fef2f2', color: '#991b1b' };
+      case 'Entregado':     return { ...base, background: '#f3fef2', color: '#15803d' };
       default:                 return { ...base, background: '#f1f5f9', color: '#64748b' };
     }
   };
@@ -90,8 +90,8 @@ function Dashboard() {
       <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
     </svg>
   );
-  const IconoDisponible = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  const IconoListoparaentrega = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dacd1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
     </svg>
   );
@@ -106,8 +106,8 @@ function Dashboard() {
       <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
     </svg>
   );
-  const IconoBaja = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#991b1b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  const IconoEntregado = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
       <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
     </svg>
@@ -126,13 +126,13 @@ function Dashboard() {
       subColor: '#10b981'
     },
     {
-      label: 'Disponibles',
-      value: stats.disponibles,
-      accentColor: '#15803d',
-      textColor: '#15803d',
-      iconBg: 'rgba(21, 128, 61, .1)',
-      icono: <IconoDisponible />,
-      badge: { label: 'Disponible', bg: '#dcfce7', color: '#15803d' }
+      label: 'Listo para Entrega',
+      value: stats.listoparaEntrega,
+      accentColor: '#dacd1c',
+      textColor: '#dacd1c',
+      iconBg: 'rgba(218, 205, 24, 0.13)',
+      icono: <IconoListoparaentrega />,
+      badge: { label: 'Listo para Entrega', bg: '#fcfbdc', color: '#dacd1c' }
     },
     {
       label: 'En revisión',
@@ -154,13 +154,13 @@ function Dashboard() {
       badge: { label: 'En Mantenimiento', bg: '#ffedd5', color: '#c2410c' }
     },
     {
-      label: 'Dados de baja',
-      value: stats.dadoDeBaja,
-      accentColor: '#991b1b',
-      textColor: '#991b1b',
-      iconBg: 'rgba(153, 27, 27, .1)',
-      icono: <IconoBaja />,
-      badge: { label: 'Dado de Baja', bg: '#fef2f2', color: '#991b1b' }
+      label: 'Entregado',
+      value: stats.entregado,
+    accentColor: '#15803d',
+      textColor: '#15803d',
+      iconBg: 'rgba(19, 112, 15, 0.1)',
+      icono: <IconoEntregado />,
+      badge: { label: 'Entregado', bg: '#f3fef2', color: '#15803d' }
     }
   ];
 

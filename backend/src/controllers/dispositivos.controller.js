@@ -1,5 +1,5 @@
 const DispositivoModel = require('../models/dispositivos.model');
-const pool = require('../database/connection'); // 👈 ARRIBA
+const pool = require('../database/connection'); // ARRIBA
 const upload = require("../middlewares/upload");
 const { enviarCorreo } = require("../services/email.service");
 // const { uploadFile, uploadMultipleFiles } = require("../controllers/file.controller");
@@ -33,6 +33,7 @@ exports.create = async (req, res) => {
         const insertId = await DispositivoModel.create(data);
         res.status(201).json({ id: insertId, ...data });
     } catch (error) {
+        console.error("Error al crear dispositivo:", error);
         res.status(500).json({ error: error.message });
     }
 };

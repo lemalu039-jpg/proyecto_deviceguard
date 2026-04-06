@@ -7,7 +7,8 @@ function ConsultarFiltros() {
   const [filtros, setFiltros] = useState({
     fecha: "",
     nombre: "",
-    ubicacion: ""
+    ubicacion: "",
+    estado: "",
   });
 
   useEffect(() => {
@@ -16,6 +17,7 @@ function ConsultarFiltros() {
 
   const loadData = async () => {
     const res = await getDispositivos();
+    console.log('dispositivos en Consultar filtros',res.data); // AGREGA ESTO
     setData(res.data);
   };
 
@@ -35,7 +37,8 @@ function ConsultarFiltros() {
     return (
       (!filtros.fecha || d.fecha_registro?.includes(filtros.fecha)) &&
       (!filtros.nombre || d.nombre?.toLowerCase().includes(filtros.nombre.toLowerCase())) &&
-      (!filtros.ubicacion || d.ubicacion?.toLowerCase().includes(filtros.ubicacion.toLowerCase()))
+      (!filtros.ubicacion || d.ubicacion?.toLowerCase().includes(filtros.ubicacion.toLowerCase())) &&
+      (!filtros.estado || d.estado === filtros.estado)
     );
   });
 
@@ -112,7 +115,7 @@ function ConsultarFiltros() {
                   </td>
                   <td>{d.serial}</td>
                   <td>
-                    <span className={`badge ${d.estado.toLowerCase()}`}>
+                    <span className={` ${d.estado.toLowerCase()}`}>
                       {d.estado}
                     </span>
                   </td>

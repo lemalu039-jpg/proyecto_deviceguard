@@ -1,0 +1,111 @@
+.mant-wrapper {
+  padding: 1.5rem;
+}
+
+.mant-wrapper-tittle {
+  font-size: 1.4rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1.5rem;
+
+}
+/* CARD */
+.mant-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+/* TITULO */
+.mant-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.mant-dot {
+ width: 4px;
+  height: 18px;
+  background: linear-gradient(135deg, #0492C2, #82EEFD);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* TABLA */
+.mant-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mant-table th {
+  text-align: left;
+  font-size: 0.8rem;
+  color: #64748b;
+  padding: 10px 0;
+}
+
+.mant-table td {
+  padding: 12px 0;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* BADGES */
+.mant-badge {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-revision {
+  display: inline-block;
+  background: #f3e8ff;
+  color: #7e22ce;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .68rem;
+  font-weight: 700;
+}
+
+.badge-mantenimiento {
+  display: inline-block;
+  background: #ffedd5;
+  color: #c2410c;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .68rem;
+  font-weight: 700;
+}
+
+.badge-listo para-entrega {
+  display: inline-block;
+ background: #fcfbdc;
+  color: #dacd1c;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .68rem;
+  font-weight: 700;
+}
+
+.badge-entregado {
+  display: inline-block;
+  background: #f3fef2;
+   color: #15803d;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .68rem;
+  font-weight: 700;
+}
+
+/* SELECT BONITO */
+.mant-select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
