@@ -1,0 +1,246 @@
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { getUsuarios, createUsuario } from "../services/api";
+import "./CSS/Equipo.css";
+
+const Icon = ({ d, size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} />
+  </svg>
+);
+
+const iniciales = (nombre = "") =>
+  nombre.split(" ").slice(0, 2).map(n => n[0]).join("").toUpperCase();
+
+const COLORES = ["#2d3a8c","#7c3aed","#0891b2","#059669","#d97706","#dc2626","#db2777"];
+const colorPorId = (id) => COLORES[id % COLORES.length];
+
+function Equipo() {
+  const [usuarios, setUsuarios] = useState([]);
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [foto, setFoto] = useState(null);
+  const [fotoPreview, setFotoPreview] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [form, setForm] = useState({
+    primerNombre: "", apellido: "", correo: "",
+    telefono: "", puesto: "", genero: "Masculino", contrasena: "123456", rol: "usuario"
+  });
+  const fileRef = useRef();
+  const navigate = useNavigate();
+
+  useEffect(() => { cargarUsuarios(); }, []);
+
+  const cargarUsuarios = async () => {
+    try {
+      const res = await getUsuarios();
+      setUsuarios(res.data);
+    } catch (e) { console.error(e); }
+  };
+
+  const handleFoto = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFoto(file);
+    setFotoPreview(URL.createObjectURL(file));
+  };
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleAgregar = async (e) => {
+    e.preventDefault();
+    try {
+      const nombre = `${form.primerNombre} ${form.apellido}`.trim();
+      await createUsuario({
+        nombre,
+        correo: form.correo,
+        contrasena: form.contrasena,
+        rol: form.rol,
+      });
+      mostrarToast("Usuario agregado correctamente");
+      setModalAbierto(false);
+      resetForm();
+      cargarUsuarios();
+    } catch (err) {
+      mostrarToast("Error al agregar usuario", true);
+    }
+  };
+
+  const resetForm = () => {
+    setForm({ primerNombre: "", apellido: "", correo: "", telefono: "", puesto: "", genero: "Masculino", contrasena: "123456", rol: "usuario" });
+    setFoto(null);
+    setFotoPreview(null);
+  };
+
+  const mostrarToast = (msg, error = false) => {
+    setToast({ msg, error });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  return (
+    <div className="equipo-root">
+      {/* Header */}
+      <div className="equipo-header">
+        <h1 className="equipo-titulo">Equipo</h1>
+        <button className="equipo-btn-add" onClick={() => setModalAbierto(true)}>
+          <Icon d="M12 5v14M5 12h14" size={16} />
+          Añadir Usuario
+        </button>
+      </div>
+
+      {/* Tarjetas */}
+      <div className="equipo-cards-grid">
+        {usuarios.map(u => (
+          <div key={u.id} className="equipo-card">
+            <div className="equipo-card-avatar" style={{ background: colorPorId(u.id) }}>
+              {iniciales(u.nombre)}
+            </div>
+            <span className="equipo-card-nombre">{u.nombre}</span>
+            <span className="equipo-card-correo">{u.correo}</span>
+            <span className={`equipo-card-rol ${u.rol === "admin" ? "admin" : "usuario"}`}>
+              {u.rol === "admin" ? "Administrador" : "Usuario"}
+            </span>
+            <button className="equipo-card-msg-btn" onClick={() => navigate("/correo", { state: { contacto: u } })}>
+              <Icon d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" size={14} />
+              Message
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Tabla */}
+      <div className="equipo-tabla-section">
+        <div className="equipo-tabla-header">
+          <Icon d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" size={18} />
+          <span>Lista de usuarios</span>
+          <span className="equipo-tabla-pill">{usuarios.length} registros</span>
+        </div>
+        <div className="equipo-tabla-wrap">
+          <table className="equipo-tabla">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Fecha registro</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usuarios.length === 0 ? (
+                <tr><td colSpan="4" className="equipo-tabla-empty">No hay usuarios registrados</td></tr>
+              ) : (
+                usuarios.map(u => (
+                  <tr key={u.id}>
+                    <td>
+                      <div className="equipo-tabla-user">
+                        <div className="equipo-tabla-avatar" style={{ background: colorPorId(u.id) }}>
+                          {iniciales(u.nombre)}
+                        </div>
+                        <span>{u.nombre}</span>
+                      </div>
+                    </td>
+                    <td>{u.correo}</td>
+                    <td>
+                      <span className={`equipo-badge ${u.rol === "admin" ? "admin" : "usuario"}`}>
+                        {u.rol === "admin" ? "Administrador" : "Usuario"}
+                      </span>
+                    </td>
+                    <td>{u.fecha_creacion ? new Date(u.fecha_creacion).toLocaleDateString("es-CO") : "—"}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Modal Añadir */}
+      {modalAbierto && (
+        <div className="equipo-modal-overlay" onClick={() => setModalAbierto(false)}>
+          <div className="equipo-modal" onClick={e => e.stopPropagation()}>
+            <div className="equipo-modal-titulo">
+              <span>Añadir Miembro del Equipo</span>
+              <button className="equipo-modal-close" onClick={() => { setModalAbierto(false); resetForm(); }}>
+                <Icon d="M18 6L6 18M6 6l12 12" size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleAgregar} className="equipo-modal-form">
+              {/* Foto */}
+              <div className="equipo-foto-area">
+                <div className="equipo-foto-circle" onClick={() => fileRef.current.click()}>
+                  {fotoPreview
+                    ? <img src={fotoPreview} alt="preview" />
+                    : <Icon d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2zM12 17a4 4 0 100-8 4 4 0 000 8z" size={28} />
+                  }
+                </div>
+                <button type="button" className="equipo-foto-btn" onClick={() => fileRef.current.click()}>
+                  Subir Foto
+                </button>
+                <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleFoto} />
+              </div>
+
+              {/* Campos */}
+              <div className="equipo-form-grid">
+                <div className="equipo-form-group">
+                  <label>Primer Nombre</label>
+                  <input name="primerNombre" placeholder="Ingresa Primer Nombre" value={form.primerNombre} onChange={handleChange} required />
+                </div>
+                <div className="equipo-form-group">
+                  <label>Apellido</label>
+                  <input name="apellido" placeholder="Ingresa Apellido" value={form.apellido} onChange={handleChange} required />
+                </div>
+                <div className="equipo-form-group">
+                  <label>Correo</label>
+                  <input name="correo" type="email" placeholder="Ingresa tu Correo" value={form.correo} onChange={handleChange} required />
+                </div>
+                <div className="equipo-form-group">
+                  <label>Número Telefónico</label>
+                  <input name="telefono" placeholder="Ingresa el Número Telefónico" value={form.telefono} onChange={handleChange} />
+                </div>
+                <div className="equipo-form-group">
+                  <label>Puesto de Trabajo</label>
+                  <input name="puesto" placeholder="CEO" value={form.puesto} onChange={handleChange} />
+                </div>
+                <div className="equipo-form-group">
+                  <label>Género</label>
+                  <select name="genero" value={form.genero} onChange={handleChange}>
+                    <option>Masculino</option>
+                    <option>Femenino</option>
+                    <option>Otro</option>
+                  </select>
+                </div>
+                <div className="equipo-form-group">
+                  <label>Rol</label>
+                  <select name="rol" value={form.rol} onChange={handleChange}>
+                    <option value="usuario">Usuario</option>
+                    <option value="admin">Administrador</option>
+                  </select>
+                </div>
+                <div className="equipo-form-group">
+                  <label>Contraseña inicial</label>
+                  <input name="contrasena" type="password" placeholder="Contraseña" value={form.contrasena} onChange={handleChange} required />
+                </div>
+              </div>
+
+              <button type="submit" className="equipo-btn-submit">Agregar</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div className={`equipo-toast ${toast.error ? "error" : "ok"}`}>
+          {toast.error
+            ? <Icon d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            : <Icon d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          }
+          {toast.msg}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Equipo;

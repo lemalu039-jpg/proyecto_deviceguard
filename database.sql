@@ -74,3 +74,25 @@ INSERT INTO mantenimiento (dispositivo_id, descripcion, estado_mantenimiento) VA
 
 UPDATE dispositivos SET estado = 'En Prestamo' WHERE id = 3;
 UPDATE dispositivos SET estado = 'En Mantenimiento' WHERE id = 4;
+
+-- Tabla de correos enviados (notificaciones automáticas)
+CREATE TABLE IF NOT EXISTS correos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    destinatario VARCHAR(150) NOT NULL,
+    asunto VARCHAR(255) NOT NULL,
+    mensaje TEXT NOT NULL,
+    fecha_envio DATE NOT NULL,
+    hora_envio TIME NOT NULL
+);
+
+-- Tabla de mensajería interna entre usuarios
+CREATE TABLE IF NOT EXISTS mensajes_internos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    remitente_id INT NOT NULL,
+    destinatario_id INT NOT NULL,
+    mensaje TEXT NOT NULL,
+    leido TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (remitente_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (destinatario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);

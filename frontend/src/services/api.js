@@ -51,6 +51,13 @@ export const createMantenimiento = (data) => api.post('/mantenimiento', data);
 export const updateMantenimiento = (id, data) => api.put(`/mantenimiento/${id}`, data);
 export const deleteMantenimiento = (id) => api.delete(`/mantenimiento/${id}`);
 
+// Correos externos
 export const getCorreos = () => api.get('/correo');
+export const enviarCorreo = (data) => api.post('/correo/enviar', data);
+
+// Mensajería interna
+export const getMensajesContactos = (userId) => api.get(`/correo/mensajes/contactos/${userId}`);
+export const getConversacion = (userId, contactId) => api.get(`/correo/mensajes/conversacion/${userId}/${contactId}`);
+export const enviarMensaje = (data) => api.post('/correo/mensajes', data);
 
 export default api;

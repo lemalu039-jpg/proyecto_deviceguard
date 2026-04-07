@@ -19,6 +19,7 @@ import Estadisticas from './pages/Estadisticas';
 import ConsultarFiltros from "./pages/Consultarfiltros";
 import Correo from "./pages/Correo";
 import GestionMantenimiento from './pages/GestionMantenimiento';
+import Equipo from './pages/Equipo';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -155,6 +156,12 @@ function App() {
 <Route path="/gestion" element={
   <ProtectedRoute>
     <GestionMantenimiento />
+  </ProtectedRoute>
+} />
+
+<Route path="/equipo" element={
+  <ProtectedRoute>
+    <Equipo />
   </ProtectedRoute>
 } />
       </Routes>
