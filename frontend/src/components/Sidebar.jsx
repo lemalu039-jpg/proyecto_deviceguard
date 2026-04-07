@@ -31,7 +31,7 @@ function Sidebar({ onLogout }) {
     { path: '/registrarsalida', label: 'Registrar Salida', icon: registrarsalida_ },
     { path: '/calendario', label: 'Calendario', icon: calendario_ },
     { path: '/estadisticas', label: 'Estadísticas', icon: estadisticas_ },
-    { path: '/usuarios', label: 'Equipo', icon: equipo_ },
+    { path: '/equipo', label: 'Equipo', icon: equipo_ },
     { path: '/mantenimiento', label: 'Historial', icon: notificaciones_ },
     { path: '/gestion', label: 'Gestión de mantenimiento', icon: ajustes },
   ];
