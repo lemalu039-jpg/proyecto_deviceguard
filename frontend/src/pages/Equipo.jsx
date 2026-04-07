@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUsuarios, createUsuario } from "../services/api";
+import { getUsuarios, createUsuario, updateUsuario, deleteUsuario } from "../services/api";
 import "./CSS/Equipo.css";
 
 const Icon = ({ d, size = 16 }) => (
@@ -19,6 +19,9 @@ const colorPorId = (id) => COLORES[id % COLORES.length];
 function Equipo() {
   const [usuarios, setUsuarios] = useState([]);
   const [modalAbierto, setModalAbierto] = useState(false);
+  const [modalEditar, setModalEditar] = useState(false);
+  const [modalEliminar, setModalEliminar] = useState(false);
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [foto, setFoto] = useState(null);
   const [fotoPreview, setFotoPreview] = useState(null);
   const [toast, setToast] = useState(null);
@@ -26,6 +29,7 @@ function Equipo() {
     primerNombre: "", apellido: "", correo: "",
     telefono: "", puesto: "", genero: "Masculino", contrasena: "123456", rol: "usuario"
   });
+  const [formEditar, setFormEditar] = useState({ nombre: "", correo: "", rol: "usuario" });
   const fileRef = useRef();
   const navigate = useNavigate();
 
@@ -77,6 +81,49 @@ function Equipo() {
     setTimeout(() => setToast(null), 3000);
   };
 
+  const abrirEditar = (u) => {
+    setUsuarioSeleccionado(u);
+    const partes = u.nombre?.split(" ") || [];
+    setFormEditar({
+      nombre: u.nombre || "",
+      correo: u.correo || "",
+      rol: u.rol || "usuario",
+    });
+    setModalEditar(true);
+  };
+
+  const handleEditar = async (e) => {
+    e.preventDefault();
+    try {
+      await updateUsuario(usuarioSeleccionado.id, {
+        nombre: formEditar.nombre,
+        correo: formEditar.correo,
+        rol: formEditar.rol,
+      });
+      mostrarToast("Usuario actualizado correctamente");
+      setModalEditar(false);
+      cargarUsuarios();
+    } catch {
+      mostrarToast("Error al actualizar usuario", true);
+    }
+  };
+
+  const abrirEliminar = (u) => {
+    setUsuarioSeleccionado(u);
+    setModalEliminar(true);
+  };
+
+  const handleEliminar = async () => {
+    try {
+      await deleteUsuario(usuarioSeleccionado.id);
+      mostrarToast("Usuario eliminado correctamente");
+      setModalEliminar(false);
+      cargarUsuarios();
+    } catch {
+      mostrarToast("Error al eliminar usuario", true);
+    }
+  };
+
   return (
     <div className="equipo-root">
       {/* Header */}
@@ -123,11 +170,12 @@ function Equipo() {
                 <th>Correo</th>
                 <th>Rol</th>
                 <th>Fecha registro</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {usuarios.length === 0 ? (
-                <tr><td colSpan="4" className="equipo-tabla-empty">No hay usuarios registrados</td></tr>
+                <tr><td colSpan="5" className="equipo-tabla-empty">No hay usuarios registrados</td></tr>
               ) : (
                 usuarios.map(u => (
                   <tr key={u.id}>
@@ -146,6 +194,18 @@ function Equipo() {
                       </span>
                     </td>
                     <td>{u.fecha_creacion ? new Date(u.fecha_creacion).toLocaleDateString("es-CO") : "—"}</td>
+                    <td>
+                      <div className="equipo-acciones">
+                        <button className="equipo-btn-editar" onClick={() => abrirEditar(u)} title="Editar">
+                          <Icon d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" size={14} />
+                          Editar
+                        </button>
+                        <button className="equipo-btn-eliminar" onClick={() => abrirEliminar(u)} title="Eliminar">
+                          <Icon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" size={14} />
+                          Eliminar
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}
@@ -225,6 +285,58 @@ function Equipo() {
 
               <button type="submit" className="equipo-btn-submit">Agregar</button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Editar */}
+      {modalEditar && (
+        <div className="equipo-modal-overlay" onClick={() => setModalEditar(false)}>
+          <div className="equipo-modal" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
+            <div className="equipo-modal-titulo">
+              <span>Editar Usuario</span>
+              <button className="equipo-modal-close" onClick={() => setModalEditar(false)}>
+                <Icon d="M18 6L6 18M6 6l12 12" size={18} />
+              </button>
+            </div>
+            <form onSubmit={handleEditar} className="equipo-modal-form">
+              <div className="equipo-form-grid" style={{ gridTemplateColumns: "1fr" }}>
+                <div className="equipo-form-group">
+                  <label>Nombre completo</label>
+                  <input value={formEditar.nombre} onChange={e => setFormEditar({ ...formEditar, nombre: e.target.value })} required />
+                </div>
+                <div className="equipo-form-group">
+                  <label>Correo</label>
+                  <input type="email" value={formEditar.correo} onChange={e => setFormEditar({ ...formEditar, correo: e.target.value })} required />
+                </div>
+                <div className="equipo-form-group">
+                  <label>Rol</label>
+                  <select value={formEditar.rol} onChange={e => setFormEditar({ ...formEditar, rol: e.target.value })}>
+                    <option value="usuario">Usuario</option>
+                    <option value="admin">Administrador</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" className="equipo-btn-submit">Guardar cambios</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Eliminar */}
+      {modalEliminar && (
+        <div className="equipo-modal-overlay" onClick={() => setModalEliminar(false)}>
+          <div className="equipo-modal equipo-modal-confirm" onClick={e => e.stopPropagation()}>
+            <div className="equipo-confirm-icon">
+              <Icon d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" size={32} />
+            </div>
+            <p className="equipo-confirm-msg">
+              ¿Eliminar a <strong>{usuarioSeleccionado?.nombre}</strong>? Esta acción no se puede deshacer.
+            </p>
+            <div className="equipo-confirm-btns">
+              <button className="equipo-btn-cancel" onClick={() => setModalEliminar(false)}>Cancelar</button>
+              <button className="equipo-btn-delete" onClick={handleEliminar}>Eliminar</button>
+            </div>
           </div>
         </div>
       )}

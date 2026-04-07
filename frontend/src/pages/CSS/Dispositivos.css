@@ -261,6 +261,8 @@
   padding: 3px 10px;
   border-radius: 20px;
   letter-spacing: .3px;
+   background: #fcfbdc;
+  color: #dacd1c;
 }
 
 .badge-listo para-entrega {
@@ -290,8 +292,8 @@
 
 
 .disp-btn-edit {
-  background: #e0f5ff;
-  color: #0492C2;
+  background: #eef0fb;
+  color: #2d3a8c;
   border: none;
   padding: .28rem .7rem;
   border-radius: 6px;
@@ -307,8 +309,8 @@
 }
 
 .disp-btn-del {
-  background: #fef2f2;
-  color: #ef4444;
+ background: #fee2e2;
+    color: #dc2626;
   border: none;
   padding: .28rem .7rem;
   border-radius: 6px;
@@ -316,6 +318,13 @@
   font-weight: 600;
   cursor: pointer;
   transition: background .15s;
+}
+
+.disp-btn-edit,
+.disp-btn-del {
+  display: inline-flex;   /* 🔥 clave */
+  align-items: center;    /* centra vertical */
+  gap: 6px;               /* 👈 separación icono-texto */
 }
 
 .disp-btn-del:hover {

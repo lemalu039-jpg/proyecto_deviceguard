@@ -36,6 +36,22 @@
   font-size: .8rem;
 }
 
+.filtros-select {
+  padding: .4rem .6rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  font-size: .8rem;
+  background: #fff;
+  color: #334155;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+}
+
+.filtros-select:focus {
+  border-color: #2d3a8c;
+}
+
 /* BOTÓN BORRAR */
 .btn-clear {
   margin-left: auto;
@@ -89,7 +105,7 @@
 }
 
 /* COLORES */
-.disponible {
+.listo.para.entrega {
   display: inline-block;
   background: #fcfbdc;
   color: #dacd1c;

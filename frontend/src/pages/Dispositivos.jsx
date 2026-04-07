@@ -3,6 +3,13 @@ import { getDispositivos, createDispositivo, updateDispositivo, deleteDispositiv
 import { Modal } from 'bootstrap';
 import './CSS/Dispositivos.css';
 
+const Icon = ({ d, size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} />
+  </svg>
+);
+
 function Dispositivos() {
   const [dispositivos, setDispositivos] = useState([]);
   const [form, setForm] = useState({
@@ -263,8 +270,14 @@ function Dispositivos() {
                     </span>
                   </td>
                   <td>
-                    <button className="disp-btn-edit" onClick={() => handleEdit(d)}>Editar</button>
-                    <button className="disp-btn-del" onClick={() => handleDelete(d.id)}>Eliminar</button>
+                    <button className="disp-btn-edit" onClick={() => handleEdit(d)}>
+                      <Icon d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                      Editar
+                    </button>
+                    <button className="disp-btn-del" onClick={() => handleDelete(d.id)}>
+                      <Icon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))}

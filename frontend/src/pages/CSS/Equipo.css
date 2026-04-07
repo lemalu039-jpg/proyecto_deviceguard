@@ -384,6 +384,102 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── ACCIONES TABLA ───────────────────────────────────── */
+.equipo-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.equipo-btn-editar,
+.equipo-btn-eliminar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.38rem 0.85rem;
+  border-radius: 7px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.equipo-btn-editar {
+  background: #eef0fb;
+  color: #2d3a8c;
+}
+
+.equipo-btn-editar:hover {
+  background: #dde1f7;
+}
+
+.equipo-btn-eliminar {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.equipo-btn-eliminar:hover {
+  background: #fecaca;
+}
+
+/* ── MODAL CONFIRMACIÓN ───────────────────────────────── */
+.equipo-modal-confirm {
+  max-width: 380px !important;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.equipo-confirm-icon {
+  color: #f59e0b;
+  display: flex;
+  justify-content: center;
+}
+
+.equipo-confirm-msg {
+  font-size: 0.9rem;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.equipo-confirm-btns {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.equipo-btn-cancel {
+  flex: 1;
+  padding: 0.65rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.equipo-btn-cancel:hover { background: #f1f5f9; }
+
+.equipo-btn-delete {
+  flex: 1;
+  padding: 0.65rem;
+  border-radius: 8px;
+  border: none;
+  background: #dc2626;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.equipo-btn-delete:hover { background: #b91c1c; }
+
 /* ── SCROLLBAR ────────────────────────────────────────── */
 .equipo-modal::-webkit-scrollbar { width: 4px; }
 .equipo-modal::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }

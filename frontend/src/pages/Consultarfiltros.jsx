@@ -29,7 +29,8 @@ function ConsultarFiltros() {
     setFiltros({
       fecha: "",
       nombre: "",
-      ubicacion: ""
+      ubicacion: "",
+      estado: "",
     });
   };
 
@@ -75,6 +76,19 @@ function ConsultarFiltros() {
           value={filtros.ubicacion}
           onChange={handleChange}
         />
+
+        <select
+          name="estado"
+          value={filtros.estado}
+          onChange={handleChange}
+          className="filtros-select"
+        >
+          <option value="">Estado</option>
+          <option value="Listo para entrega">Listo para Entrega</option>
+          <option value="Entregado">Entregado</option>
+          <option value="En Mantenimiento">En Mantenimiento</option>
+          <option value="En Revision">En Revision</option>
+        </select>
 
         <button className="btn-clear" onClick={limpiarFiltros}>
           Borrar Filtro
