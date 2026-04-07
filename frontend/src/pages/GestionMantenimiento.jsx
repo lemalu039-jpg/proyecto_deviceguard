@@ -82,11 +82,18 @@ function GestionMantenimiento() {
               <td>
                 <select
                   className="mant-select"
-                  value={d.estado}
-                  onChange={(e) => cambiarEstado(d.id, e.target.value)}
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) cambiarEstado(d.id, e.target.value);
+                  }}
                 >
-                  <option value="En Mantenimiento">En Mantenimiento</option>
-                  <option value="Entregado">Entregado</option>
+                  <option value="">Cambiar a...</option>
+                  {d.estado === "En Revision" && (
+                    <option value="En Mantenimiento">En Mantenimiento</option>
+                  )}
+                  {d.estado === "Listo para Entrega" && (
+                    <option value="Entregado">Entregado</option>
+                  )}
                 </select>
               </td>
 

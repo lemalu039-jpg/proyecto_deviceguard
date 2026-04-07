@@ -41,20 +41,45 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
     console.log("ENTRÉ AL UPDATE");
     try {
+        // Validar transición de estado si se está cambiando el estado
+        if (req.body.estado) {
+            const dispositivo = await DispositivoModel.findById(req.params.id);
+            if (!dispositivo) {
+                return res.status(404).json({ error: 'Dispositivo no encontrado' });
+            }
+
+            const estadoActual = dispositivo.estado;
+            const nuevoEstado = req.body.estado;
+
+            const transicionesPermitidas = {
+                "En Revision":       ["En Mantenimiento"],
+                "Listo para Entrega": ["Entregado"],
+            };
+
+            const permitidos = transicionesPermitidas[estadoActual];
+            if (permitidos && !permitidos.includes(nuevoEstado)) {
+                return res.status(400).json({
+                    error: `No se puede cambiar de "${estadoActual}" a "${nuevoEstado}". Transición no permitida.`
+                });
+            }
+        }
+
         const affectedRows = await DispositivoModel.update(req.params.id, req.body);
         if (affectedRows > 0) {
-            await enviarCorreo({
-  destinatario: process.env.EMAIL_USER, // por ahora a ti mismo
-  asunto: "Salida de dispositivo",
-  mensaje: `
+            // Solo enviar correo si es un registro de salida (tiene fecha_salida)
+            if (req.body.fecha_salida) {
+                await enviarCorreo({
+                    destinatario: process.env.EMAIL_USER,
+                    asunto: "Salida de dispositivo",
+                    mensaje: `
 El dispositivo con ID ${req.params.id} ha sido registrado como salida.
 
 Fecha: ${req.body.fecha_salida}
 Hora: ${req.body.hora_salida}
 Estado: ${req.body.estado}
-  `,
-});
-
+                    `,
+                });
+            }
             res.json({ message: 'Dispositivo actualizado exitosamente' });
         } else {
             res.status(404).json({ error: 'Dispositivo no encontrado' });

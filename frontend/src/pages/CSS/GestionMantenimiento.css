@@ -54,10 +54,13 @@
 
 /* BADGES */
 .mant-badge {
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  display: inline-block;
+ background: #fcfbdc;
+  color: #dacd1c;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .68rem;
+  font-weight: 700;
 }
 
 .badge-revision {
