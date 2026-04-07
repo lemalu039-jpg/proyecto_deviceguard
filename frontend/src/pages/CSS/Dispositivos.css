@@ -263,9 +263,9 @@
   letter-spacing: .3px;
 }
 
-.badge-disponible {
-  background: #dcfce7;
-  color: #15803d;
+.badge-listo para-entrega {
+ background: #fcfbdc;
+  color: #dacd1c;
 }
 
 .badge-revision {
@@ -281,9 +281,9 @@
 
 
 
-.badge-baja {
-  background: #fef2f2;
-  color: #991b1b;
+.badge-entregado {
+  background: #f3fef2;
+   color: #15803d;
 }
 
 

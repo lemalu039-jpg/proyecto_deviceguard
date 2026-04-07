@@ -18,6 +18,7 @@ import Reportes from "./pages/Reportes";
 import Estadisticas from './pages/Estadisticas';
 import ConsultarFiltros from "./pages/Consultarfiltros";
 import Correo from "./pages/Correo";
+import GestionMantenimiento from './pages/GestionMantenimiento';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -150,11 +151,20 @@ function App() {
     <Estadisticas />
   </ProtectedRoute>
 } />
+
+<Route path="/gestion" element={
+  <ProtectedRoute>
+    <GestionMantenimiento />
+  </ProtectedRoute>
+} />
       </Routes>
     </Router>
 
+
+
   
   );
+
 }
 
 export default App;

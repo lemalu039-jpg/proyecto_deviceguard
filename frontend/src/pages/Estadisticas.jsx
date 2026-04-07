@@ -27,10 +27,10 @@ function Estadisticas() {
   const total = dispositivos.length;
 
   const estados = {
-    'Disponible':       { color: '#16a34a', bg: '#dcfce7', count: 0 },
+    'Listo para Entrega':       { color: '#dacd1c', bg: '#fcfbdc', count: 0 },
     'En Revision':      { color: '#7e22ce', bg: '#f3e8ff', count: 0 },
     'En Mantenimiento': { color: '#ea580c', bg: '#ffedd5', count: 0 },
-    'Dado de Baja':     { color: '#991b1b', bg: '#fef2f2', count: 0 },
+    'Entregado':     { color: '#16a34a', bg: '#f3fef2', count: 0 },
   };
 
   dispositivos.forEach(d => {
@@ -81,10 +81,10 @@ function Estadisticas() {
   const getBadgeStyle = (estado) => {
     const base = { display: 'inline-block', fontSize: '.65rem', fontWeight: 700, padding: '2px 9px', borderRadius: '20px' };
     switch (estado) {
-      case 'Disponible':       return { ...base, background: '#dcfce7', color: '#15803d' };
+      case 'Listo para Entrega':       return { ...base, background: '#fcfbdc', color: '#dacd1c' };
       case 'En Revision':      return { ...base, background: '#f3e8ff', color: '#7e22ce' };
       case 'En Mantenimiento': return { ...base, background: '#ffedd5', color: '#c2410c' };
-      case 'Dado de Baja':     return { ...base, background: '#fef2f2', color: '#991b1b' };
+      case 'Entregado':     return { ...base, background: '#f3fef2', color: '#15803d' };
       default:                 return { ...base, background: '#f1f5f9', color: '#64748b' };
     }
   };
@@ -115,10 +115,10 @@ function Estadisticas() {
 
   const filtros = [
     { label: 'Todos', value: 'todos' },
-    { label: 'Disponible', value: 'Disponible' },
+    { label: 'Listo para Entrega', value: 'Listo para Entrega' },
     { label: 'En Revisión', value: 'En Revision' },
     { label: 'En Mantenimiento', value: 'En Mantenimiento' },
-    { label: 'Dado de Baja', value: 'Dado de Baja' },
+    { label: 'Entregado', value: 'Entregado' },
   ];
 
   return (

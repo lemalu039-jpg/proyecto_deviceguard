@@ -111,11 +111,10 @@ function Dispositivos() {
 
   const getBadgeClass = (estado) => {
     switch (estado) {
-      case 'Disponible':       return 'badge-disponible';
+      case 'Listo para Entrega':       return 'badge-listo para-entrega';
       case 'En Revision':      return 'badge-revision';
       case 'En Mantenimiento': return 'badge-mantenimiento';
-      case 'Dado de Baja':     return 'badge-baja';
-      default:                 return 'badge-inactivo';
+      case 'Entregado':        return 'badge-entregado';
     }
   };
 

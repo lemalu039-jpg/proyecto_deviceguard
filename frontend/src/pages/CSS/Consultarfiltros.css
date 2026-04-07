@@ -89,22 +89,42 @@
 }
 
 /* COLORES */
-.badge.disponible {
-  background: #dcfce7;
-  color: #15803d;
+.disponible {
+  display: inline-block;
+  background: #fcfbdc;
+  color: #dacd1c;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .68rem;
+  font-weight: 700;
 }
 
-.badge.en\ revisión {
-  background: #ede9fe;
-  color: #6d28d9;
+.en.revision {
+   display: inline-block;
+  background: #f3e8ff;
+  color: #7e22ce;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .68rem;
+  font-weight: 700;
 }
 
-.badge.en\ mantenimiento {
+.en.mantenimiento {
+  display: inline-block;
   background: #ffedd5;
   color: #c2410c;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .68rem;
+  font-weight: 700;
 }
 
-.badge.dado\ de\ baja {
-  background: #fee2e2;
-  color: #991b1b;
+.entregado {
+   display: inline-block;
+ background: #f3fef2;
+   color: #15803d;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .68rem;
+  font-weight: 700;
 }

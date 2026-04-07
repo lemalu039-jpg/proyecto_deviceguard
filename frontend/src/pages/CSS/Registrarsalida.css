@@ -298,51 +298,10 @@
   background: #fecaca;
 }
 
-
-.badge-disponible {
-  display: inline-block;
-  background: #dcfce7;
-  color: #15803d;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: .68rem;
-  font-weight: 700;
-}
-
-.badge-revision {
-  display: inline-block;
-  background: #f3e8ff;
-  color: #7e22ce;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: .68rem;
-  font-weight: 700;
-}
-
 .badge-mantenimiento {
   display: inline-block;
   background: #ffedd5;
   color: #c2410c;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: .68rem;
-  font-weight: 700;
-}
-
-.badge-baja {
-  display: inline-block;
-  background: #fef2f2;
-  color: #991b1b;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: .68rem;
-  font-weight: 700;
-}
-
-.badge-inactivo {
-  display: inline-block;
-  background: #f1f5f9;
-  color: #64748b;
   padding: 3px 10px;
   border-radius: 20px;
   font-size: .68rem;

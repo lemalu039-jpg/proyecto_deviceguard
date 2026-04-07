@@ -6,6 +6,7 @@ import {
   updateDispositivo
 } from "../services/api";
 import "./CSS/Registrarsalida.css";
+import axios from "axios";
 
 function SalidaDispositivos() {
   const [salidas, setSalidas] = useState([]);
@@ -89,12 +90,18 @@ const handleSubmit = async (e) => {
     const ahora = new Date();
     const fecha = ahora.toISOString().split("T")[0];
     const hora = ahora.toTimeString().slice(0, 5);
-
+  //Guardar salida
     await updateDispositivo(dispositivo.id, {
-      estado: "Disponible",
+      estado: "Listo para Entrega",
       fecha_salida: fecha,
       hora_salida: hora
     });
+  // Enviar correo
+    await axios.post("http://localhost:5000/api/correo/enviar", {
+  destino: "maria.lopez@sena.edu.co", // luego puedes hacerlo dinámico
+  asunto: "Salida de dispositivo",
+  mensaje: `El dispositivo con serial ${form.serial} ha sido entregado correctamente.`
+});
 
     cerrarModal();
     loadData();
@@ -134,10 +141,10 @@ const handleSubmit = async (e) => {
 
   const getBadgeClass = (estado) => {
     switch (estado) {
-      case 'Disponible':       return 'badge-disponible';
+      case 'Listo para Entrega':       return 'badge-listo para-entrega';
       case 'En Revision':      return 'badge-revision';
       case 'En Mantenimiento': return 'badge-mantenimiento';
-      case 'Dado de Baja':     return 'badge-baja';
+      case 'Entregado':     return 'badge-entregado';
       default:                 return 'badge-inactivo';
     }
   };

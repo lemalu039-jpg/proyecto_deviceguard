@@ -1,62 +1,71 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getCorreos } from "../services/api";
 import "./CSS/Correo.css";
 
 function Correo() {
+  const [correos, setCorreos] = useState([]);
 
-  const [mensaje, setMensaje] = useState("");
-  const [destino, setDestino] = useState("");
+  useEffect(() => {
+    loadCorreos();
+  }, []);
 
-  const handleEnviar = async () => {
-    await enviarCorreo({
-      destino,
-      asunto: "Notificación del sistema",
-      mensaje
-    });
-
-    alert("Correo enviado");
-    setMensaje("");
+  const loadCorreos = async () => {
+    try {
+      const res = await getCorreos();
+      setCorreos(res.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <div className="correo-wrapper">
 
-  {/* SIDEBAR */}
-  <div className="correo-sidebar">
-    <button className="btn-redactar">Redactar</button>
+      <div className="correo-card">
+        <div className="correo-card-title">
+          <div className="correo-card-dot"></div>
+          <span>Historial de correos</span>
+          <span className="correo-count">{correos.length} enviados</span>
+        </div>
 
-    <ul>
-      <li>Bandeja de Entrada</li>
-      <li>Destacado</li>
-      <li>Enviado</li>
-      <li>Papelera</li>
-    </ul>
-  </div>
+        <div className="correo-table-wrap">
+          <table className="correo-table">
+            <thead>
+              <tr>
+                <th>Destinatario</th>
+                <th>Asunto</th>
+                <th>Mensaje</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+              </tr>
+            </thead>
 
-  {/* MAIN */}
-  <div className="correo-main">
+            <tbody>
+              {correos.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="correo-empty">
+                    No hay correos registrados
+                  </td>
+                </tr>
+              ) : (
+                correos.map(c => (
+                  <tr key={c.id}>
+                    <td>{c.destinatario}</td>
+                    <td>{c.asunto}</td>
+                    <td>{c.mensaje}</td>
+                    <td>{c.fecha_envio}</td>
+                    <td>{c.hora_envio}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
 
-    <div className="correo-header">
-      Laura Avila
-    </div>
+          </table>
+        </div>
 
-    <div className="correo-chat">
-      <div className="mensaje recibido">
-        Mensaje recibido de prueba...
       </div>
 
-      <div className="mensaje enviado">
-        Respuesta enviada desde el sistema
-      </div>
     </div>
-
-    <div className="correo-input">
-      <input placeholder="Correo destino" />
-      <input placeholder="Escribe mensaje..." />
-      <button>Enviar</button>
-    </div>
-
-  </div>
-</div>
   );
 }
 

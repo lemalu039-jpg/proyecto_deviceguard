@@ -51,5 +51,6 @@ export const createMantenimiento = (data) => api.post('/mantenimiento', data);
 export const updateMantenimiento = (id, data) => api.put(`/mantenimiento/${id}`, data);
 export const deleteMantenimiento = (id) => api.delete(`/mantenimiento/${id}`);
 
+export const getCorreos = () => api.get('/correo');
 
 export default api;
