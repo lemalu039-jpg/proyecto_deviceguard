@@ -87,7 +87,7 @@ function GestionMantenimiento() {
                     if (e.target.value) cambiarEstado(d.id, e.target.value);
                   }}
                 >
-                  <option value="">Cambiar a...</option>
+                  <option value="">cambiar estado</option>
                   {d.estado === "En Revision" && (
                     <option value="En Mantenimiento">En Mantenimiento</option>
                   )}
