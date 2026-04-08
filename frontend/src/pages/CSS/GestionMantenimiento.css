@@ -5,13 +5,13 @@
 .mant-wrapper-tittle {
   font-size: 1.4rem;
     font-weight: 700;
-    color: #333;
+    color: var(--text-main);
     margin-bottom: 1.5rem;
 
 }
 /* CARD */
 .mant-card {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: 0 10px 25px rgba(0,0,0,0.05);
@@ -43,13 +43,13 @@
 .mant-table th {
   text-align: left;
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--text-muted);
   padding: 10px 0;
 }
 
 .mant-table td {
   padding: 12px 0;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--input-bg);
 }
 
 /* BADGES */
@@ -107,8 +107,8 @@
 .mant-select {
   padding: 6px 10px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
+  border: 1px solid var(--border);
+  background: var(--table-head);
   font-size: 0.85rem;
   cursor: pointer;
 }

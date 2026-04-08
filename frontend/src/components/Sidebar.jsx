@@ -39,7 +39,7 @@ function Sidebar({ onLogout }) {
   return (
     <aside style={{
       width: '260px',
-      background: 'white',
+      background: 'var(--bg-card)',
       borderRight: '1px solid var(--border)',
       display: 'flex',
       flexDirection: 'column',
@@ -87,8 +87,8 @@ function Sidebar({ onLogout }) {
                 gap: '1rem',
                 padding: '0.75rem 1rem',
                 borderRadius: 'var(--radius-sm)',
-                color: isActive ? 'white' : 'var(--text-muted)',
-                background: isActive ? 'var(--bg-dark)' : 'transparent',
+                color: isActive ? '#ffffff' : 'var(--text-muted)',
+                background: isActive ? 'linear-gradient(135deg, #0e5870, #6eccd8)' : 'transparent',
                 fontWeight: isActive ? 600 : 500,
                 fontSize: '0.9rem'
               })}
@@ -112,7 +112,7 @@ function Sidebar({ onLogout }) {
         </nav>
 
         <div style={{ padding: '1.5rem 1.5rem 0.75rem 1.5rem' }}>
-          <span style={{ fontSize: '0.7rem', fontWeight: 600, color: '#b2bec3', letterSpacing: '1px' }}>PÁGINAS</span>
+          <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '1px' }}>PÁGINAS</span>
         </div>
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', padding: '0 1rem' }}>
@@ -126,8 +126,8 @@ function Sidebar({ onLogout }) {
                 gap: '1rem',
                 padding: '0.75rem 1rem',
                 borderRadius: 'var(--radius-sm)',
-                color: isActive ? 'white' : 'var(--text-muted)',
-                background: isActive ? 'var(--bg-dark)' : 'transparent',
+                color: isActive ? '#ffffff' : 'var(--text-muted)',
+                background: isActive ? 'linear-gradient(135deg, #0492C2, #82EEFD)' : 'transparent',
                 fontWeight: isActive ? 600 : 500,
                 fontSize: '0.9rem'
               })}

@@ -23,7 +23,7 @@
   align-items: center;
   gap: 0.5rem;
   background: var(--primary);
-  color: #fff;
+  color: var(--bg-card);
   border: none;
   padding: 0.65rem 1.3rem;
   border-radius: 8px;
@@ -43,7 +43,7 @@
 }
 
 .equipo-card {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 16px;
   border: 1px solid #e8ecf4;
   padding: 1.8rem 1.2rem 1.4rem;
@@ -60,7 +60,7 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  color: #fff;
+  color: var(--bg-card);
   font-size: 1.3rem;
   font-weight: 700;
   display: flex;
@@ -72,13 +72,13 @@
 .equipo-card-nombre {
   font-weight: 700;
   font-size: 0.95rem;
-  color: #1e293b;
+  color: var(--text-main);
   text-align: center;
 }
 
 .equipo-card-correo {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   text-align: center;
   word-break: break-all;
 }
@@ -98,9 +98,9 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  border: 1px solid #e2e8f0;
-  background: #fff;
-  color: #475569;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
   padding: 0.45rem 1rem;
   border-radius: 8px;
   font-size: 0.8rem;
@@ -109,11 +109,11 @@
   margin-top: 0.4rem;
 }
 
-.equipo-card-msg-btn:hover { background: #f1f5f9; }
+.equipo-card-msg-btn:hover { background: var(--input-bg); }
 
 /* ── TABLA ────────────────────────────────────────────── */
 .equipo-tabla-section {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 14px;
   border: 1px solid #e8ecf4;
   overflow: hidden;
@@ -127,7 +127,7 @@
   border-bottom: 1px solid #e8ecf4;
   font-weight: 600;
   font-size: 0.95rem;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
 .equipo-tabla-pill {
@@ -155,22 +155,22 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #94a3b8;
-  background: #f8fafc;
+  color: var(--text-muted);
+  background: var(--table-head);
   border-bottom: 1px solid #e8ecf4;
 }
 
 .equipo-tabla tbody tr {
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--input-bg);
   transition: background 0.12s;
 }
 
-.equipo-tabla tbody tr:hover { background: #f8fafc; }
+.equipo-tabla tbody tr:hover { background: var(--table-head); }
 .equipo-tabla tbody tr:last-child { border-bottom: none; }
 
 .equipo-tabla tbody td {
   padding: 0.85rem 1.2rem;
-  color: #334155;
+  color: var(--text-main);
   vertical-align: middle;
 }
 
@@ -184,7 +184,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  color: #fff;
+  color: var(--bg-card);
   font-size: 0.7rem;
   font-weight: 700;
   display: flex;
@@ -206,7 +206,7 @@
 .equipo-tabla-empty {
   text-align: center;
   padding: 2.5rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.875rem;
 }
 
@@ -247,21 +247,21 @@
   justify-content: space-between;
   font-size: 1.15rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
 .equipo-modal-close {
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #94a3b8;
+  color: var(--text-muted);
   padding: 0.2rem;
   border-radius: 6px;
   display: flex;
   align-items: center;
 }
 
-.equipo-modal-close:hover { color: #475569; background: #e2e8f0; }
+.equipo-modal-close:hover { color: var(--text-muted); background: var(--border); }
 
 .equipo-modal-form {
   display: flex;
@@ -281,13 +281,13 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #e2e8f0;
+  background: var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   overflow: hidden;
-  color: #94a3b8;
+  color: var(--text-muted);
   transition: background 0.15s;
 }
 
@@ -305,7 +305,7 @@
 
 /* Form grid */
 .equipo-form-grid {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 12px;
   padding: 1.4rem;
   display: grid;
@@ -322,16 +322,16 @@
 .equipo-form-group label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #475569;
+  color: var(--text-muted);
 }
 
 .equipo-form-group input,
 .equipo-form-group select {
   padding: 0.6rem 0.9rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 0.875rem;
-  background: #f8fafc;
+  background: var(--table-head);
   outline: none;
   transition: border-color 0.15s;
   font-family: inherit;
@@ -340,12 +340,12 @@
 .equipo-form-group input:focus,
 .equipo-form-group select:focus {
   border-color: #2d3a8c;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .equipo-btn-submit {
   background: var(--primary);
-  color: #fff;
+  color: var(--bg-card);
   border: none;
   padding: 0.75rem;
   border-radius: 10px;
@@ -376,7 +376,7 @@
   animation: slideUp 0.25s ease;
 }
 
-.equipo-toast.ok { background: #1e293b; color: #fff; }
+.equipo-toast.ok { background: var(--text-main); color: var(--bg-card); }
 .equipo-toast.error { background: #fee2e2; color: #dc2626; }
 
 @keyframes slideUp {
@@ -439,7 +439,7 @@
 
 .equipo-confirm-msg {
   font-size: 0.9rem;
-  color: #334155;
+  color: var(--text-main);
   line-height: 1.5;
 }
 
@@ -454,16 +454,16 @@
   flex: 1;
   padding: 0.65rem;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: #fff;
-  color: #475569;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s;
 }
 
-.equipo-btn-cancel:hover { background: #f1f5f9; }
+.equipo-btn-cancel:hover { background: var(--input-bg); }
 
 .equipo-btn-delete {
   flex: 1;
@@ -471,7 +471,7 @@
   border-radius: 8px;
   border: none;
   background: #dc2626;
-  color: #fff;
+  color: var(--bg-card);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
@@ -482,4 +482,4 @@
 
 /* ── SCROLLBAR ────────────────────────────────────────── */
 .equipo-modal::-webkit-scrollbar { width: 4px; }
-.equipo-modal::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+.equipo-modal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }

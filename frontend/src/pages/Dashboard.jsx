@@ -55,7 +55,7 @@ function Dashboard() {
       case 'En Revision':      return { ...base, background: '#f3e8ff', color: '#7e22ce' };
       case 'En Mantenimiento': return { ...base, background: '#ffedd5', color: '#c2410c' };
       case 'Entregado':     return { ...base, background: '#f3fef2', color: '#15803d' };
-      default:                 return { ...base, background: '#f1f5f9', color: '#64748b' };
+      default:                 return { ...base, background: 'var(--input-bg)', color: 'var(--text-muted)' };
     }
   };
 
@@ -71,7 +71,7 @@ function Dashboard() {
     textAlign: 'left',
     fontSize: '.71rem',
     fontWeight: 700,
-    color: '#64748b',
+    color: 'var(--text-muted)',
     textTransform: 'uppercase',
     letterSpacing: '.04em',
     whiteSpace: 'nowrap'
@@ -79,8 +79,8 @@ function Dashboard() {
 
   const tdStyle = {
     padding: '.65rem .85rem',
-    borderBottom: '1px solid #f1f5f9',
-    color: '#334155',
+    borderBottom: '1px solid var(--border)',
+    color: 'var(--text-main)',
     verticalAlign: 'middle'
   };
 
@@ -169,9 +169,9 @@ function Dashboard() {
 
   const renderCard = (card, i) => (
     <div key={i} style={{
-      background: '#fff',
+      background: 'var(--bg-card)',
       borderRadius: '12px',
-      border: '1px solid #e2e8f0',
+      border: '1px solid var(--border)',
       padding: '1.1rem 1rem 1rem 1.3rem',
       position: 'relative',
       overflow: 'hidden',
@@ -244,11 +244,11 @@ function Dashboard() {
         Lista de dispositivos recientes
       </h3>
 
-      <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+      <div style={{ background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.81rem' }}>
             <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+              <tr style={{ background: 'var(--table-head)', borderBottom: '2px solid var(--border)' }}>
                 <th style={thStyle}>Imagen</th>
                 <th style={thStyle}>Nombre</th>
                 <th style={thStyle}>Ubicación</th>
@@ -259,11 +259,11 @@ function Dashboard() {
             </thead>
             <tbody>
               {dispositivos.map((d, i) => (
-                <tr key={d.id} style={{ background: i % 2 === 0 ? '#fff' : '#f8fafc' }}>
+                <tr key={d.id} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
                   <td style={tdStyle}>
                     <div style={{
                       width: '42px', height: '42px', borderRadius: '8px',
-                      background: '#f1f5f9', border: '1px solid #e2e8f0',
+                      background: 'var(--input-bg)', border: '1px solid var(--border)',
                       overflow: 'hidden', flexShrink: 0
                     }}>
                       {d.archivo
@@ -272,17 +272,17 @@ function Dashboard() {
                         alt={d.nombre}
                         onClick={() => setImagenActiva(`http://localhost:5000/uploads/${d.archivo}`)}
                         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block',cursor: 'pointer'}} />
-                        : <span style={{ fontSize: '.6rem', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>N/A</span>
+                        : <span style={{ fontSize: '.6rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>N/A</span>
                       }
                     </div>
                   </td>
                   <td style={tdStyle}>
-                    <div style={{ fontWeight: 600, color: '#1a1a2e', fontSize: '.82rem' }}>{d.nombre}</div>
-                    <div style={{ fontSize: '.71rem', color: '#94a3b8', marginTop: '1px' }}>{d.tipo}</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
+                    <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo}</div>
                   </td>
-                  <td style={{ ...tdStyle, fontSize: '.8rem', color: '#64748b' }}>{d.ubicacion || 'N/A'}</td>
-                  <td style={{ ...tdStyle, fontSize: '.8rem', color: '#64748b', fontFamily: 'monospace' }}>{d.serial}</td>
-                  <td style={{ ...tdStyle, fontSize: '.8rem', color: '#64748b' }}>{formatFecha(d.fecha_registro)}</td>
+                  <td style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)' }}>{d.ubicacion || 'N/A'}</td>
+                  <td style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>{d.serial}</td>
+                  <td style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)' }}>{formatFecha(d.fecha_registro)}</td>
                   <td style={tdStyle}>
                     <span style={getBadgeStyle(d.estado)}>{d.estado}</span>
                   </td>
@@ -290,7 +290,7 @@ function Dashboard() {
               ))}
               {dispositivos.length === 0 && (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '2.5rem', color: '#94a3b8', fontSize: '.82rem' }}>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
                     No hay dispositivos registrados
                   </td>
                 </tr>

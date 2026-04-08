@@ -135,7 +135,7 @@ function Prestamos() {
                   </td>
                   <td>
                     {p.estado_prestamo !== 'Devuelto' && (
-                      <button className="btn" style={{ padding: '0.25rem 0.5rem', background: '#e2e8f0', marginRight: '0.5rem' }} onClick={() => handleEdit(p)}>Resolver</button>
+                      <button className="btn" style={{ padding: '0.25rem 0.5rem', background: 'var(--border)', marginRight: '0.5rem' }} onClick={() => handleEdit(p)}>Resolver</button>
                     )}
                     <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem' }} onClick={() => handleDelete(p.id)}>Eliminar</button>
                   </td>

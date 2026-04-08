@@ -147,7 +147,7 @@ function Mantenimiento() {
                     </span>
                   </td>
                   <td>
-                    <button className="btn" style={{ padding: '0.25rem 0.5rem', background: '#e2e8f0', marginRight: '0.5rem', marginBottom: '0.5rem' }} onClick={() => handleEdit(m)}>Ver/Editar</button>
+                    <button className="btn" style={{ padding: '0.25rem 0.5rem', background: 'var(--border)', marginRight: '0.5rem', marginBottom: '0.5rem' }} onClick={() => handleEdit(m)}>Ver/Editar</button>
                     <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem' }} onClick={() => handleDelete(m.id)}>Eliminar</button>
                   </td>
                 </tr>
