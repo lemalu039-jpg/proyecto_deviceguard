@@ -75,7 +75,7 @@ const generarBD = async () => {
         {/* Dispositivos */}
         <div className="card">
           <img src={dispositivosIcon} alt="dispositivos" />
-          <h3>Reporte Dispositivos</h3>
+          <h3 id="olga">Reporte Dispositivos</h3>
           <button onClick={generarDispositivos}>Generar Reporte</button>
         </div>
 
