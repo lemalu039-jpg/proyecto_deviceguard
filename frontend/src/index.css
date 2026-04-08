@@ -43,33 +43,36 @@
   --table-stripe: #f9fafb;
 
   --shadow: rgba(0, 0, 0, 0.08);
+
+  --sidebar-active-bg: #151E3D;
 }
 
 /* ─── MODO OSCURO PRO (EL QUE QUERÍAS) ───────────────────────── */
 
 [data-theme='dark'] {
-  --bg-main: #020813;     /* Extremely dark navy blue */
-  --bg-card: #0A111F;     /* Deep navy blue for cards */
+  --bg-main: #020813;
+  --bg-card: #0A111F;
   --bg-sidebar: #0A111F;
   --bg-toggle: #1E293B;
 
   --text-main: #F8FAFC;
   --text-muted: #94A3B8;
 
-  --border: #162441;     /* Smooth blue grid lines */
+  --border: #162441;
   --hover: #162441;
 
-  --input-bg: #0C1525;    /* Input fields */
+  --input-bg: #0C1525;
   --input-border: #162441;
 
-  --table-head: #050E1B;  /* Table header */
+  --table-head: #050E1B;
   --table-stripe: #07101E;
 
   --shadow: rgba(0, 0, 0, 0.8);
 
-  /* Override primary colors for dark mode to match bright electric blue accent */
   --primary: #0066FF;
   --primary-hover: #0052CC;
+
+  --sidebar-active-bg: linear-gradient(135deg, #075670, #6fcad6);
 }
 
 /* ─── RESET ───────────────────────── */
