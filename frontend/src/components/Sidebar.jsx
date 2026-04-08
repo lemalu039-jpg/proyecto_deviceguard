@@ -88,24 +88,25 @@ function Sidebar({ onLogout }) {
                 padding: '0.75rem 1rem',
                 borderRadius: 'var(--radius-sm)',
                 color: isActive ? '#ffffff' : 'var(--text-muted)',
-                background: isActive ? 'linear-gradient(135deg, #0e5870, #6eccd8)' : 'transparent',
+                background: isActive ? 'var(--sidebar-active-bg)' : 'transparent',
                 fontWeight: isActive ? 600 : 500,
                 fontSize: '0.9rem'
               })}
             >
-              {({isActive}) => (
-                  <>
-                    <img  
-                    src={item.icon} 
-                    alt={item.label} 
-                    style={{ 
-                      width: '35px', 
-                      height: '22px', 
-                      objectFit: 'contain' , 
-                      filter: isActive ? 'brightness(0) invert(1)' : 'none'}} 
-                      />
-                    {item.label}
-                  </>
+              {({ isActive }) => (
+                <>
+                  <img
+                    src={item.icon}
+                    alt={item.label}
+                    style={{
+                      width: '35px',
+                      height: '22px',
+                      objectFit: 'contain',
+                      filter: isActive ? 'brightness(0) invert(1)' : 'none'
+                    }}
+                  />
+                  {item.label}
+                </>
               )}
             </NavLink>
           ))}
@@ -127,13 +128,26 @@ function Sidebar({ onLogout }) {
                 padding: '0.75rem 1rem',
                 borderRadius: 'var(--radius-sm)',
                 color: isActive ? '#ffffff' : 'var(--text-muted)',
-                background: isActive ? 'linear-gradient(135deg, #0492C2, #82EEFD)' : 'transparent',
+                background: isActive ? 'var(--sidebar-active-bg)' : 'transparent',
                 fontWeight: isActive ? 600 : 500,
                 fontSize: '0.9rem'
               })}
             >
-              <img  src={item.icon} alt={item.label}  style={{ width: '35px', height: '22px', objectFit: 'contain' }}/>
-              {item.label}
+              {({ isActive }) => (
+                <>
+                  <img
+                    src={item.icon}
+                    alt={item.label}
+                    style={{
+                      width: '35px',
+                      height: '22px',
+                      objectFit: 'contain',
+                      filter: isActive ? 'brightness(0) invert(1)' : 'none'
+                    }}
+                  />
+                  {item.label}
+                </>
+              )}
             </NavLink>
           ))}
         </nav>

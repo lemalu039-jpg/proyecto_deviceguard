@@ -232,13 +232,12 @@ const handleSubmit = async (e) => {
                 <th>Fecha entrada</th>
                 <th>Fecha salida</th>
                 <th>Estado</th>
-                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {salidas.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="salida-empty">No hay registros</td>
+                  <td colSpan="4" className="salida-empty">No hay registros</td>
                 </tr>
               ) : (
                 salidas
@@ -264,9 +263,6 @@ const handleSubmit = async (e) => {
                       <span className={getBadgeClass(s.estado)}>
                         {s.estado}
                       </span>
-                    </td>
-                    <td>
-                      <button className="salida-btn-del" onClick={() => handleDelete(s.id)}>Finalizar</button>
                     </td>
                   </tr>
                 ))
