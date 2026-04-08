@@ -6,20 +6,30 @@ import bdIcon from "../assets/icons/reportes_bd.svg"
 
 function Reportes() {
 
- const generarUsuarios = async () => {
+const generarUsuarios = async () => {
   try {
     const res = await axios.get(
       "http://localhost:5000/api/reportes/usuarios-excel",
       { responseType: "blob" }
     );
 
+    const disposition = res.headers["content-disposition"];
+    const ahora = new Date();
+    const fecha = ahora.toISOString().split("T")[0];
+    let nombreArchivo = `reporte_usuarios_${fecha}.xlsx`;
+
+    if (disposition && disposition.includes("filename=")) {
+      nombreArchivo = disposition.split("filename=")[1];
+    }
+
     const url = window.URL.createObjectURL(new Blob([res.data]));
     const link = document.createElement("a");
     link.href = url;
-    link.download = "usuarios.xlsx";
+    link.download = nombreArchivo;
     link.click();
+
   } catch (error) {
-    console.error("Error al descargar usuarios:", error);
+    console.error(error);
   }
 };
 
@@ -29,31 +39,27 @@ const generarDispositivos = async () => {
       "http://localhost:5000/api/reportes/dispositivos-excel",
       { responseType: "blob" }
     );
+const ahora = new Date();
+    const fecha = ahora.toISOString().split("T")[0];
+    const disposition = res.headers["content-disposition"];
+    let nombreArchivo = `reporte_dispositivos_${fecha}.xlsx`;
+
+    if (disposition && disposition.includes("filename=")) {
+      nombreArchivo = disposition
+        .split("filename=")[1]
+        .replace(/"/g, "");
+    }
+
+    console.log("Nombre recibido:", nombreArchivo); // 👈 DEBUG
 
     const url = window.URL.createObjectURL(new Blob([res.data]));
     const link = document.createElement("a");
     link.href = url;
-    link.download = "dispositivos.xlsx";
+    link.download = nombreArchivo;
     link.click();
+
   } catch (error) {
     console.error("Error al descargar dispositivos:", error);
-  }
-};
-
-const generarBD = async () => {
-  try {
-    const res = await axios.get(
-      "http://localhost:5000/api/reportes/bd-excel",
-      { responseType: "blob" }
-    );
-
-    const url = window.URL.createObjectURL(new Blob([res.data]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "bd.xlsx";
-    link.click();
-  } catch (error) {
-    console.error("Error al descargar BD:", error);
   }
 };
 
