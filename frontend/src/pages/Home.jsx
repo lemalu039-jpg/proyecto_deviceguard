@@ -69,8 +69,7 @@ function Home() {
           sin complicaciones
         </h1>
         <p className="hero-sub anim-up d2">
-          Registra, monitorea y programa el mantenimiento de todos los equipos
-          de tu institución desde un solo lugar, de forma rápida y segura.
+          Registra dispositivos, gestiona su estado durante el mantenimiento y mantén trazabilidad completa desde la recepción hasta la entrega final.
         </p>
         <div className="hero-btns anim-up d3">
           <button className="btn-p" onClick={() => navigate('/login')}>Comenzar ahora ↗</button>
@@ -93,7 +92,7 @@ function Home() {
               </svg>
             </div>
             <div className="feat-title">Registro y control</div>
-            <div className="feat-desc">Registra todos los equipos con su tipo, serial, estado y ubicación con historial automático de uso.</div>
+            <div className="feat-desc">Registra dispositivos de clientes con su información, estado y fecha de ingreso al sistema.</div> 
           </div>
           <div className="feat anim-up d1">
             <div className="feat-icon feat-icon-pink">
@@ -102,7 +101,7 @@ function Home() {
               </svg>
             </div>
             <div className="feat-title">Mantenimiento</div>
-            <div className="feat-desc">Programa mantenimientos preventivos y correctivos con historial completo de cada equipo.</div>
+            <div className="feat-desc">Administra el proceso técnico y actualiza el estado de cada equipo durante su reparación.</div>
           </div>
           <div className="feat anim-up d2">
             <div className="feat-icon feat-icon-cyan">
@@ -111,8 +110,8 @@ function Home() {
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
             </div>
-            <div className="feat-title">Préstamos</div>
-            <div className="feat-desc">Controla quién tiene cada equipo y genera alertas automáticas de vencimiento.</div>
+            <div className="feat-title">Salida de dipositivos</div>
+            <div className="feat-desc">Controla la entrega de equipos y registra la fecha y hora de salida.</div>
           </div>
           <div className="feat anim-up d3">
             <div className="feat-icon feat-icon-green">
@@ -121,7 +120,7 @@ function Home() {
               </svg>
             </div>
             <div className="feat-title">Roles y accesos</div>
-            <div className="feat-desc">Administrador, técnico y usuario con permisos diferenciados para mayor seguridad.</div>
+            <div className="feat-desc">Gestiona accesos según el rol: administrador, técnico o usuario.</div>
           </div>
         </div>
       </div>
@@ -134,12 +133,12 @@ function Home() {
         <div className="sec-title anim-left d1">¿Quiénes somos?</div>
         <div className="about-grid">
           <p className="sec-sub anim-left d2">
-            DeviceGuard es una solución digital diseñada para mejorar el control,
-            monitoreo y gestión de dispositivos tecnológicos en entornos educativos
-            e institucionales.<br /><br />
-            Nuestro propósito es ofrecer una plataforma clara, rápida y útil que
-            ayude a mantener todo organizado y bajo control, sin procesos
-            complicados ni papeleo extra.
+           DeviceGuard es un sistema diseñado para gestionar dispositivos 
+           electrónicos de clientes externos dentro de una empresa de 
+           mantenimiento.<br /><br />
+            Permite llevar control del proceso completo: desde el registro del equipo, 
+            su mantenimiento y hasta su entrega final, mejorando la organización y 
+            trazabilidad del servicio técnico.
           </p>
           <div className="about-list anim-right">
             <div className="about-item">
@@ -191,12 +190,12 @@ function Home() {
               </svg>
             </div>
             <div className="mission-card-title">Nuestro objetivo</div>
-            <div className="mission-card-sub">Brindar una herramienta que facilite la gestión tecnológica institucional de forma eficiente, segura y accesible para todos.</div>
+            <div className="mission-card-sub">Brindar una herramienta que facilite la gestión de dispositivos de clientes durante su proceso de mantenimiento, de forma organizada, segura y eficiente.</div>
           </div>
           <div className="anim-right">
             <div className="sec-tag">Misión</div>
-            <div className="sec-title d1">Tecnología al servicio<br />de la educación</div>
-            <div className="sec-sub d2">Automatizamos el control de inventario y mantenimiento para que los equipos estén siempre disponibles y en óptimas condiciones.</div>
+            <div className="sec-title d1">Tecnología al servicio<br />del mantenimiento</div>
+            <div className="sec-sub d2">Optimizar el control y seguimiento de dispositivos electrónicos en mantenimiento, garantizando trazabilidad desde su ingreso hasta su entrega final.</div>
           </div>
         </div>
       </div>
