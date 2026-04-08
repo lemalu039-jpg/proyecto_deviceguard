@@ -84,7 +84,7 @@ function Home() {
       <div className="section" id="features">
         <div className="sec-tag anim-left">¿Qué hace DeviceGuard?</div>
         <div className="sec-title anim-left d1">Todo lo que necesitas<br />en un solo lugar</div>
-        <div className="sec-sub anim-left d2">Cada módulo está diseñado para facilitar la gestión diaria de equipos en tu institución.</div>
+        <div className="sec-sub anim-left d2">Cada módulo está diseñado para facilitar la gestión diaria de equipos en tu empresa.</div>
         <div className="feat-grid">
           <div className="feat anim-up">
             <div className="feat-icon feat-icon-blue">
