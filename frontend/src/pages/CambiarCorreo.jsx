@@ -37,20 +37,19 @@ function CambiarCorreo() {
     }}>
 
       <div style={{
-        background: "white",
-        padding: "40px",
+        maxWidth: "400px",
+        margin: "125px auto",
+        padding: "35px",
         borderRadius: "12px",
-        boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
-        width: "400px"
+        background: "var(--bg-card)",
+        boxShadow: "var(--shadow)"
       }}>
 
-        <h2 style={{
-          marginBottom: "25px",
-          textAlign: "center",
-          color: "#2d3436"
-        }}>
-          Cambiar correo
-        </h2>
+        <h2 style={{ 
+            marginBottom: "5px",
+            textAlign: "center",
+            color: "var(--text-main)"
+          }}>Cambiar Correo</h2>
 
         <input
           type="email"
@@ -59,9 +58,12 @@ function CambiarCorreo() {
           onChange={(e) => setCorreo(e.target.value)}
           style={{
             width: "100%",
+            marginTop: "20px",
             padding: "12px",
             borderRadius: "8px",
-            border: "1px solid #dfe6e9",
+            border: "1px solid var(--border)",
+            background: "var(--input-bg)",
+            color: "var(--text-main)",
             marginBottom: "20px",
             fontSize: "14px"
           }}

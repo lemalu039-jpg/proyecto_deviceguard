@@ -99,7 +99,7 @@ function Login({ onLogin }) {
       background: '#f5f5f5'
     },
     card: {
-      background: '#fff',
+      background: 'var(--bg-card)',
       borderRadius: '20px',
       width: '100%',
       maxWidth: '780px',
@@ -120,7 +120,7 @@ function Login({ onLogin }) {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
-      background: '#fff',
+      background: 'var(--bg-card)',
       transition: 'left .55s cubic-bezier(.77,0,.18,1)',
       zIndex: 1,
       overflowY: 'auto'
@@ -143,13 +143,13 @@ function Login({ onLogin }) {
       transition: 'left .55s cubic-bezier(.77,0,.18,1)',
       zIndex: 10
     },
-    title: { fontSize: '1.3rem', fontWeight: 700, color: '#1a1a2e', textAlign: 'center', marginBottom: '1.1rem' },
+    title: { fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-main)', textAlign: 'center', marginBottom: '1.1rem' },
     field: { display: 'flex', alignItems: 'center', background: '#f5f5f5', border: '1.5px solid #e2e2e2', borderRadius: '8px', marginBottom: '.7rem', padding: '0 .7rem' },
-    input: { flex: 1, background: 'transparent', border: 'none', outline: 'none', padding: '.55rem .45rem', fontSize: '.83rem', color: '#1a1a2e' },
-    select: { flex: 1, background: 'transparent', border: 'none', outline: 'none', padding: '.55rem .45rem', fontSize: '.83rem', color: '#1a1a2e', cursor: 'pointer' },
+    input: { flex: 1, background: 'transparent', border: 'none', outline: 'none', padding: '.55rem .45rem', fontSize: '.83rem', color: 'var(--text-main)' },
+    select: { flex: 1, background: 'transparent', border: 'none', outline: 'none', padding: '.55rem .45rem', fontSize: '.83rem', color: 'var(--text-main)', cursor: 'pointer' },
     icon: { fontSize: '13px', color: '#9e9e9e', width: '16px', textAlign: 'center', flexShrink: 0 },
-    btnMain: { width: '100%', padding: '.63rem', background: 'linear-gradient(135deg,#52B2BF,#0A1172)', color: '#fff', border: 'none', borderRadius: '30px', fontSize: '.88rem', fontWeight: 700, cursor: 'pointer', letterSpacing: '.4px', marginTop: '.1rem' },
-    btnOff: { width: '100%', padding: '.63rem', background: '#bdbdbd', color: '#fff', border: 'none', borderRadius: '30px', fontSize: '.88rem', fontWeight: 700, cursor: 'not-allowed', marginTop: '.1rem' },
+    btnMain: { width: '100%', padding: '.63rem', background: 'linear-gradient(135deg,#52B2BF,#0A1172)', color: 'var(--bg-card)', border: 'none', borderRadius: '30px', fontSize: '.88rem', fontWeight: 700, cursor: 'pointer', letterSpacing: '.4px', marginTop: '.1rem' },
+    btnOff: { width: '100%', padding: '.63rem', background: '#bdbdbd', color: 'var(--bg-card)', border: 'none', borderRadius: '30px', fontSize: '.88rem', fontWeight: 700, cursor: 'not-allowed', marginTop: '.1rem' },
     alertErr: { background: '#fce4ec', border: '1px solid #f48fb1', color: '#c62828', borderRadius: '6px', padding: '.55rem .75rem', fontSize: '.78rem', marginBottom: '.7rem' },
     alertOk: { background: '#e8f5e9', border: '1px solid #a5d6a7', color: '#1b5e20', borderRadius: '6px', padding: '.55rem .75rem', fontSize: '.78rem', marginBottom: '.7rem' },
     forgot: { textAlign: 'right', fontSize: '.72rem', color: '#E91E63', cursor: 'pointer', marginTop: '-.35rem', marginBottom: '.75rem', fontWeight: 500 },
@@ -157,10 +157,10 @@ function Login({ onLogin }) {
     iconWrap: { width: '90px', height: '90px', background: '#e8eaf6', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem'
 },
     panelLogo: { fontSize: '.73rem', fontWeight: 700, letterSpacing: '1.5px', color: '#52b2b7', marginBottom: '.55rem', textTransform: 'uppercase' },
-    panelBadge: { display: 'inline-block', background: '#52b2b7', color: '#fff', fontSize: '.61rem', fontWeight: 700, padding: '2px 10px', borderRadius: '20px', letterSpacing: '.5px', marginBottom: '.85rem', textTransform: 'uppercase' },
-    panelTitle: { color: '#fff', fontSize: '1.35rem', fontWeight: 700, marginBottom: '.4rem' },
+    panelBadge: { display: 'inline-block', background: '#52b2b7', color: 'var(--bg-card)', fontSize: '.61rem', fontWeight: 700, padding: '2px 10px', borderRadius: '20px', letterSpacing: '.5px', marginBottom: '.85rem', textTransform: 'uppercase' },
+    panelTitle: { color: 'var(--bg-card)', fontSize: '1.35rem', fontWeight: 700, marginBottom: '.4rem' },
     panelSub: { color: 'rgba(255,255,255,.75)', fontSize: '.79rem', marginBottom: '1.4rem', lineHeight: 1.6 },
-    btnOutline: { padding: '.52rem 1.75rem', background: 'transparent', border: '2px solid #fff', borderRadius: '30px', color: '#fff', fontSize: '.84rem', fontWeight: 600, cursor: 'pointer' },
+    btnOutline: { padding: '.52rem 1.75rem', background: 'transparent', border: '2px solid var(--bg-card)', borderRadius: '30px', color: 'var(--bg-card)', fontSize: '.84rem', fontWeight: 600, cursor: 'pointer' },
   };
 
   return (

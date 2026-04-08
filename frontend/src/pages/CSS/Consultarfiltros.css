@@ -8,7 +8,7 @@
   font-size: 1.9rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: #1a1a2e;
+  color: var(--text-main);
 }
 
 /* BARRA */
@@ -16,8 +16,8 @@
   display: flex;
   align-items: center;
   gap: .6rem;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: .6rem;
   margin-bottom: 1rem;
@@ -25,14 +25,14 @@
 
 .filtros-label {
   font-size: .8rem;
-  color: #64748b;
+  color: var(--text-muted);
   font-weight: 600;
 }
 
 .filtros-bar input {
   padding: .4rem .6rem;
   border-radius: 6px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   font-size: .8rem;
   background: #fff;
   color: #334155;
@@ -48,10 +48,10 @@
 .filtros-select {
   padding: .4rem .6rem;
   border-radius: 6px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   font-size: .8rem;
-  background: #fff;
-  color: #334155;
+  background: var(--bg-card);
+  color: var(--text-main);
   cursor: pointer;
   outline: none;
   font-family: inherit;
@@ -74,9 +74,9 @@
 
 /* CARD */
 .filtros-card {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   overflow: hidden;
 }
 
@@ -88,21 +88,21 @@
 }
 
 .filtros-table th {
-  background: #f8fafc;
+  background: var(--table-head);
   padding: .7rem;
   text-align: left;
   font-size: .7rem;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 .filtros-table td {
   padding: .7rem;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--input-bg);
 }
 
 .hora {
   font-size: .7rem;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 /* BADGES */

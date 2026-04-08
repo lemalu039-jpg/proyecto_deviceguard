@@ -103,7 +103,7 @@ function Usuarios() {
                   <td>{u.correo}</td>
                   <td><span className={`badge ${u.rol === 'admin' ? 'badge-warning' : 'badge-success'}`}>{u.rol}</span></td>
                   <td>
-                    <button className="btn" style={{ padding: '0.25rem 0.5rem', background: '#e2e8f0', marginRight: '0.5rem' }} onClick={() => handleEdit(u)}>Editar</button>
+                    <button className="btn" style={{ padding: '0.25rem 0.5rem', background: 'var(--border)', marginRight: '0.5rem' }} onClick={() => handleEdit(u)}>Editar</button>
                     <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem' }} onClick={() => handleDelete(u.id)}>Eliminar</button>
                   </td>
                 </tr>

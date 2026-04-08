@@ -154,7 +154,7 @@ function Dispositivos() {
           <div className="modal-content" style={{ borderRadius: '12px', border: 'none' }}>
 
             <div className="modal-header" style={{ background: '#151E3D', borderRadius: '12px 12px 0 0', borderBottom: 'none' }}>
-              <h5 className="modal-title" id="dispositivoModalLabel" style={{ color: '#fff', fontWeight: 700, fontSize: '1rem' }}>
+              <h5 className="modal-title" id="dispositivoModalLabel" style={{ color: 'var(--bg-card)', fontWeight: 700, fontSize: '1rem' }}>
                 {editingId ? 'Editar dispositivo' : 'Registrar nuevo dispositivo'}
               </h5>
               <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -214,7 +214,7 @@ function Dispositivos() {
               </form>
             </div>
 
-            <div className="modal-footer" style={{ borderTop: '1px solid #e2e8f0', padding: '1rem 1.5rem' }}>
+            <div className="modal-footer" style={{ borderTop: '1px solid var(--border)', padding: '1rem 1.5rem' }}>
               <button type="button" className="disp-btn-cancel" data-bs-dismiss="modal">
                 Cerrar
               </button>
@@ -260,7 +260,7 @@ function Dispositivos() {
                   <td>{d.ubicacion || 'N/A'}</td>
                   <td>
                     {formatFecha(d.fecha_registro)}<br />
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                       {d.hora_registro || '—'}
                     </span>
                   </td>

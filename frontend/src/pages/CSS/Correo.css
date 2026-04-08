@@ -12,7 +12,7 @@
 .cmail-sidebar {
   width: 260px;
   min-width: 260px;
-  background: #fff;
+  background: var(--bg-card);
   border-right: 1px solid #e8ecf4;
   display: flex;
   flex-direction: column;
@@ -48,7 +48,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #94a3b8;
+  color: var(--text-muted);
   padding: 0 0.4rem;
   margin: 0.4rem 0 0.2rem;
 }
@@ -63,13 +63,13 @@
   background: transparent;
   cursor: pointer;
   font-size: 0.875rem;
-  color: #475569;
+  color: var(--text-muted);
   width: 100%;
   text-align: left;
   transition: background 0.15s;
 }
 
-.cmail-nav-item:hover { background: #f1f5f9; }
+.cmail-nav-item:hover { background: var(--input-bg); }
 .cmail-nav-item.active {
   background: #eef0fb;
   color: #2d3a8c;
@@ -81,8 +81,8 @@
 /* Badge */
 .cmail-badge {
   margin-left: auto;
-  background: #e2e8f0;
-  color: #475569;
+  background: var(--border);
+  color: var(--text-muted);
   font-size: 0.7rem;
   font-weight: 700;
   padding: 0.1rem 0.45rem;
@@ -118,7 +118,7 @@
   transition: background 0.15s;
 }
 
-.cmail-contacto-item:hover { background: #f1f5f9; }
+.cmail-contacto-item:hover { background: var(--input-bg); }
 .cmail-contacto-item.active { background: #eef0fb; }
 
 .cmail-contacto-info {
@@ -131,7 +131,7 @@
 .cmail-contacto-nombre {
   font-size: 0.82rem;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-main);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -139,7 +139,7 @@
 
 .cmail-contacto-correo {
   font-size: 0.72rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -151,7 +151,7 @@
   height: 36px;
   border-radius: 50%;
   background: #2d3a8c;
-  color: #fff;
+  color: var(--bg-card);
   font-size: 0.75rem;
   font-weight: 700;
   display: flex;
@@ -169,7 +169,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 0 12px 12px 0;
 }
 
@@ -189,7 +189,7 @@
   border-bottom: 1px solid #e8ecf4;
   font-weight: 600;
   font-size: 0.95rem;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
 .cmail-count-pill {
@@ -221,23 +221,23 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #94a3b8;
-  background: #f8fafc;
+  color: var(--text-muted);
+  background: var(--table-head);
   border-bottom: 1px solid #e8ecf4;
   position: sticky;
   top: 0;
 }
 
 .cmail-table tbody tr {
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--input-bg);
   transition: background 0.12s;
 }
 
-.cmail-table tbody tr:hover { background: #f8fafc; }
+.cmail-table tbody tr:hover { background: var(--table-head); }
 
 .cmail-table tbody td {
   padding: 0.75rem 1.2rem;
-  color: #334155;
+  color: var(--text-main);
   vertical-align: middle;
 }
 
@@ -249,11 +249,11 @@
 
 .cmail-asunto {
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
 .cmail-msg-preview {
-  color: #64748b;
+  color: var(--text-muted);
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
@@ -262,8 +262,8 @@
 }
 
 .cmail-hora {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--input-bg);
+  color: var(--text-muted);
   font-size: 0.75rem;
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
@@ -273,7 +273,7 @@
 .cmail-empty {
   text-align: center;
   padding: 3rem 1rem;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .cmail-empty svg { margin: 0 auto 0.8rem; display: block; opacity: 0.4; }
@@ -293,7 +293,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #94a3b8;
+  color: var(--text-muted);
   gap: 1rem;
 }
 
@@ -312,13 +312,13 @@
   display: block;
   font-weight: 700;
   font-size: 0.95rem;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
 .cmail-chat-correo {
   display: block;
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .cmail-chat-messages {
@@ -328,12 +328,12 @@
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-  background: #f8fafc;
+  background: var(--table-head);
 }
 
 .cmail-chat-empty {
   text-align: center;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.85rem;
   margin: auto;
 }
@@ -359,15 +359,15 @@
 .cmail-bubble p { margin: 0 0 0.3rem; }
 
 .cmail-bubble.suyo {
-  background: #fff;
-  color: #1e293b;
+  background: var(--bg-card);
+  color: var(--text-main);
   border: 1px solid #e8ecf4;
   border-bottom-left-radius: 4px;
 }
 
 .cmail-bubble.mio {
-  background: #1e293b;
-  color: #fff;
+  background: var(--text-main);
+  color: var(--bg-card);
   border-bottom-right-radius: 4px;
 }
 
@@ -385,28 +385,28 @@
   gap: 0.6rem;
   padding: 0.9rem 1.2rem;
   border-top: 1px solid #e8ecf4;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .cmail-chat-input input {
   flex: 1;
   padding: 0.6rem 1rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 999px;
   font-size: 0.875rem;
   outline: none;
-  background: #f8fafc;
+  background: var(--table-head);
   transition: border-color 0.15s;
 }
 
-.cmail-chat-input input:focus { border-color: #2d3a8c; background: #fff; }
+.cmail-chat-input input:focus { border-color: #2d3a8c; background: var(--bg-card); }
 
 .cmail-btn-enviar {
   display: flex;
   align-items: center;
   gap: 0.4rem;
   background: #2d3a8c;
-  color: #fff;
+  color: var(--bg-card);
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 999px;
@@ -435,7 +435,7 @@
   animation: slideUp 0.25s ease;
 }
 
-.cmail-toast.ok { background: #1e293b; color: #fff; }
+.cmail-toast.ok { background: var(--text-main); color: var(--bg-card); }
 .cmail-toast.error { background: #fee2e2; color: #dc2626; }
 
 @keyframes slideUp {
@@ -451,6 +451,6 @@
 .cmail-sidebar::-webkit-scrollbar-thumb,
 .cmail-table-wrap::-webkit-scrollbar-thumb,
 .cmail-chat-messages::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
+  background: var(--border);
   border-radius: 4px;
 }

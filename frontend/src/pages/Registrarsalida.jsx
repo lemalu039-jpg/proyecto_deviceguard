@@ -245,18 +245,18 @@ const handleSubmit = async (e) => {
                 .filter(s => s.estado === "En Mantenimiento")
                 .map(s => (
                   <tr key={s.id}>
-                    <td style={{ fontWeight: 700, color: '#1e293b' }}>{s.serial}</td>
+                    <td style={{ fontWeight: 700, color: 'var(--text-main)' }}>{s.serial}</td>
                     <td>
                       {s.fecha_registro?.split("T")[0]}
                       <br />
-                      <span style={{ fontSize: '.75rem', color: '#64748b' }}>
+                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>
                         {s.hora_registro || '—'}
                       </span>
                     </td>
                     <td>
                       {s.fecha_salida ? s.fecha_salida.split("T")[0] : '—'}
                       <br />
-                      <span style={{ fontSize: '.75rem', color: '#64748b' }}>
+                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>
                         {s.hora_salida || '—'}
                       </span>
                     </td>
