@@ -12,11 +12,6 @@ const generarExcelDispositivos = async (req, res) => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Dispositivos");
 
-    // 🧠 TITULO
-    worksheet.addRow(["DEVICEGUARD"]);
-    worksheet.addRow(["Reporte de Dispositivos"]);
-    worksheet.addRow([`Fecha: ${new Date().toLocaleDateString()}`]);
-    worksheet.addRow([]);
 
     // 📊 COLUMNAS (ajústalas si tu tabla es diferente)
     worksheet.columns = [
@@ -46,7 +41,7 @@ const generarExcelDispositivos = async (req, res) => {
   });
 });
 
-    worksheet.getRow(5).font = { bold: true };
+    worksheet.getRow(1).font = { bold: true };
 
     // 📤 RESPUESTA
     res.setHeader(
@@ -54,63 +49,15 @@ const generarExcelDispositivos = async (req, res) => {
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
 
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=dispositivos.xlsx"
-    );
+    const ahora = new Date();
+    const fecha = ahora.toISOString().split("T")[0];
 
-    await workbook.xlsx.write(res);
-    res.end();
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error al generar Excel");
-  }
-};
-
-const generarExcelBD = async (req, res) => {
-  try {
-    const [usuarios] = await db.query("SELECT COUNT(*) as total FROM usuarios");
-    const [dispositivos] = await db.query("SELECT COUNT(*) as total FROM dispositivos");
-
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Resumen");
-
-    // 🧠 TITULO
-    worksheet.addRow(["DEVICEGUARD"]);
-    worksheet.addRow(["Reporte General del Sistema"]);
-    worksheet.addRow([`Fecha: ${new Date().toLocaleDateString()}`]);
-    worksheet.addRow([]);
-
-    // 📊 COLUMNAS
-    worksheet.columns = [
-      { header: "Descripción", key: "descripcion", width: 30 },
-      { header: "Cantidad", key: "cantidad", width: 15 }
-    ];
-
-    // 📥 DATOS
-    worksheet.addRow({
-      descripcion: "Total de usuarios",
-      cantidad: usuarios[0].total
-    });
-
-    worksheet.addRow({
-      descripcion: "Total de dispositivos",
-      cantidad: dispositivos[0].total
-    });
-
-    worksheet.getRow(5).font = { bold: true };
-
-    // 📤 RESPUESTA
-    res.setHeader(
-      "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    );
+    const nombreArchivo = `reporte_dispositivos_${fecha}.xlsx`;
 
     res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=bd.xlsx"
-    );
+    "Content-Disposition",
+    `attachment; filename=${nombreArchivo}`
+);
 
     await workbook.xlsx.write(res);
     res.end();
@@ -132,12 +79,6 @@ const generarExcelUsuarios = async (req, res) => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Usuarios");
 
-    // 🧠 TÍTULO
-    worksheet.addRow(["DEVICEGUARD"]);
-    worksheet.addRow(["Reporte de Usuarios"]);
-    worksheet.addRow([`Fecha: ${new Date().toLocaleDateString()}`]);
-    worksheet.addRow([]); // espacio
-
     // 📊 ENCABEZADOS
     worksheet.columns = [
       { header: "ID", key: "id", width: 10 },
@@ -157,7 +98,7 @@ const generarExcelUsuarios = async (req, res) => {
     });
 
     // 🎨 ESTILO
-    worksheet.getRow(5).font = { bold: true };
+    worksheet.getRow(1).font = { bold: true };
 
     // 📤 RESPUESTA
     res.setHeader(
@@ -165,10 +106,15 @@ const generarExcelUsuarios = async (req, res) => {
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
 
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=usuarios.xlsx"
-    );
+    const ahora = new Date();
+    const fecha = ahora.toISOString().split("T")[0];
+
+    const nombreArchivo = `reporte_usuarios_${fecha}.xlsx`;
+
+   res.setHeader(
+  "Content-Disposition",
+  `attachment; filename=${nombreArchivo}`
+);
 
     await workbook.xlsx.write(res);
     res.end();
@@ -182,5 +128,4 @@ const generarExcelUsuarios = async (req, res) => {
 module.exports = {
   generarExcelUsuarios,
   generarExcelDispositivos,
-  generarExcelBD
 };
