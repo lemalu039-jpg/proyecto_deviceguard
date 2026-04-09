@@ -45,7 +45,35 @@
   background: #b2bec3;
 }
 
-.card #olga {
+.reporte-fechas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
   margin-bottom: 1rem;
-  height: 80px;
+}
+
+.reporte-fechas label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-align: left;
+}
+
+.reporte-fechas input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  background: #fff;
+  color: #334155;
+  outline: none;
+  font-family: inherit;
+}
+
+.reporte-fechas input:focus {
+  border-color: #151E3D;
 }

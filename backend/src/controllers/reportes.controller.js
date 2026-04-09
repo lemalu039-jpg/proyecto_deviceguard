@@ -3,7 +3,13 @@ const db = require("../database/connection");
 
 const generarExcelDispositivos = async (req, res) => {
   try {
-    const [dispositivos] = await db.query("SELECT * FROM dispositivos");
+    const { desde, hasta } = req.query;
+    let query = "SELECT * FROM dispositivos WHERE 1=1";
+    const params = [];
+    if (desde) { query += " AND DATE(fecha_registro) >= ?"; params.push(desde); }
+    if (hasta) { query += " AND DATE(fecha_registro) <= ?"; params.push(hasta); }
+
+    const [dispositivos] = await db.query(query, params);
 
     if (!dispositivos || dispositivos.length === 0) {
       return res.status(404).send("No hay dispositivos en la base de datos");
@@ -70,7 +76,13 @@ const generarExcelDispositivos = async (req, res) => {
 
 const generarExcelUsuarios = async (req, res) => {
   try {
-    const [usuarios] = await db.query("SELECT * FROM usuarios");
+    const { desde, hasta } = req.query;
+    let query = "SELECT * FROM usuarios WHERE 1=1";
+    const params = [];
+    if (desde) { query += " AND DATE(fecha_creacion) >= ?"; params.push(desde); }
+    if (hasta) { query += " AND DATE(fecha_creacion) <= ?"; params.push(hasta); }
+
+    const [usuarios] = await db.query(query, params);
 
     if (!usuarios || usuarios.length === 0) {
       return res.status(404).send("No hay usuarios en la base de datos");
