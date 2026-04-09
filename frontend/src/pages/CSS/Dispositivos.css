@@ -454,3 +454,205 @@
   padding: .45rem .8rem;
   cursor: pointer;
 }
+
+/* ── BANNER BOTONES ──────────────────────────────────── */
+.disp-banner-btns {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+
+.disp-banner-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  padding: .6rem 1.2rem;
+  border-radius: 8px;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+
+.disp-banner-btn-secondary:hover {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.5);
+}
+
+/* ── MODAL REINGRESO ─────────────────────────────────── */
+.reingreso-modal-content {
+  border-radius: 14px !important;
+  overflow: hidden;
+  border: none !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35) !important;
+}
+
+.reingreso-modal-header {
+  background: linear-gradient(135deg, #151E3D, #0492C2);
+  padding: 1.1rem 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reingreso-modal-titulo {
+  color: #fff;
+  font-weight: 700;
+  font-size: .98rem;
+  letter-spacing: .2px;
+}
+
+.reingreso-close {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,.7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: .2rem;
+  border-radius: 5px;
+  transition: color .15s;
+}
+
+.reingreso-close:hover { color: #fff; }
+
+.reingreso-modal-body {
+  padding: 1.5rem;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reingreso-field {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+}
+
+.reingreso-label {
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.reingreso-serial-row {
+  display: flex;
+  gap: .5rem;
+}
+
+.reingreso-input {
+  flex: 1;
+  padding: .55rem .8rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: .85rem;
+  color: var(--text-main);
+  background: var(--table-head);
+  outline: none;
+  font-family: inherit;
+  transition: border-color .2s;
+}
+
+.reingreso-input:focus { border-color: #0492C2; background: var(--bg-card); }
+
+.reingreso-btn-buscar {
+  background: linear-gradient(135deg, #0492C2, #82EEFD);
+  color: #fff;
+  border: none;
+  padding: .55rem 1.1rem;
+  border-radius: 8px;
+  font-size: .83rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity .2s;
+  white-space: nowrap;
+}
+
+.reingreso-btn-buscar:hover { opacity: .88; }
+.reingreso-btn-buscar:disabled { opacity: .6; cursor: not-allowed; }
+
+.reingreso-error {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  background: #fee2e2;
+  color: #dc2626;
+  padding: .6rem .9rem;
+  border-radius: 8px;
+  font-size: .82rem;
+  font-weight: 500;
+}
+
+.reingreso-info-card {
+  background: var(--table-head);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.reingreso-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: .83rem;
+}
+
+.reingreso-info-label { color: var(--text-muted); font-weight: 500; }
+.reingreso-info-val   { color: var(--text-main);  font-weight: 600; }
+
+.reingreso-confirm-msg {
+  margin-top: .4rem;
+  padding-top: .75rem;
+  border-top: 1px solid var(--border);
+  font-size: .83rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.reingreso-confirm-msg strong { color: #0492C2; }
+
+.reingreso-modal-footer {
+  padding: .9rem 1.4rem;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: .6rem;
+}
+
+.reingreso-btn-cancel {
+  background: var(--input-bg);
+  color: var(--text-muted);
+  border: none;
+  padding: .55rem 1.1rem;
+  border-radius: 8px;
+  font-size: .83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.reingreso-btn-cancel:hover { background: var(--border); }
+
+.reingreso-btn-confirm {
+  background: linear-gradient(135deg, #0492C2, #82EEFD);
+  color: #fff;
+  border: none;
+  padding: .55rem 1.3rem;
+  border-radius: 8px;
+  font-size: .83rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+
+.reingreso-btn-confirm:hover { opacity: .88; }
+.reingreso-btn-confirm:disabled { opacity: .6; cursor: not-allowed; }

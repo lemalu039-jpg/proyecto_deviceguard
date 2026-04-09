@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getDispositivos, createDispositivo, updateDispositivo, deleteDispositivo } from '../services/api';
+import { getDispositivos, createDispositivo, updateDispositivo, deleteDispositivo, getDispositivoBySerial } from '../services/api';
 import { Modal } from 'bootstrap';
 import './CSS/Dispositivos.css';
 
@@ -13,18 +13,18 @@ const Icon = ({ d, size = 14 }) => (
 function Dispositivos() {
   const [dispositivos, setDispositivos] = useState([]);
   const [form, setForm] = useState({
-    nombre: '',
-    tipo: '',
-    serial: '',
-    marca: '',
-    ubicacion: '',
-    estado: 'Disponible',
+    nombre: '', tipo: '', serial: '', marca: '',
+    ubicacion: '', estado: 'Disponible',
     fecha_registro: new Date().toISOString().split('T')[0],
     hora_registro: new Date().toTimeString().slice(0, 5)
   });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const modalRef = useRef(null);
+
+  // — Reingreso —
+  const [reingreso, setReingreso] = useState({ serial: '', dispositivo: null, error: '', buscando: false, confirmando: false });
+  const [loadingReingreso, setLoadingReingreso] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -116,6 +116,50 @@ function Dispositivos() {
     }
   };
 
+  // — Funciones de reingreso —
+  const abrirReingreso = () => {
+    setReingreso({ serial: '', dispositivo: null, error: '', buscando: false, confirmando: false });
+    const modal = new Modal(document.getElementById('reingresoModal'));
+    modal.show();
+  };
+
+  const cerrarReingreso = () => {
+    const modalEl = document.getElementById('reingresoModal');
+    const modal = Modal.getInstance(modalEl);
+    if (modal) modal.hide();
+  };
+
+  const buscarPorSerial = async () => {
+    if (!reingreso.serial.trim()) return;
+    setReingreso(r => ({ ...r, buscando: true, dispositivo: null, error: '' }));
+    try {
+      const res = await getDispositivoBySerial(reingreso.serial.trim());
+      setReingreso(r => ({ ...r, dispositivo: res.data, buscando: false, confirmando: true }));
+    } catch {
+      setReingreso(r => ({ ...r, error: 'El dispositivo no está registrado', buscando: false, confirmando: false }));
+    }
+  };
+
+  const confirmarReingreso = async () => {
+    setLoadingReingreso(true);
+    try {
+      const ahora = new Date();
+      await updateDispositivo(reingreso.dispositivo.id, {
+        estado: 'En Revision',
+        fecha_registro: ahora.toISOString().split('T')[0],
+        hora_registro: ahora.toTimeString().slice(0, 5),
+        fecha_salida: null,
+        hora_salida: null,
+      });
+      cerrarReingreso();
+      loadData();
+    } catch {
+      setReingreso(r => ({ ...r, error: 'Error al reingresar el dispositivo' }));
+    } finally {
+      setLoadingReingreso(false);
+    }
+  };
+
   const getBadgeClass = (estado) => {
     switch (estado) {
       case 'Listo para Entrega':       return 'badge-listo para-entrega';
@@ -142,9 +186,15 @@ function Dispositivos() {
             Registra<br />Nuevos Dispositivos
           </h1>
           <p className="disp-banner-sub">Registra y guarda nuevos dispositivos en el sistema</p>
-          <button className="disp-banner-btn" onClick={abrirModal}>
-            Registrar Dispositivo
-          </button>
+          <div className="disp-banner-btns">
+            <button className="disp-banner-btn" onClick={abrirModal}>
+              Registrar Dispositivo
+            </button>
+            <button className="disp-banner-btn-secondary" onClick={abrirReingreso}>
+              <Icon d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" size={15} />
+              Reingresar Dispositivo
+            </button>
+          </div>
         </div>
       </div>
 
@@ -221,6 +271,86 @@ function Dispositivos() {
               <button type="submit" form="disp-form" className="disp-btn-primary" disabled={loading}>
                 {loading ? 'Guardando...' : editingId ? 'Actualizar dispositivo' : 'Registrar dispositivo'}
               </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* modal Reingreso */}
+      <div className="modal fade" id="reingresoModal" tabIndex="-1" aria-hidden="true">
+        <div className="modal-dialog modal-md modal-dialog-centered">
+          <div className="modal-content reingreso-modal-content">
+
+            <div className="reingreso-modal-header">
+              <span className="reingreso-modal-titulo">Reingresar Dispositivo</span>
+              <button type="button" className="reingreso-close" data-bs-dismiss="modal" aria-label="Cerrar">
+                <Icon d="M18 6L6 18M6 6l12 12" size={16} />
+              </button>
+            </div>
+
+            <div className="reingreso-modal-body">
+
+              {/* Campo serial */}
+              <div className="reingreso-field">
+                <label className="reingreso-label">SERIAL DEL DISPOSITIVO</label>
+                <div className="reingreso-serial-row">
+                  <input
+                    type="text"
+                    className="reingreso-input"
+                    placeholder="Ej: ABC-123456"
+                    value={reingreso.serial}
+                    onChange={e => setReingreso(r => ({ ...r, serial: e.target.value, dispositivo: null, error: '', confirmando: false }))}
+                    onKeyDown={e => e.key === 'Enter' && buscarPorSerial()}
+                  />
+                  <button className="reingreso-btn-buscar" onClick={buscarPorSerial} disabled={reingreso.buscando}>
+                    {reingreso.buscando ? '...' : 'Buscar'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Error */}
+              {reingreso.error && (
+                <div className="reingreso-error">
+                  <Icon d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" size={15} />
+                  {reingreso.error}
+                </div>
+              )}
+
+              {/* Datos del dispositivo encontrado */}
+              {reingreso.dispositivo && (
+                <div className="reingreso-info-card">
+                  <div className="reingreso-info-row">
+                    <span className="reingreso-info-label">Nombre</span>
+                    <span className="reingreso-info-val">{reingreso.dispositivo.nombre}</span>
+                  </div>
+                  <div className="reingreso-info-row">
+                    <span className="reingreso-info-label">Marca</span>
+                    <span className="reingreso-info-val">{reingreso.dispositivo.marca}</span>
+                  </div>
+                  <div className="reingreso-info-row">
+                    <span className="reingreso-info-label">Tipo</span>
+                    <span className="reingreso-info-val">{reingreso.dispositivo.tipo}</span>
+                  </div>
+                  <div className="reingreso-info-row">
+                    <span className="reingreso-info-label">Estado actual</span>
+                    <span className="reingreso-info-val">{reingreso.dispositivo.estado}</span>
+                  </div>
+                  <div className="reingreso-confirm-msg">
+                    ¿Deseas reingresar este dispositivo al sistema?<br />
+                    <span>Su estado cambiará a <strong>En Revisión</strong></span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="reingreso-modal-footer">
+              <button className="reingreso-btn-cancel" data-bs-dismiss="modal">Cerrar</button>
+              {reingreso.confirmando && (
+                <button className="reingreso-btn-confirm" onClick={confirmarReingreso} disabled={loadingReingreso}>
+                  {loadingReingreso ? 'Procesando...' : 'Confirmar Reingreso'}
+                </button>
+              )}
             </div>
 
           </div>
