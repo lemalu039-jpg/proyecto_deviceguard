@@ -18,6 +18,7 @@ const colorPorId = (id) => COLORES[id % COLORES.length];
 
 function Equipo() {
   const [usuarios, setUsuarios] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
   const [modalEliminar, setModalEliminar] = useState(false);
@@ -162,6 +163,23 @@ function Equipo() {
           <span>Lista de usuarios</span>
           <span className="equipo-tabla-pill">{usuarios.length} registros</span>
         </div>
+
+        {/* Buscador */}
+        <div className="equipo-busqueda">
+          <Icon d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z" size={16} />
+          <input
+            type="text"
+            placeholder="Buscar por nombre o correo..."
+            value={busqueda}
+            onChange={e => setBusqueda(e.target.value)}
+          />
+          {busqueda && (
+            <button onClick={() => setBusqueda("")}>
+              <Icon d="M18 6L6 18M6 6l12 12" size={14} />
+            </button>
+          )}
+        </div>
+
         <div className="equipo-tabla-wrap">
           <table className="equipo-tabla">
             <thead>
@@ -174,10 +192,15 @@ function Equipo() {
               </tr>
             </thead>
             <tbody>
-              {usuarios.length === 0 ? (
-                <tr><td colSpan="5" className="equipo-tabla-empty">No hay usuarios registrados</td></tr>
-              ) : (
-                usuarios.map(u => (
+              {(() => {
+                const filtrados = usuarios.filter(u =>
+                  u.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
+                  u.correo?.toLowerCase().includes(busqueda.toLowerCase())
+                );
+                if (filtrados.length === 0) return (
+                  <tr><td colSpan="5" className="equipo-tabla-empty">No se encontraron usuarios</td></tr>
+                );
+                return filtrados.map(u => (
                   <tr key={u.id}>
                     <td>
                       <div className="equipo-tabla-user">
@@ -207,8 +230,8 @@ function Equipo() {
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
+                ));
+              })()}
             </tbody>
           </table>
         </div>

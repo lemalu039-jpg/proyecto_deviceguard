@@ -210,7 +210,40 @@
   font-size: 0.875rem;
 }
 
-/* ── MODAL ────────────────────────────────────────────── */
+/* ── BUSCADOR ─────────────────────────────────────────── */
+.equipo-busqueda {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.2rem;
+  border-bottom: 1px solid #e8ecf4;
+  color: #94a3b8;
+}
+
+.equipo-busqueda input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  background: transparent;
+  color: #334155;
+  font-family: inherit;
+}
+
+.equipo-busqueda input::placeholder { color: #94a3b8; }
+
+.equipo-busqueda button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  padding: 0.1rem;
+  border-radius: 4px;
+}
+
+.equipo-busqueda button:hover { color: #475569; }
 .equipo-modal-overlay {
   position: fixed;
   inset: 0;
