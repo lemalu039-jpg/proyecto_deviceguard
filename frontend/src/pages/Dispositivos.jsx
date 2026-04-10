@@ -16,19 +16,19 @@ function Dispositivos() {
     nombre: '', tipo: '', serial: '', marca: '',
     ubicacion: '', estado: 'Disponible',
     fecha_registro: new Date().toISOString().split('T')[0],
-    hora_registro: new Date().toTimeString().slice(0, 5)
+    hora_registro: new Date().toTimeString().slice(0, 5),
+    descripcion: ''
   });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const modalRef = useRef(null);
 
-  // — Reingreso —
-  const [reingreso, setReingreso] = useState({ serial: '', dispositivo: null, error: '', buscando: false, confirmando: false });
+  const [reingreso, setReingreso] = useState({
+    serial: '', dispositivo: null, error: '', buscando: false, confirmando: false
+  });
   const [loadingReingreso, setLoadingReingreso] = useState(false);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
     try {
@@ -49,15 +49,14 @@ function Dispositivos() {
       nombre: '', tipo: '', serial: '', marca: '',
       ubicacion: '', estado: 'Disponible',
       fecha_registro: new Date().toISOString().split('T')[0],
-      hora_registro: new Date().toTimeString().slice(0, 5)
+      hora_registro: new Date().toTimeString().slice(0, 5),
+      descripcion: ''
     });
-    const modal = new Modal(document.getElementById('dispositivoModal'));
-    modal.show();
+    new Modal(document.getElementById('dispositivoModal')).show();
   };
 
   const cerrarModal = () => {
-    const modalEl = document.getElementById('dispositivoModal');
-    const modal = Modal.getInstance(modalEl);
+    const modal = Modal.getInstance(document.getElementById('dispositivoModal'));
     if (modal) modal.hide();
   };
 
@@ -65,18 +64,14 @@ function Dispositivos() {
     e.preventDefault();
     setLoading(true);
     try {
-      let formData = new FormData();
-      Object.keys(form).forEach(key => {
-        formData.append(key, form[key]);
-      });
+      const formData = new FormData();
+      Object.keys(form).forEach(key => formData.append(key, form[key]));
       const ahora = new Date();
-      formData.set("fecha_registro", ahora.toISOString().split("T")[0]);
-      formData.set("hora_registro", ahora.toTimeString().slice(0, 5));
-      formData.set("estado", "En Revision"); // automático 
+      formData.set('fecha_registro', ahora.toISOString().split('T')[0]);
+      formData.set('hora_registro', ahora.toTimeString().slice(0, 5));
+      if (!editingId) formData.set('estado', 'En Revision');
       const archivo = document.getElementById('archivo');
-      if (archivo && archivo.files[0]) {
-        formData.append('archivo', archivo.files[0]);
-      }
+      if (archivo && archivo.files[0]) formData.append('archivo', archivo.files[0]);
       if (editingId) {
         await updateDispositivo(editingId, formData);
       } else {
@@ -99,14 +94,12 @@ function Dispositivos() {
       marca: d.marca || '',
       ubicacion: d.ubicacion || '',
       estado: d.estado || 'Disponible',
-      fecha_registro: d.fecha_registro
-        ? d.fecha_registro.split('T')[0]
-        : new Date().toISOString().split('T')[0],
-      hora_registro: d.hora_registro || new Date().toTimeString().slice(0, 5)
+      fecha_registro: d.fecha_registro ? d.fecha_registro.split('T')[0] : new Date().toISOString().split('T')[0],
+      hora_registro: d.hora_registro || new Date().toTimeString().slice(0, 5),
+      descripcion: d.descripcion || ''
     });
     setEditingId(d.id);
-    const modal = new Modal(document.getElementById('dispositivoModal'));
-    modal.show();
+    new Modal(document.getElementById('dispositivoModal')).show();
   };
 
   const handleDelete = async (id) => {
@@ -116,27 +109,24 @@ function Dispositivos() {
     }
   };
 
-  // — Funciones de reingreso —
   const abrirReingreso = () => {
     setReingreso({ serial: '', dispositivo: null, error: '', buscando: false, confirmando: false });
-    const modal = new Modal(document.getElementById('reingresoModal'));
-    modal.show();
+    new Modal(document.getElementById('reingresoModal')).show();
   };
 
   const cerrarReingreso = () => {
-    const modalEl = document.getElementById('reingresoModal');
-    const modal = Modal.getInstance(modalEl);
+    const modal = Modal.getInstance(document.getElementById('reingresoModal'));
     if (modal) modal.hide();
   };
 
   const buscarPorSerial = async () => {
     if (!reingreso.serial.trim()) return;
-    setReingreso(r => ({ ...r, buscando: true, dispositivo: null, error: '' }));
+    setReingreso(r => ({ ...r, buscando: true, dispositivo: null, error: '', confirmando: false }));
     try {
       const res = await getDispositivoBySerial(reingreso.serial.trim());
       setReingreso(r => ({ ...r, dispositivo: res.data, buscando: false, confirmando: true }));
     } catch {
-      setReingreso(r => ({ ...r, error: 'El dispositivo no está registrado', buscando: false, confirmando: false }));
+      setReingreso(r => ({ ...r, error: 'El dispositivo no está registrado', buscando: false }));
     }
   };
 
@@ -162,17 +152,17 @@ function Dispositivos() {
 
   const getBadgeClass = (estado) => {
     switch (estado) {
-      case 'Listo para Entrega':       return 'badge-listo para-entrega';
-      case 'En Revision':      return 'badge-revision';
-      case 'En Mantenimiento': return 'badge-mantenimiento';
-      case 'Entregado':        return 'badge-entregado';
+      case 'Listo para Entrega': return 'badge-listo';
+      case 'En Revision':        return 'badge-revision';
+      case 'En Mantenimiento':   return 'badge-mantenimiento';
+      case 'Entregado':          return 'badge-entregado';
+      default:                   return 'badge-revision';
     }
   };
 
   const formatFecha = (fecha) => {
     if (!fecha) return 'N/A';
-    const d = new Date(fecha);
-    return d.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+    return new Date(fecha).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
   };
 
   return (
@@ -182,14 +172,10 @@ function Dispositivos() {
       <div className="disp-banner">
         <div className="disp-banner-lines"></div>
         <div className="disp-banner-content">
-          <h1 className="disp-banner-title">
-            Registra<br />Nuevos Dispositivos
-          </h1>
+          <h1 className="disp-banner-title">Registra<br />Nuevos Dispositivos</h1>
           <p className="disp-banner-sub">Registra y guarda nuevos dispositivos en el sistema</p>
           <div className="disp-banner-btns">
-            <button className="disp-banner-btn" onClick={abrirModal}>
-              Registrar Dispositivo
-            </button>
+            <button className="disp-banner-btn" onClick={abrirModal}>Registrar Dispositivo</button>
             <button className="disp-banner-btn-secondary" onClick={abrirReingreso}>
               <Icon d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" size={15} />
               Reingresar Dispositivo
@@ -198,152 +184,136 @@ function Dispositivos() {
         </div>
       </div>
 
-      {/* modal Bootstrap */}
-      <div className="modal fade" id="dispositivoModal" tabIndex="-1" aria-labelledby="dispositivoModalLabel" aria-hidden="true" ref={modalRef}>
+      {/* modal registrar / editar */}
+      <div className="modal fade" id="dispositivoModal" tabIndex="-1" aria-hidden="true" ref={modalRef}>
         <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content" style={{ borderRadius: '12px', border: 'none' }}>
-
-            <div className="modal-header" style={{ background: '#151E3D', borderRadius: '12px 12px 0 0', borderBottom: 'none' }}>
-              <h5 className="modal-title" id="dispositivoModalLabel" style={{ color: 'var(--bg-card)', fontWeight: 700, fontSize: '1rem' }}>
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">
                 {editingId ? 'Editar dispositivo' : 'Registrar nuevo dispositivo'}
               </h5>
-              <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-
-            <div className="modal-body" style={{ padding: '1.5rem' }}>
+            <div className="modal-body">
               <form onSubmit={handleSubmit} id="disp-form">
                 <div className="row g-3">
-
                   <div className="col-md-6">
                     <label className="disp-modal-label">Nombre</label>
                     <input type="text" name="nombre" value={form.nombre} onChange={handleChange}
                       placeholder="Ej: Portátil HP ProBook" required className="disp-modal-input" />
                   </div>
-
                   <div className="col-md-6">
                     <label className="disp-modal-label">Tipo</label>
                     <input type="text" name="tipo" value={form.tipo} onChange={handleChange}
                       placeholder="Ej: Portátil, Proyector..." required className="disp-modal-input" />
                   </div>
-
                   <div className="col-md-6">
                     <label className="disp-modal-label">Serial</label>
                     <input type="text" name="serial" value={form.serial} onChange={handleChange}
                       placeholder="Ej: ABC-123456" required className="disp-modal-input"
                       disabled={editingId != null} />
                   </div>
-
                   <div className="col-md-6">
                     <label className="disp-modal-label">Marca</label>
                     <input type="text" name="marca" value={form.marca} onChange={handleChange}
                       placeholder="Ej: HP, Dell, Epson..." required className="disp-modal-input" />
                   </div>
-
                   <div className="col-md-6">
                     <label className="disp-modal-label">Ubicación</label>
                     <input type="text" name="ubicacion" value={form.ubicacion} onChange={handleChange}
                       placeholder="Ej: Aula 101" className="disp-modal-input" />
                   </div>
-
                   <div className="col-md-6">
                     <label className="disp-modal-label">Estado</label>
-                    <input
-                      type="text"
-                      value="En Revisión"
-                      disabled
-                      className="disp-modal-input"
-                     />
+                    <input type="text" value="En Revisión" disabled className="disp-modal-input" />
                   </div>
-                  
+                  <div className="col-12">
+                    <label className="disp-modal-label">Descripción del equipo</label>
+                    <textarea
+                      name="descripcion"
+                      value={form.descripcion}
+                      onChange={handleChange}
+                      placeholder="Ej: Pantalla rayada, teclado sin tecla Enter, cargador incluido..."
+                      className="disp-modal-input"
+                      rows={3}
+                      style={{ resize: 'vertical', minHeight: '70px' }}
+                    />
+                  </div>
                   <div className="col-12">
                     <label className="disp-modal-label">Imagen del dispositivo</label>
                     <input type="file" id="archivo" accept="image/*" className="disp-modal-input" />
                   </div>
-
                 </div>
               </form>
             </div>
-
-            <div className="modal-footer" style={{ borderTop: '1px solid var(--border)', padding: '1rem 1.5rem' }}>
-              <button type="button" className="disp-btn-cancel" data-bs-dismiss="modal">
-                Cerrar
-              </button>
+            <div className="modal-footer">
+              <button type="button" className="disp-btn-cancel" data-bs-dismiss="modal">Cerrar</button>
               <button type="submit" form="disp-form" className="disp-btn-primary" disabled={loading}>
                 {loading ? 'Guardando...' : editingId ? 'Actualizar dispositivo' : 'Registrar dispositivo'}
               </button>
             </div>
-
           </div>
         </div>
       </div>
 
-      {/* modal Reingreso */}
+      {/* modal reingreso */}
       <div className="modal fade" id="reingresoModal" tabIndex="-1" aria-hidden="true">
         <div className="modal-dialog modal-md modal-dialog-centered">
           <div className="modal-content reingreso-modal-content">
-
             <div className="reingreso-modal-header">
               <span className="reingreso-modal-titulo">Reingresar Dispositivo</span>
-              <button type="button" className="reingreso-close" data-bs-dismiss="modal" aria-label="Cerrar">
+              <button type="button" className="reingreso-close" data-bs-dismiss="modal">
                 <Icon d="M18 6L6 18M6 6l12 12" size={16} />
               </button>
             </div>
-
             <div className="reingreso-modal-body">
-
-              {/* Campo serial */}
               <div className="reingreso-field">
-                <label className="reingreso-label">SERIAL DEL DISPOSITIVO</label>
+                <label className="reingreso-label">Serial del dispositivo</label>
                 <div className="reingreso-serial-row">
-                  <input
-                    type="text"
-                    className="reingreso-input"
-                    placeholder="Ej: ABC-123456"
+                  <input type="text" className="reingreso-input" placeholder="Ej: ABC-123456"
                     value={reingreso.serial}
                     onChange={e => setReingreso(r => ({ ...r, serial: e.target.value, dispositivo: null, error: '', confirmando: false }))}
-                    onKeyDown={e => e.key === 'Enter' && buscarPorSerial()}
-                  />
+                    onKeyDown={e => e.key === 'Enter' && buscarPorSerial()} />
                   <button className="reingreso-btn-buscar" onClick={buscarPorSerial} disabled={reingreso.buscando}>
                     {reingreso.buscando ? '...' : 'Buscar'}
                   </button>
                 </div>
               </div>
-
-              {/* Error */}
               {reingreso.error && (
                 <div className="reingreso-error">
                   <Icon d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" size={15} />
                   {reingreso.error}
                 </div>
               )}
-
-              {/* Datos del dispositivo encontrado */}
               {reingreso.dispositivo && (
                 <div className="reingreso-info-card">
-                  <div className="reingreso-info-row">
-                    <span className="reingreso-info-label">Nombre</span>
-                    <span className="reingreso-info-val">{reingreso.dispositivo.nombre}</span>
-                  </div>
-                  <div className="reingreso-info-row">
-                    <span className="reingreso-info-label">Marca</span>
-                    <span className="reingreso-info-val">{reingreso.dispositivo.marca}</span>
-                  </div>
-                  <div className="reingreso-info-row">
-                    <span className="reingreso-info-label">Tipo</span>
-                    <span className="reingreso-info-val">{reingreso.dispositivo.tipo}</span>
-                  </div>
-                  <div className="reingreso-info-row">
-                    <span className="reingreso-info-label">Estado actual</span>
-                    <span className="reingreso-info-val">{reingreso.dispositivo.estado}</span>
-                  </div>
+                  {[
+                    { label: 'Nombre', value: reingreso.dispositivo.nombre },
+                    { label: 'Marca', value: reingreso.dispositivo.marca },
+                    { label: 'Serial', value: reingreso.dispositivo.serial },
+                    { label: 'Tipo', value: reingreso.dispositivo.tipo },
+                    { label: 'Estado actual', value: reingreso.dispositivo.estado },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="reingreso-info-row">
+                      <span className="reingreso-info-label">{label}</span>
+                      <span className="reingreso-info-val">{value || '—'}</span>
+                    </div>
+                  ))}
+                  {reingreso.dispositivo.descripcion && (
+                    <div className="reingreso-info-row" style={{ flexDirection: 'column', gap: '3px' }}>
+                      <span className="reingreso-info-label">Descripción</span>
+                      <span className="reingreso-info-val" style={{ fontSize: '.78rem' }}>
+                        {reingreso.dispositivo.descripcion}
+                      </span>
+                    </div>
+                  )}
                   <div className="reingreso-confirm-msg">
-                    ¿Deseas reingresar este dispositivo al sistema?<br />
+                    ¿Deseas reingresar este dispositivo?<br />
                     <span>Su estado cambiará a <strong>En Revisión</strong></span>
                   </div>
                 </div>
               )}
             </div>
-
             <div className="reingreso-modal-footer">
               <button className="reingreso-btn-cancel" data-bs-dismiss="modal">Cerrar</button>
               {reingreso.confirmando && (
@@ -352,7 +322,6 @@ function Dispositivos() {
                 </button>
               )}
             </div>
-
           </div>
         </div>
       </div>
@@ -364,7 +333,6 @@ function Dispositivos() {
           <span>Lista de dispositivos</span>
           <span className="disp-count">{dispositivos.length} registrados</span>
         </div>
-
         <div className="disp-table-wrap">
           <table className="disp-table">
             <thead>
@@ -395,9 +363,7 @@ function Dispositivos() {
                     </span>
                   </td>
                   <td>
-                    <span className={`disp-badge ${getBadgeClass(d.estado)}`}>
-                      {d.estado}
-                    </span>
+                    <span className={`disp-badge ${getBadgeClass(d.estado)}`}>{d.estado}</span>
                   </td>
                   <td>
                     <button className="disp-btn-edit" onClick={() => handleEdit(d)}>
@@ -412,9 +378,7 @@ function Dispositivos() {
                 </tr>
               ))}
               {dispositivos.length === 0 && (
-                <tr>
-                  <td colSpan="7" className="disp-empty">No hay dispositivos registrados</td>
-                </tr>
+                <tr><td colSpan="7" className="disp-empty">No hay dispositivos registrados</td></tr>
               )}
             </tbody>
           </table>
