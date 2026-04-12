@@ -32,7 +32,6 @@ function Sidebar({ onLogout }) {
     { path: '/calendario', label: 'Calendario', icon: calendario_ },
     { path: '/estadisticas', label: 'Estadísticas', icon: estadisticas_ },
     { path: '/equipo', label: 'Equipo', icon: equipo_ },
-    { path: '/mantenimiento', label: 'Historial', icon: notificaciones_ },
     { path: '/gestion', label: 'Gestión de mantenimiento', icon: ajustes },
   ];
 

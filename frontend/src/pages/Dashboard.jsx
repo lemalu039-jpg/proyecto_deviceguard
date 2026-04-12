@@ -284,7 +284,14 @@ function Dashboard() {
                   </td>
                   <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">{d.ubicacion || 'N/A'}</td>
                   <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', fontFamily: 'monospace', cursor: 'pointer' }} className="hover-link">{d.serial}</td>
-                  <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">{formatFecha(d.fecha_registro)}</td>
+                  <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">
+                    {formatFecha(d.fecha_registro)}
+                    {d.hora_registro && (
+                      <div style={{ fontSize: '.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                        {d.hora_registro}
+                      </div>
+                    )}
+                  </td>
                   <td style={tdStyle}>
                     <span style={getBadgeStyle(d.estado)}>{d.estado}</span>
                   </td>

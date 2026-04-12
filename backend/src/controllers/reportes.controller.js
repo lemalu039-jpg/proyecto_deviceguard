@@ -50,20 +50,13 @@ const generarExcelDispositivos = async (req, res) => {
     worksheet.getRow(1).font = { bold: true };
 
     // 📤 RESPUESTA
-    res.setHeader(
-      "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    );
-
     const ahora = new Date();
     const fecha = ahora.toISOString().split("T")[0];
+    const hora  = ahora.toTimeString().slice(0, 5).replace(":", "-");
+    const nombreArchivo = `reporte_dispositivos_${fecha}_${hora}.xlsx`;
 
-    const nombreArchivo = `reporte_dispositivos_${fecha}.xlsx`;
-
-    res.setHeader(
-    "Content-Disposition",
-    `attachment; filename=${nombreArchivo}`
-);
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename=${nombreArchivo}`);
 
     await workbook.xlsx.write(res);
     res.end();
@@ -112,21 +105,13 @@ const generarExcelUsuarios = async (req, res) => {
     // 🎨 ESTILO
     worksheet.getRow(1).font = { bold: true };
 
-    // 📤 RESPUESTA
-    res.setHeader(
-      "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    );
-
     const ahora = new Date();
     const fecha = ahora.toISOString().split("T")[0];
+    const hora  = ahora.toTimeString().slice(0, 5).replace(":", "-");
+    const nombreArchivo = `reporte_usuarios_${fecha}_${hora}.xlsx`;
 
-    const nombreArchivo = `reporte_usuarios_${fecha}.xlsx`;
-
-   res.setHeader(
-  "Content-Disposition",
-  `attachment; filename=${nombreArchivo}`
-);
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename=${nombreArchivo}`);
 
     await workbook.xlsx.write(res);
     res.end();

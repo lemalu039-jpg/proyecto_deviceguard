@@ -6,7 +6,6 @@ import {
   updateDispositivo
 } from "../services/api";
 import "./CSS/Registrarsalida.css";
-import axios from "axios";
 
 function SalidaDispositivos() {
   const [salidas, setSalidas] = useState([]);
@@ -80,28 +79,20 @@ const handleSubmit = async (e) => {
       return;
     }
 
-    // VALIDACIÓN CORRECTA
     if (dispositivo.estado !== "En Mantenimiento") {
       alert("Solo puedes registrar salida si el dispositivo está en mantenimiento.");
       return;
     }
 
-    // AUTOMÁTICO
     const ahora = new Date();
     const fecha = ahora.toISOString().split("T")[0];
-    const hora = ahora.toTimeString().slice(0, 5);
-  //Guardar salida
+    const hora  = ahora.toTimeString().slice(0, 5);
+
     await updateDispositivo(dispositivo.id, {
       estado: "Listo para Entrega",
       fecha_salida: fecha,
-      hora_salida: hora
+      hora_salida: hora,
     });
-  // Enviar correo
-    await axios.post("http://localhost:5000/api/correo/enviar", {
-  destino: "maria.lopez@sena.edu.co", // luego puedes hacerlo dinámico
-  asunto: "Salida de dispositivo",
-  mensaje: `El dispositivo con serial ${form.serial} ha sido entregado correctamente.`
-});
 
     cerrarModal();
     loadData();

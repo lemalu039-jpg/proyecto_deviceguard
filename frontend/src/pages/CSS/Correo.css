@@ -366,9 +366,18 @@
 }
 
 .cmail-bubble.mio {
-  background: var(--text-main);
-  color: var(--bg-card);
+  background: #151E3D;
+  color: #ffffff;
   border-bottom-right-radius: 4px;
+}
+
+[data-theme='light'] .cmail-bubble.mio {
+  background: #151E3D;
+  color: #ffffff;
+}
+
+[data-theme='light'] .cmail-bubble.mio .cmail-bubble-hora {
+  color: rgba(255,255,255,0.65);
 }
 
 .cmail-bubble-hora {
