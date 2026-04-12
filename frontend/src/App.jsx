@@ -22,6 +22,7 @@ import Correo from './pages/Correo';
 import GestionMantenimiento from './pages/GestionMantenimiento';
 import Equipo from './pages/Equipo';
 import Calendario from './pages/Calendario';
+import HistorialDispositivo from './pages/HistorialDispositivo';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -95,6 +96,7 @@ function App() {
           <Route path="/gestion" element={<ProtectedRoute><GestionMantenimiento /></ProtectedRoute>} />
           <Route path="/equipo" element={<ProtectedRoute><Equipo /></ProtectedRoute>} />
           <Route path="/calendario" element={<ProtectedRoute><Calendario /></ProtectedRoute>} />
+          <Route path="/historial/:id" element={<ProtectedRoute><HistorialDispositivo /></ProtectedRoute>} />
         </Routes>
       </Router>
     </ThemeProvider>
