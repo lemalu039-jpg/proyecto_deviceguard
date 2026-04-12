@@ -64,23 +64,21 @@ exports.update = async (req, res) => {
                 return res.status(404).json({ error: 'Dispositivo no encontrado' });
             }
 
+            // findById ya hace JOIN y devuelve estado como texto
             const estadoActual = dispositivo.estado;
             const nuevoEstado = req.body.estado;
 
             const transicionesPermitidas = {
-                "En Revision":       ["En Mantenimiento", "Entregado", "Listo para Entrega", "Listo para entrega"],
+                "En Revision":        ["En Mantenimiento"],
+                "En Mantenimiento":   ["Listo para Entrega"],
                 "Listo para Entrega": ["Entregado"],
-                "Listo para entrega": ["Entregado"],
             };
 
             const permitidos = transicionesPermitidas[estadoActual];
             if (permitidos && !permitidos.includes(nuevoEstado)) {
-                // Ignore restriction for "Entregado" if it comes from the force action like registrar salida
-                if (nuevoEstado !== "Entregado") {
-                    return res.status(400).json({
-                        error: `No se puede cambiar de "${estadoActual}" a "${nuevoEstado}". Transición no permitida.`
-                    });
-                }
+                return res.status(400).json({
+                    error: `No se puede cambiar de "${estadoActual}" a "${nuevoEstado}". Transición no permitida.`
+                });
             }
         }
 
@@ -140,19 +138,11 @@ exports.delete = async (req, res) => {
 
 exports.getBySerial = async (req, res) => {
   try {
-    const { serial } = req.params;
-
-    const [rows] = await pool.query(
-      "SELECT * FROM dispositivos WHERE serial = ?",
-      [serial]
-    );
-
-    if (rows.length === 0) {
+    const dispositivo = await DispositivoModel.findBySerial(req.params.serial);
+    if (!dispositivo) {
       return res.status(404).json({ message: "No encontrado" });
     }
-
-    res.json(rows[0]);
-
+    res.json(dispositivo);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error servidor" });

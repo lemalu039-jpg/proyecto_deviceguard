@@ -84,10 +84,10 @@ function ConsultarFiltros() {
           className="filtros-select"
         >
           <option value="">Estado</option>
-          <option value="Listo para entrega">Listo para Entrega</option>
-          <option value="Entregado">Entregado</option>
-          <option value="En Mantenimiento">En Mantenimiento</option>
           <option value="En Revision">En Revision</option>
+          <option value="En Mantenimiento">En Mantenimiento</option>
+          <option value="Listo para Entrega">Listo para Entrega</option>
+          <option value="Entregado">Entregado</option>
         </select>
 
         <button className="btn-clear" onClick={limpiarFiltros}>

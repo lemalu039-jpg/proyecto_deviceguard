@@ -12,6 +12,18 @@ CREATE TABLE IF NOT EXISTS usuarios (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabla de estados (normalización)
+CREATE TABLE IF NOT EXISTS estados (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL
+);
+
+INSERT INTO estados (nombre) VALUES
+('En Revision'),
+('En Mantenimiento'),
+('Listo para Entrega'),
+('Entregado');
+
 -- Tabla de Dispositivos
 CREATE TABLE IF NOT EXISTS dispositivos (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -20,9 +32,17 @@ CREATE TABLE IF NOT EXISTS dispositivos (
     serial VARCHAR(100) NOT NULL UNIQUE,
     marca VARCHAR(50) NOT NULL,
     modelo VARCHAR(50),
-    estado ENUM('Disponible', 'En Prestamo', 'En Mantenimiento', 'Inactivo') DEFAULT 'Disponible',
     ubicacion VARCHAR(100),
-    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    hora_registro TIME,
+    archivo VARCHAR(255),
+    fecha_salida DATE,
+    hora_salida TIME,
+    descripcion TEXT,
+    estado_id INT,
+    usuario_id INT,
+    FOREIGN KEY (estado_id) REFERENCES estados(id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
 -- Tabla de Préstamos
@@ -46,7 +66,9 @@ CREATE TABLE IF NOT EXISTS mantenimiento (
     descripcion TEXT NOT NULL,
     costo DECIMAL(10, 2) DEFAULT 0.00,
     estado_mantenimiento ENUM('En Proceso', 'Completado', 'Cancelado') DEFAULT 'En Proceso',
-    FOREIGN KEY (dispositivo_id) REFERENCES dispositivos(id) ON DELETE CASCADE
+    tecnico_id INT,
+    FOREIGN KEY (dispositivo_id) REFERENCES dispositivos(id) ON DELETE CASCADE,
+    FOREIGN KEY (tecnico_id) REFERENCES usuarios(id)
 );
 
 -- INSERCIÓN DE DATOS DE PRUEBA (SEED)
