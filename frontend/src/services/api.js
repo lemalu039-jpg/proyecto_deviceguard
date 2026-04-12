@@ -60,4 +60,8 @@ export const getMensajesContactos = (userId) => api.get(`/correo/mensajes/contac
 export const getConversacion = (userId, contactId) => api.get(`/correo/mensajes/conversacion/${userId}/${contactId}`);
 export const enviarMensaje = (data) => api.post('/correo/mensajes', data);
 
+// Historial
+export const getHistorial = (dispositivoId) => api.get(`/historial/${dispositivoId}`);
+export const createObservacion = (dispositivoId, data) => api.post(`/historial/${dispositivoId}`, data);
+
 export default api;

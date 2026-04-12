@@ -52,15 +52,19 @@ exports.update = async (req, res) => {
             const nuevoEstado = req.body.estado;
 
             const transicionesPermitidas = {
-                "En Revision":       ["En Mantenimiento"],
+                "En Revision":       ["En Mantenimiento", "Entregado", "Listo para Entrega", "Listo para entrega"],
                 "Listo para Entrega": ["Entregado"],
+                "Listo para entrega": ["Entregado"],
             };
 
             const permitidos = transicionesPermitidas[estadoActual];
             if (permitidos && !permitidos.includes(nuevoEstado)) {
-                return res.status(400).json({
-                    error: `No se puede cambiar de "${estadoActual}" a "${nuevoEstado}". Transición no permitida.`
-                });
+                // Ignore restriction for "Entregado" if it comes from the force action like registrar salida
+                if (nuevoEstado !== "Entregado") {
+                    return res.status(400).json({
+                        error: `No se puede cambiar de "${estadoActual}" a "${nuevoEstado}". Transición no permitida.`
+                    });
+                }
             }
         }
 

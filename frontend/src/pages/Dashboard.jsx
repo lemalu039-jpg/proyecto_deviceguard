@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getDispositivos, getUsuarios } from '../services/api';
 
 function Dashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalDispositivos: 0,
     listoparaEntrega: 0,
@@ -276,13 +278,13 @@ function Dashboard() {
                       }
                     </div>
                   </td>
-                  <td style={tdStyle}>
-                    <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
+                  <td onClick={() => navigate(`/historial/${d.id}`)} style={{...tdStyle, cursor: 'pointer'}} className="hover-link">
+                    <div style={{ fontWeight: 600, color: 'var(--primary)', fontSize: '.82rem', textDecoration: 'underline dotted' }}>{d.nombre}</div>
                     <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo}</div>
                   </td>
-                  <td style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)' }}>{d.ubicacion || 'N/A'}</td>
-                  <td style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>{d.serial}</td>
-                  <td style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)' }}>{formatFecha(d.fecha_registro)}</td>
+                  <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">{d.ubicacion || 'N/A'}</td>
+                  <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', fontFamily: 'monospace', cursor: 'pointer' }} className="hover-link">{d.serial}</td>
+                  <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">{formatFecha(d.fecha_registro)}</td>
                   <td style={tdStyle}>
                     <span style={getBadgeStyle(d.estado)}>{d.estado}</span>
                   </td>
