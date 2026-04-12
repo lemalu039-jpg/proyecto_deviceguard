@@ -8,14 +8,27 @@ function Reportes() {
   const [fechaUsuarios, setFechaUsuarios] = useState({ desde: "", hasta: "" });
   const [fechaDispositivos, setFechaDispositivos] = useState({ desde: "", hasta: "" });
 
-  const descargar = (blob, nombreBase) => {
+  const descargar = (blob, headers, nombreBase) => {
     const ahora = new Date();
     const fecha = ahora.toISOString().split("T")[0];
+    const hora  = ahora.toTimeString().slice(0, 5).replace(":", "-");
+
+    // Intentar usar el nombre que manda el backend
+    let nombreArchivo = `${nombreBase}_${fecha}_${hora}.xlsx`;
+    const disposition = headers["content-disposition"];
+    if (disposition && disposition.includes("filename=")) {
+      const match = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      if (match && match[1]) {
+        nombreArchivo = match[1].replace(/['"]/g, "").trim();
+      }
+    }
+
     const url = window.URL.createObjectURL(new Blob([blob]));
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${nombreBase}_${fecha}.xlsx`;
+    link.download = nombreArchivo;
     link.click();
+    window.URL.revokeObjectURL(url);
   };
 
   const generarUsuarios = async () => {
@@ -27,7 +40,7 @@ function Reportes() {
         "http://localhost:5000/api/reportes/usuarios-excel",
         { responseType: "blob", params }
       );
-      descargar(res.data, "reporte_usuarios");
+      descargar(res.data, res.headers, "reporte_usuarios");
     } catch (error) {
       console.error(error);
     }
@@ -42,7 +55,7 @@ function Reportes() {
         "http://localhost:5000/api/reportes/dispositivos-excel",
         { responseType: "blob", params }
       );
-      descargar(res.data, "reporte_dispositivos");
+      descargar(res.data, res.headers, "reporte_dispositivos");
     } catch (error) {
       console.error("Error al descargar dispositivos:", error);
     }

@@ -1,8 +1,7 @@
 const DispositivoModel = require('../models/dispositivos.model');
-const pool = require('../database/connection'); // ARRIBA
+const pool = require('../database/connection');
 const upload = require("../middlewares/upload");
-const { enviarCorreo } = require("../services/email.service");
-// const { uploadFile, uploadMultipleFiles } = require("../controllers/file.controller");
+const { enviarCorreo, EVENTOS } = require("../services/email.service");
 
 exports.getAll = async (req, res) => {
     try {
@@ -28,9 +27,24 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        // console.log("Archivo recibido:", req.file);
         let data = {...req.body , archivo: req.file ? req.file.filename : null};
         const insertId = await DispositivoModel.create(data);
+
+        const destino = process.env.EMAIL_USER;
+        console.log("=== CREATE dispositivo ===");
+        console.log("destino email:", destino);
+
+        if (destino) {
+            console.log("Llamando enviarCorreo...");
+            enviarCorreo({
+                destinatario: destino,
+                evento: EVENTOS.REGISTRO,
+                datos: { nombre: data.nombre, serial: data.serial, marca: data.marca, tipo: data.tipo, ubicacion: data.ubicacion },
+            }).catch(e => console.error("Error correo registro:", e.message));
+        } else {
+            console.log("EMAIL_USER vacío, no se envía correo");
+        }
+
         res.status(201).json({ id: insertId, ...data });
     } catch (error) {
         console.error("Error al crear dispositivo:", error);
@@ -40,6 +54,8 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
     console.log("ENTRÉ AL UPDATE");
+    console.log("EMAIL_USER disponible:", process.env.EMAIL_USER || "VACÍO");
+    console.log("body.estado:", req.body.estado);
     try {
         // Validar transición de estado si se está cambiando el estado
         if (req.body.estado) {
@@ -70,20 +86,36 @@ exports.update = async (req, res) => {
 
         const affectedRows = await DispositivoModel.update(req.params.id, req.body);
         if (affectedRows > 0) {
-            // Solo enviar correo si es un registro de salida (tiene fecha_salida)
-            if (req.body.fecha_salida) {
-                await enviarCorreo({
-                    destinatario: process.env.EMAIL_USER,
-                    asunto: "Salida de dispositivo",
-                    mensaje: `
-El dispositivo con ID ${req.params.id} ha sido registrado como salida.
+            const nuevoEstado = req.body.estado;
+            const destino = process.env.EMAIL_USER;
 
-Fecha: ${req.body.fecha_salida}
-Hora: ${req.body.hora_salida}
-Estado: ${req.body.estado}
-                    `,
-                });
+            if (destino && nuevoEstado) {
+                const disp = await DispositivoModel.findById(req.params.id);
+                let eventoCorreo = null;
+
+                if (nuevoEstado === "En Mantenimiento") {
+                    eventoCorreo = EVENTOS.INICIO_MANTENIMIENTO;
+                } else if (nuevoEstado === "Listo para Entrega" || nuevoEstado === "Listo para entrega") {
+                    eventoCorreo = EVENTOS.FIN_MANTENIMIENTO;
+                } else if (nuevoEstado === "Entregado" || req.body.fecha_salida) {
+                    eventoCorreo = EVENTOS.SALIDA;
+                }
+
+                if (eventoCorreo) {
+                    enviarCorreo({
+                        destinatario: destino,
+                        evento: eventoCorreo,
+                        datos: {
+                            id: req.params.id,
+                            nombre: disp?.nombre,
+                            serial: disp?.serial,
+                            fecha_salida: req.body.fecha_salida,
+                            hora_salida: req.body.hora_salida,
+                        },
+                    }).catch(e => console.error("Error correo estado:", e.message));
+                }
             }
+
             res.json({ message: 'Dispositivo actualizado exitosamente' });
         } else {
             res.status(404).json({ error: 'Dispositivo no encontrado' });

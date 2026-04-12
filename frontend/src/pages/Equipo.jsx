@@ -19,6 +19,7 @@ const colorPorId = (id) => COLORES[id % COLORES.length];
 function Equipo() {
   const [usuarios, setUsuarios] = useState([]);
   const [busqueda, setBusqueda] = useState("");
+  const usuarioActual = JSON.parse(localStorage.getItem("usuario") || "{}");
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
   const [modalEliminar, setModalEliminar] = useState(false);
@@ -148,10 +149,12 @@ function Equipo() {
             <span className={`equipo-card-rol ${u.rol === "admin" ? "admin" : "usuario"}`}>
               {u.rol === "admin" ? "Administrador" : "Usuario"}
             </span>
-            <button className="equipo-card-msg-btn" onClick={() => navigate("/correo", { state: { contacto: u } })}>
-              <Icon d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" size={14} />
-              Message
-            </button>
+            {u.id !== usuarioActual.id && (
+              <button className="equipo-card-msg-btn" onClick={() => navigate("/correo", { state: { contacto: u } })}>
+                <Icon d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" size={14} />
+                Message
+              </button>
+            )}
           </div>
         ))}
       </div>
