@@ -76,14 +76,15 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={
-            isAuthenticated ?
-              <Navigate to="/dashboard" /> :
-              <Login onLogin={handleLogin} />
+            isAuthenticated
+              ? <Navigate to={usuario?.rol === 'tecnico' ? '/gestion' : '/dashboard'} />
+              : <Login onLogin={handleLogin} />
           } />
 
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/dispositivos" element={<ProtectedRoute><Dispositivos /></ProtectedRoute>} />
           <Route path="/Registrarsalida" element={<ProtectedRoute><Registrarsalida /></ProtectedRoute>} />
+          <Route path="/registrarsalida" element={<ProtectedRoute><Registrarsalida /></ProtectedRoute>} />
           <Route path="/prestamos" element={<ProtectedRoute><Prestamos /></ProtectedRoute>} />
           <Route path="/mantenimiento" element={<ProtectedRoute><Mantenimiento /></ProtectedRoute>} />
           <Route path="/usuarios" element={<ProtectedRoute><Usuarios /></ProtectedRoute>} />

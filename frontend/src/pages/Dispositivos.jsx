@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { getDispositivos, createDispositivo, updateDispositivo, deleteDispositivo, getDispositivoBySerial } from '../services/api';
 import { Modal } from 'bootstrap';
 import './CSS/Dispositivos.css';
+import { generarSerial } from "../ejemplo/generador";
 
 const Icon = ({ d, size = 14 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -11,6 +12,11 @@ const Icon = ({ d, size = 14 }) => (
 );
 
 function Dispositivos() {
+useEffect(() => {
+    console.log("Serial generado:", generarSerial());
+    setSerial(generarSerial());
+  }, []);
+const [serial, setSerial] = useState(""); // Estado para almacenar el serial generado del ejemplo
   const [dispositivos, setDispositivos] = useState([]);
   const [form, setForm] = useState({
     nombre: '', tipo: '', serial: '', marca: '',
@@ -33,11 +39,17 @@ function Dispositivos() {
   const loadData = async () => {
     try {
       const res = await getDispositivos();
-      setDispositivos(res.data);
+      const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const dispositivos = usuarioActual.rol === 'usuario'
+        ? res.data.filter(d => d.usuario_id === usuarioActual.id)
+        : res.data;
+      setDispositivos(dispositivos);
     } catch (err) {
       console.error('Error cargando dispositivos:', err);
     }
   };
+
+  const esSuperAdmin = JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'super_admin';
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -167,6 +179,15 @@ function Dispositivos() {
 
   return (
     <div className="disp-wrap">
+      <div style={{
+  padding: "10px",
+  background: "#f1f5f9",
+  borderRadius: "8px",
+  marginBottom: "15px"
+}}>
+  <h4>Generadores</h4>
+  <p>Serial: {serial}</p>
+</div>
 
       {/* banner */}
       <div className="disp-banner">

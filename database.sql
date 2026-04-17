@@ -75,9 +75,10 @@ CREATE TABLE IF NOT EXISTS mantenimiento (
 
 -- Usuarios
 INSERT INTO usuarios (nombre, correo, contrasena, rol) VALUES
+('Super Admin', 'superadmin@deviceguard.com', 'superadmin123', 'super_admin'),
 ('Juan Pérez', 'juan.perez@sena.edu.co', '123456', 'admin'),
 ('Maria Lopez', 'maria.lopez@sena.edu.co', '123456', 'usuario'),
-('Carlos Ruiz', 'carlos.ruiz@sena.edu.co', '123456', 'usuario');
+('Carlos Ruiz', 'carlos.ruiz@sena.edu.co', '123456', 'tecnico');
 
 -- Dispositivos
 INSERT INTO dispositivos (nombre, tipo, serial, marca, modelo, estado, ubicacion) VALUES

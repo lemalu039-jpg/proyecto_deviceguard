@@ -22,8 +22,17 @@ function Calendario() {
     catch { return []; }
   });
 
+  const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
+  const esUsuario = usuarioActual.rol === 'usuario';
+
   useEffect(() => {
-    getDispositivos().then(res => setDispositivos(res.data)).catch(console.error);
+    getDispositivos().then(res => {
+      const todos = res.data;
+      const filtrados = esUsuario
+        ? todos.filter(d => d.usuario_id === usuarioActual.id)
+        : todos;
+      setDispositivos(filtrados);
+    }).catch(console.error);
   }, []);
 
   const year = fecha.getFullYear();
@@ -194,10 +203,12 @@ function Calendario() {
             style={{ background: 'var(--input-bg)', color: 'var(--text-main)', border: '1px solid var(--border)', padding: '.42rem .9rem', borderRadius: '8px', cursor: 'pointer', fontSize: '.78rem', fontWeight: 600 }}>
             Hoy
           </button>
-          <button onClick={() => setModalAbierto(true)}
-            style={{ background: 'linear-gradient(135deg,#0492C2,#82EEFD)', color: '#fff', border: 'none', padding: '.42rem 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '.78rem' }}>
-            + Agregar evento
-          </button>
+          {!esUsuario && (
+            <button onClick={() => setModalAbierto(true)}
+              style={{ background: 'linear-gradient(135deg,#0492C2,#82EEFD)', color: '#fff', border: 'none', padding: '.42rem 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '.78rem' }}>
+              + Agregar evento
+            </button>
+          )}
         </div>
       </div>
 
@@ -273,7 +284,9 @@ function Calendario() {
                         <div style={{ fontSize: '.69rem', color: 'var(--text-muted)', marginTop: '1px' }}>{ev.tipo} · {ev.ubicacion || 'Sin ubicación'}</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '5px' }}>
                           <span style={{ fontSize: '.62rem', fontWeight: 700, padding: '1px 7px', borderRadius: '20px', background: col.bg, color: col.color }}>{ev.estado}</span>
-                          <button style={s.btnSalida} onClick={() => abrirModalSalida(ev)}>↩ Registrar salida</button>
+                          {!esUsuario && (
+                            <button style={s.btnSalida} onClick={() => abrirModalSalida(ev)}>↩ Registrar salida</button>
+                          )}
                         </div>
                       </div>
                     </div>

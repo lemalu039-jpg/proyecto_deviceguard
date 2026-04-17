@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDispositivos, getUsuarios } from '../services/api';
+import { estadosDispositivo } from "../ejemplo/generador2";
 
 function Dashboard() {
+  useEffect(() => {
+  const generador = estadosDispositivo();
+
+  console.log(generador.next().value);
+  console.log(generador.next().value);
+  console.log(generador.next().value);
+  console.log(generador.next().value);
+  console.log(generador.next().value); // undefined
+}, []);
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalDispositivos: 0,
@@ -25,15 +35,22 @@ function Dashboard() {
           getUsuarios()
         ]);
         const allDevices = devicesRes.data;
+        
+        // Filtrar por usuario si el rol es 'usuario'
+        const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
+        const dispositivos = usuarioActual.rol === 'usuario'
+          ? allDevices.filter(d => d.usuario_id === usuarioActual.id)
+          : allDevices;
+
         setStats({
-          totalDispositivos: allDevices.length,
-          listoparaEntrega:     allDevices.filter(d => d.estado === 'Listo para Entrega').length,
-          enRevision:      allDevices.filter(d => d.estado === 'En Revision').length,
-          enMantenimiento: allDevices.filter(d => d.estado === 'En Mantenimiento').length,
-          entregado:      allDevices.filter(d => d.estado === 'Entregado').length,
+          totalDispositivos: dispositivos.length,
+          listoparaEntrega:     dispositivos.filter(d => d.estado === 'Listo para Entrega').length,
+          enRevision:      dispositivos.filter(d => d.estado === 'En Revision').length,
+          enMantenimiento: dispositivos.filter(d => d.estado === 'En Mantenimiento').length,
+          entregado:      dispositivos.filter(d => d.estado === 'Entregado').length,
           usuarios:        usuariosRes.data.length
         });
-        setDispositivos(allDevices.slice(0, 5));
+        setDispositivos(dispositivos.slice(0, 5));
       } catch (error) {
         console.error('Error fetching dashboard data', error);
       } finally {
@@ -212,7 +229,7 @@ function Dashboard() {
           </span>
         ) : (
           <p style={{ fontSize: '.75rem', margin: 0, color: card.subColor, fontWeight: 600 }}>
-            {card.sub}
+            {JSON.parse(localStorage.getItem('usuario')||'{}').rol === 'usuario' ? null : card.sub}
           </p>
         )}
       </div>
@@ -257,6 +274,7 @@ function Dashboard() {
                 <th style={thStyle}>Serial</th>
                 <th style={thStyle}>Fecha registro</th>
                 <th style={thStyle}>Estado</th>
+                {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='super_admin' && <th style={thStyle}>Registrado por</th>}
               </tr>
             </thead>
             <tbody>
@@ -295,6 +313,11 @@ function Dashboard() {
                   <td style={tdStyle}>
                     <span style={getBadgeStyle(d.estado)}>{d.estado}</span>
                   </td>
+                  {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='super_admin' && (
+                    <td style={{ ...tdStyle, fontSize: '.78rem', color: 'var(--text-muted)' }}>
+                      {d.registrado_por || '—'}
+                    </td>
+                  )}
                 </tr>
               ))}
               {dispositivos.length === 0 && (

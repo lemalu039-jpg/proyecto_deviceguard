@@ -146,8 +146,14 @@ function Equipo() {
             </div>
             <span className="equipo-card-nombre">{u.nombre}</span>
             <span className="equipo-card-correo">{u.correo}</span>
-            <span className={`equipo-card-rol ${u.rol === "admin" ? "admin" : "usuario"}`}>
-              {u.rol === "admin" ? "Administrador" : "Usuario"}
+            <span className={`equipo-card-rol ${
+              u.rol === "super_admin" ? "super-admin" : 
+              u.rol === "tecnico" ? "tecnico" : 
+              "usuario"
+            }`}>
+              {u.rol === "super_admin" ? "Super Admin" : 
+               u.rol === "tecnico" ? "Técnico" : 
+               "Usuario"}
             </span>
             {u.id !== usuarioActual.id && (
               <button className="equipo-card-msg-btn" onClick={() => navigate("/correo", { state: { contacto: u } })}>
@@ -215,8 +221,14 @@ function Equipo() {
                     </td>
                     <td>{u.correo}</td>
                     <td>
-                      <span className={`equipo-badge ${u.rol === "admin" ? "admin" : "usuario"}`}>
-                        {u.rol === "admin" ? "Administrador" : "Usuario"}
+                      <span className={`equipo-badge ${
+                        u.rol === "super_admin" ? "super-admin" : 
+                        u.rol === "tecnico" ? "tecnico" : 
+                        "usuario"
+                      }`}>
+                        {u.rol === "super_admin" ? "Super Admin" : 
+                         u.rol === "tecnico" ? "Técnico" : 
+                         "Usuario"}
                       </span>
                     </td>
                     <td>{u.fecha_creacion ? new Date(u.fecha_creacion).toLocaleDateString("es-CO") : "—"}</td>
@@ -300,7 +312,7 @@ function Equipo() {
                   <label>Rol</label>
                   <select name="rol" value={form.rol} onChange={handleChange}>
                     <option value="usuario">Usuario</option>
-                    <option value="admin">Administrador</option>
+                    <option value="tecnico">Técnico</option>
                   </select>
                 </div>
                 <div className="equipo-form-group">
@@ -339,7 +351,7 @@ function Equipo() {
                   <label>Rol</label>
                   <select value={formEditar.rol} onChange={e => setFormEditar({ ...formEditar, rol: e.target.value })}>
                     <option value="usuario">Usuario</option>
-                    <option value="admin">Administrador</option>
+                    <option value="tecnico">Técnico</option>
                   </select>
                 </div>
               </div>
