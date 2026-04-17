@@ -61,21 +61,27 @@ exports.update = async (req, res) => {
                 return res.status(404).json({ error: 'Dispositivo no encontrado' });
             }
 
-            // findById ya hace JOIN y devuelve estado como texto
+            // Permite cambiar a Entregado desde cualquier estado
+            // Para otras transiciones, aplica reglas más restrictivas
             const estadoActual = dispositivo.estado;
             const nuevoEstado = req.body.estado;
 
-            const transicionesPermitidas = {
-                "En Revision":        ["En Mantenimiento"],
-                "En Mantenimiento":   ["Listo para Entrega"],
-                "Listo para Entrega": ["Entregado"],
-            };
+            if (nuevoEstado !== 'Entregado') {
+                const transicionesPermitidas = {
+                    "En Revision":        ["En Mantenimiento"],
+                    "En Mantenimiento":   ["Listo para Entrega", "Listo para entrega"],
+                    "Listo para Entrega": ["Entregado"],
+                    "Listo para entrega": ["Entregado"],
+                    "Disponible":         ["En Revision", "Entregado"],
+                    "Dado de Baja":       ["Entregado"],
+                };
 
-            const permitidos = transicionesPermitidas[estadoActual];
-            if (permitidos && !permitidos.includes(nuevoEstado)) {
-                return res.status(400).json({
-                    error: `No se puede cambiar de "${estadoActual}" a "${nuevoEstado}". Transición no permitida.`
-                });
+                const permitidos = transicionesPermitidas[estadoActual];
+                if (permitidos && !permitidos.includes(nuevoEstado)) {
+                    return res.status(400).json({
+                        error: `No se puede cambiar de "${estadoActual}" a "${nuevoEstado}". Transición no permitida.`
+                    });
+                }
             }
         }
 
