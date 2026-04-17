@@ -11,12 +11,11 @@ function SalidaDispositivos() {
   const [salidas, setSalidas] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
   const [form, setForm] = useState({
-    serial: "",
-    fecha: new Date().toISOString().split("T")[0],
-    hora: new Date().toTimeString().slice(0, 5),
-    estado: ""
+    serial: "", fecha: new Date().toISOString().split("T")[0],
+    hora: new Date().toTimeString().slice(0, 5), estado: ""
   });
   const [loading, setLoading] = useState(false);
+  const esSuperAdmin = JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'super_admin';
 
   useEffect(() => {
     loadData();
@@ -223,38 +222,30 @@ const handleSubmit = async (e) => {
                 <th>Fecha entrada</th>
                 <th>Fecha salida</th>
                 <th>Estado</th>
+                {esSuperAdmin && <th>Registrado por</th>}
               </tr>
             </thead>
             <tbody>
               {salidas.length === 0 ? (
-                <tr>
-                  <td colSpan="4" className="salida-empty">No hay registros</td>
-                </tr>
+                <tr><td colSpan={esSuperAdmin ? 5 : 4} className="salida-empty">No hay registros</td></tr>
               ) : (
-                salidas
-                .filter(s => s.estado === "En Mantenimiento")
-                .map(s => (
+                salidas.filter(s => s.estado === "En Mantenimiento").map(s => (
                   <tr key={s.id}>
                     <td style={{ fontWeight: 700, color: 'var(--text-main)' }}>{s.serial}</td>
                     <td>
-                      {s.fecha_registro?.split("T")[0]}
-                      <br />
-                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>
-                        {s.hora_registro || '—'}
-                      </span>
+                      {s.fecha_registro?.split("T")[0]}<br />
+                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{s.hora_registro || '—'}</span>
                     </td>
                     <td>
-                      {s.fecha_salida ? s.fecha_salida.split("T")[0] : '—'}
-                      <br />
-                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>
-                        {s.hora_salida || '—'}
-                      </span>
+                      {s.fecha_salida ? s.fecha_salida.split("T")[0] : '—'}<br />
+                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{s.hora_salida || '—'}</span>
                     </td>
-                    <td>
-                      <span className={getBadgeClass(s.estado)}>
-                        {s.estado}
-                      </span>
-                    </td>
+                    <td><span className={getBadgeClass(s.estado)}>{s.estado}</span></td>
+                    {esSuperAdmin && (
+                      <td style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
+                        {s.registrado_por || '—'}
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

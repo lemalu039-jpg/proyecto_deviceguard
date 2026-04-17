@@ -62,6 +62,7 @@ function GestionMantenimiento() {
           <tr>
             <th>Nombre</th>
             <th>Serial</th>
+            <th>Registrado por</th>
             <th>Estado actual</th>
             <th>Cambiar estado</th>
           </tr>
@@ -72,6 +73,9 @@ function GestionMantenimiento() {
             <tr key={d.id}>
               <td>{d.nombre}</td>
               <td>{d.serial}</td>
+              <td style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
+                {d.registrado_por || '—'}
+              </td>
 
               <td>
                 <span className={`mant-badge ${getBadgeClass(d.estado)}`}>

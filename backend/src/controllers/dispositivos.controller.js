@@ -27,22 +27,19 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        let data = {...req.body , archivo: req.file ? req.file.filename : null};
+        // usuario_id viene del header x-usuario-id (puesto por el interceptor de axios)
+        const usuario_id = req.headers['x-usuario-id'] || req.body.usuario_id || null;
+        let data = { ...req.body, archivo: req.file ? req.file.filename : null, usuario_id };
+
         const insertId = await DispositivoModel.create(data);
 
         const destino = process.env.EMAIL_USER;
-        console.log("=== CREATE dispositivo ===");
-        console.log("destino email:", destino);
-
         if (destino) {
-            console.log("Llamando enviarCorreo...");
             enviarCorreo({
                 destinatario: destino,
                 evento: EVENTOS.REGISTRO,
                 datos: { nombre: data.nombre, serial: data.serial, marca: data.marca, tipo: data.tipo, ubicacion: data.ubicacion },
             }).catch(e => console.error("Error correo registro:", e.message));
-        } else {
-            console.log("EMAIL_USER vacío, no se envía correo");
         }
 
         res.status(201).json({ id: insertId, ...data });

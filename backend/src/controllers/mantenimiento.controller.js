@@ -24,8 +24,11 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        const insertId = await MantenimientoModel.create(req.body);
-        res.status(201).json({ id: insertId, ...req.body });
+        // tecnico_id se toma del header x-usuario-id (interceptor de axios)
+        const tecnico_id = req.headers['x-usuario-id'] || req.body.tecnico_id || null;
+        const data = { ...req.body, tecnico_id };
+        const insertId = await MantenimientoModel.create(data);
+        res.status(201).json({ id: insertId, ...data });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

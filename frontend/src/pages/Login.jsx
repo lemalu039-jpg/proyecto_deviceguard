@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import logo from '../assets/icons/logo-deviceguard.svg';  
-import ajustes from '../assets/icons/ajustes.svg';
 import candado from '../assets/icons/candado.svg';
 import correo from '../assets/icons/correo.svg';
 import usuario from '../assets/icons/usuario.svg';
@@ -90,13 +89,15 @@ function Login({ onLogin }) {
     }
   };
 
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
   const s = {
     page: {
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#f5f5f5'
+      background: isDark ? 'var(--bg-main)' : '#f5f5f5'
     },
     card: {
       background: 'var(--bg-card)',
@@ -107,9 +108,8 @@ function Login({ onLogin }) {
       display: 'flex',
       position: 'relative',
       overflow: 'hidden',
-      boxShadow: '0 8px 32px rgba(26,26,46,0.15)'
+      boxShadow: isDark ? '0 8px 40px rgba(0,0,0,0.6)' : '0 8px 32px rgba(26,26,46,0.15)'
     },
-  
     formWrap: {
       position: 'absolute',
       top: 0,
@@ -125,7 +125,6 @@ function Login({ onLogin }) {
       zIndex: 1,
       overflowY: 'auto'
     },
- 
     panel: {
       position: 'absolute',
       top: 0,
@@ -144,23 +143,26 @@ function Login({ onLogin }) {
       zIndex: 10
     },
     title: { fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-main)', textAlign: 'center', marginBottom: '1.1rem' },
-    field: { display: 'flex', alignItems: 'center', background: '#f5f5f5', border: '1.5px solid #e2e2e2', borderRadius: '8px', marginBottom: '.7rem', padding: '0 .7rem' },
-    input: { flex: 1, background: 'transparent', border: 'none', outline: 'none', padding: '.55rem .45rem', fontSize: '.83rem', color: 'var(--text-main)' },
-    select: { flex: 1, background: 'transparent', border: 'none', outline: 'none', padding: '.55rem .45rem', fontSize: '.83rem', color: 'var(--text-main)', cursor: 'pointer' },
+    field: {
+      display: 'flex', alignItems: 'center',
+      background: isDark ? '#1E293B' : '#f5f5f5',
+      border: isDark ? '1.5px solid var(--border)' : '1.5px solid #e2e2e2',
+      borderRadius: '8px', marginBottom: '.7rem', padding: '0 .7rem'
+    },
+    input: { flex: 1, background: 'transparent', border: 'none', outline: 'none', padding: '.55rem .45rem', fontSize: '.83rem', color: isDark ? '#F8FAFC' : '#1a1a2e' },
     icon: { fontSize: '13px', color: '#9e9e9e', width: '16px', textAlign: 'center', flexShrink: 0 },
-    btnMain: { width: '100%', padding: '.63rem', background: 'linear-gradient(135deg,#52B2BF,#0A1172)', color: 'var(--bg-card)', border: 'none', borderRadius: '30px', fontSize: '.88rem', fontWeight: 700, cursor: 'pointer', letterSpacing: '.4px', marginTop: '.1rem' },
-    btnOff: { width: '100%', padding: '.63rem', background: '#bdbdbd', color: 'var(--bg-card)', border: 'none', borderRadius: '30px', fontSize: '.88rem', fontWeight: 700, cursor: 'not-allowed', marginTop: '.1rem' },
-    alertErr: { background: '#fce4ec', border: '1px solid #f48fb1', color: '#c62828', borderRadius: '6px', padding: '.55rem .75rem', fontSize: '.78rem', marginBottom: '.7rem' },
-    alertOk: { background: '#e8f5e9', border: '1px solid #a5d6a7', color: '#1b5e20', borderRadius: '6px', padding: '.55rem .75rem', fontSize: '.78rem', marginBottom: '.7rem' },
+    btnMain: { width: '100%', padding: '.63rem', background: 'linear-gradient(135deg,#52B2BF,#0A1172)', color: '#fff', border: 'none', borderRadius: '30px', fontSize: '.88rem', fontWeight: 700, cursor: 'pointer', letterSpacing: '.4px', marginTop: '.1rem' },
+    btnOff: { width: '100%', padding: '.63rem', background: '#bdbdbd', color: '#fff', border: 'none', borderRadius: '30px', fontSize: '.88rem', fontWeight: 700, cursor: 'not-allowed', marginTop: '.1rem' },
+    alertErr: { background: isDark ? '#3b1a1a' : '#fce4ec', border: isDark ? '1px solid #7f2020' : '1px solid #f48fb1', color: isDark ? '#f87171' : '#c62828', borderRadius: '6px', padding: '.55rem .75rem', fontSize: '.78rem', marginBottom: '.7rem' },
+    alertOk: { background: isDark ? '#1a3b1a' : '#e8f5e9', border: isDark ? '1px solid #2d6a2d' : '1px solid #a5d6a7', color: isDark ? '#86efac' : '#1b5e20', borderRadius: '6px', padding: '.55rem .75rem', fontSize: '.78rem', marginBottom: '.7rem' },
     forgot: { textAlign: 'right', fontSize: '.72rem', color: '#E91E63', cursor: 'pointer', marginTop: '-.35rem', marginBottom: '.75rem', fontWeight: 500 },
     row2: { display: 'flex', gap: '8px' },
-    iconWrap: { width: '90px', height: '90px', background: '#e8eaf6', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem'
-},
+    iconWrap: { width: '90px', height: '90px', background: isDark ? 'var(--input-bg)' : '#e8eaf6', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' },
     panelLogo: { fontSize: '.73rem', fontWeight: 700, letterSpacing: '1.5px', color: '#52b2b7', marginBottom: '.55rem', textTransform: 'uppercase' },
-    panelBadge: { display: 'inline-block', background: '#52b2b7', color: 'var(--bg-card)', fontSize: '.61rem', fontWeight: 700, padding: '2px 10px', borderRadius: '20px', letterSpacing: '.5px', marginBottom: '.85rem', textTransform: 'uppercase' },
-    panelTitle: { color: 'var(--bg-card)', fontSize: '1.35rem', fontWeight: 700, marginBottom: '.4rem' },
+    panelBadge: { display: 'inline-block', background: '#52b2b7', color: '#fff', fontSize: '.61rem', fontWeight: 700, padding: '2px 10px', borderRadius: '20px', letterSpacing: '.5px', marginBottom: '.85rem', textTransform: 'uppercase' },
+    panelTitle: { color: '#fff', fontSize: '1.35rem', fontWeight: 700, marginBottom: '.4rem' },
     panelSub: { color: 'rgba(255,255,255,.75)', fontSize: '.79rem', marginBottom: '1.4rem', lineHeight: 1.6 },
-    btnOutline: { padding: '.52rem 1.75rem', background: 'transparent', border: '2px solid var(--bg-card)', borderRadius: '30px', color: 'var(--bg-card)', fontSize: '.84rem', fontWeight: 600, cursor: 'pointer' },
+    btnOutline: { padding: '.52rem 1.75rem', background: 'transparent', border: '2px solid #fff', borderRadius: '30px', color: '#fff', fontSize: '.84rem', fontWeight: 600, cursor: 'pointer' },
   };
 
   return (
@@ -182,12 +184,12 @@ function Login({ onLogin }) {
               {errorLogin && <div style={s.alertErr}>{errorLogin}</div>}
               <div style={s.field}>
                 <img src={correo} alt="correo" style={{ width: "16px", marginRight: "6px" }} />
-                <input style={s.input} type="email" placeholder="correo@deviceguard.com"
+                <input className="login-input" style={s.input} type="email" placeholder="correo@deviceguard.com"
                   value={email} onChange={e => setEmail(e.target.value)} disabled={loadingLogin} />
               </div>
               <div style={s.field}>
                 <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
-                <input style={s.input} type={mostrarPassword ? "text" : "password"} placeholder="••••••••••"
+                <input className="login-input" style={s.input} type={mostrarPassword ? "text" : "password"} placeholder="••••••••••"
                   value={password} onChange={e => setPassword(e.target.value)} disabled={loadingLogin} />
               </div>
               <div style={s.forgot}>¿Olvidaste tu contraseña?</div>
@@ -204,35 +206,24 @@ function Login({ onLogin }) {
                 <div style={{ flex: 1 }}>
                   <div style={s.field}>
                     <img src={usuario} alt="usuario" style={{ width: "14px", marginRight: "6px" }} />
-                    <input style={s.input} type="text" placeholder="Nombre completo"
+                    <input className="login-input" style={s.input} type="text" placeholder="Nombre completo"
                       value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} disabled={loadingReg} />
-                  </div>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={s.field}>
-                    <img src={ajustes} alt="ajustes" style={{ width: "14px", marginRight: "6px" }} />
-                    <select style={s.select} value={form.rol}
-                      onChange={e => setForm({ ...form, rol: e.target.value })} disabled={loadingReg}>
-                      <option value="usuario">Usuario</option>
-                      <option value="tecnico">Técnico</option>
-                      <option value="admin">Admin</option>
-                    </select>
                   </div>
                 </div>
               </div>
               <div style={s.field}>
                 <img src={correo} alt="correo" style={{ width: "16px", marginRight: "6px" }} />
-                <input style={s.input} type="email" placeholder="Correo electrónico"
+                <input className="login-input" style={s.input} type="email" placeholder="Correo electrónico"
                   value={form.correo} onChange={e => setForm({ ...form, correo: e.target.value })} disabled={loadingReg} />
               </div>
               <div style={s.field}>
                 <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
-                <input style={s.input} type="password" placeholder="Contraseña (mín. 6 caracteres)"
+                <input className="login-input" style={s.input} type="password" placeholder="Contraseña (mín. 6 caracteres)"
                   value={form.contrasena} onChange={e => setForm({ ...form, contrasena: e.target.value })} disabled={loadingReg} />
               </div>
               <div style={s.field}>
                 <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
-                <input style={s.input} type="password" placeholder="Confirmar contraseña"
+                <input className="login-input" style={s.input} type="password" placeholder="Confirmar contraseña"
                   value={form.confirmar} onChange={e => setForm({ ...form, confirmar: e.target.value })} disabled={loadingReg} />
               </div>
               <button type="submit" style={loadingReg ? s.btnOff : s.btnMain} disabled={loadingReg}>

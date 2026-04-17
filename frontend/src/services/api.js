@@ -9,6 +9,27 @@ const api = axios.create({
     }
 });
 
+// Interceptor: agrega automáticamente el id del usuario logueado en cada petición
+api.interceptors.request.use(config => {
+    try {
+        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+        if (usuario.id) {
+            config.headers['x-usuario-id'] = usuario.id;
+        }
+    } catch (_) {}
+    return config;
+});
+
+// También para las peticiones multipart (createDispositivo usa axios directo)
+const apiMultipart = axios.create({ baseURL: API_URL });
+apiMultipart.interceptors.request.use(config => {
+    try {
+        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+        if (usuario.id) config.headers['x-usuario-id'] = usuario.id;
+    } catch (_) {}
+    return config;
+});
+
 // Usuarios
 export const getUsuarios = () => api.get('/usuarios');
 export const getUsuario = (id) => api.get(`/usuarios/${id}`);
@@ -20,10 +41,8 @@ export const deleteUsuario = (id) => api.delete(`/usuarios/${id}`);
 export const getDispositivos = () => api.get('/dispositivos');
 export const getDispositivo = (id) => api.get(`/dispositivos/${id}`);
 export const createDispositivo = (data) => {
-    return axios.post(`${API_URL}/dispositivos`, data, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
+    return apiMultipart.post('/dispositivos', data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
     });
 };
 export const updateDispositivo = (id, data) => api.put(`/dispositivos/${id}`, data);

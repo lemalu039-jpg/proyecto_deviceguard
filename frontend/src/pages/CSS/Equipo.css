@@ -516,3 +516,9 @@
 /* ── SCROLLBAR ────────────────────────────────────────── */
 .equipo-modal::-webkit-scrollbar { width: 4px; }
 .equipo-modal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.equipo-card-rol.super-admin { background: #fef3c7; color: #92400e; }
+.equipo-card-rol.tecnico { background: #dbeafe; color: #1e40af; }
+
+.equipo-badge.super-admin { background: #fef3c7; color: #92400e; }
+.equipo-badge.tecnico { background: #dbeafe; color: #1e40af; }
