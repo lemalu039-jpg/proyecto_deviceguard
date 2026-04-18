@@ -115,7 +115,9 @@ function ConsultarFiltros() {
                   <td>{d.nombre}</td>
                   <td>{d.ubicacion}</td>
                   <td>
-                    {d.fecha_registro?.split("T")[0]}
+                    {d.fecha_registro
+                      ? new Date(d.fecha_registro).toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: '2-digit', month: 'short', year: 'numeric' })
+                      : '—'}
                     <br />
                     <span className="hora">{d.hora_registro || ""}</span>
                   </td>

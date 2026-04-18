@@ -6,16 +6,18 @@ import './CSS/HistorialDispositivo.css';
 function HistorialDispositivo() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [data, setData] = useState({ dispositivo: null, historial: [] });
+  const [data, setData] = useState({ dispositivo: null, historial: [], mantenimientos: [] });
   const [loading, setLoading] = useState(true);
   const [nuevaObservacion, setNuevaObservacion] = useState('');
   const [guardando, setGuardando] = useState(false);
   const [usuario, setUsuario] = useState('Usuario');
+  const [rolUsuario, setRolUsuario] = useState('');
 
   useEffect(() => {
     try {
       const u = JSON.parse(localStorage.getItem('usuario'));
       if (u && u.nombre) setUsuario(u.nombre);
+      if (u && u.rol) setRolUsuario(u.rol);
     } catch {}
   }, []);
 
@@ -66,7 +68,8 @@ function HistorialDispositivo() {
   if (loading) return <div className="historial-container"><p>Cargando información del equipo...</p></div>;
   if (!data.dispositivo) return <div className="historial-container"><p>No se encontró el dispositivo.</p></div>;
 
-  const { dispositivo, historial } = data;
+  const { dispositivo, historial, mantenimientos } = data;
+  const puedeVerMantenimientos = rolUsuario === 'tecnico' || rolUsuario === 'super_admin';
 
   return (
     <div className="historial-container">
@@ -98,9 +101,45 @@ function HistorialDispositivo() {
         </div>
       </div>
 
+      {puedeVerMantenimientos && (
+        <div className="history-section">
+          <h2 className="history-title">Historial de Mantenimientos</h2>
+          {mantenimientos.length === 0 ? (
+            <div className="empty-state">No hay registros de mantenimiento para este equipo.</div>
+          ) : (
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.85rem' }}>
+              <thead>
+                <tr style={{ background: 'var(--table-head)', borderBottom: '2px solid var(--border)' }}>
+                  {['Técnico', 'Descripción', 'Estado', 'Fecha'].map(h => (
+                    <th key={h} style={{ padding: '.65rem 1rem', textAlign: 'left', fontSize: '.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '.04em' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {mantenimientos.map((m, i) => (
+                  <tr key={m.id} style={{ borderBottom: '1px solid var(--border)', background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
+                    <td style={{ padding: '.65rem 1rem', color: 'var(--text-main)', fontWeight: 600 }}>{m.tecnico_nombre || '—'}</td>
+                    <td style={{ padding: '.65rem 1rem', color: 'var(--text-muted)' }}>{m.descripcion || '—'}</td>
+                    <td style={{ padding: '.65rem 1rem' }}>
+                      <span style={{
+                        fontSize: '.72rem', fontWeight: 700, padding: '2px 10px', borderRadius: '20px',
+                        background: m.estado_mantenimiento === 'Completado' ? '#f0fdf4' : m.estado_mantenimiento === 'Cancelado' ? '#fef2f2' : '#fff7ed',
+                        color: m.estado_mantenimiento === 'Completado' ? '#15803d' : m.estado_mantenimiento === 'Cancelado' ? '#dc2626' : '#c2410c'
+                      }}>{m.estado_mantenimiento}</span>
+                    </td>
+                    <td style={{ padding: '.65rem 1rem', color: 'var(--text-muted)', fontSize: '.8rem' }}>
+                      {m.fecha ? new Date(m.fecha).toLocaleString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+
       <div className="history-section">
         <h2 className="history-title">Observaciones / Trabajos Realizados</h2>
-
         <div className="add-observation">
           <textarea 
             placeholder="Añadir nueva observación, diagnóstico o trabajo realizado..." 

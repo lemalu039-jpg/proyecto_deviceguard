@@ -50,18 +50,14 @@ exports.create = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-    console.log("ENTRÉ AL UPDATE");
-    console.log("EMAIL_USER disponible:", process.env.EMAIL_USER || "VACÍO");
-    console.log("body.estado:", req.body.estado);
+    console.log("ENTRÉ AL UPDATE - estado:", req.body.estado);
     try {
-        // Validar transición de estado si se está cambiando el estado
         if (req.body.estado) {
             const dispositivo = await DispositivoModel.findById(req.params.id);
             if (!dispositivo) {
                 return res.status(404).json({ error: 'Dispositivo no encontrado' });
             }
 
-            // findById ya hace JOIN y devuelve estado como texto
             const estadoActual = dispositivo.estado;
             const nuevoEstado = req.body.estado;
 
@@ -74,8 +70,34 @@ exports.update = async (req, res) => {
             const permitidos = transicionesPermitidas[estadoActual];
             if (permitidos && !permitidos.includes(nuevoEstado)) {
                 return res.status(400).json({
-                    error: `No se puede cambiar de "${estadoActual}" a "${nuevoEstado}". Transición no permitida.`
+                    error: `No se puede cambiar de "${estadoActual}" a "${nuevoEstado}".`
                 });
+            }
+
+            const tecnico_id = req.headers['x-usuario-id'] || null;
+
+            if (nuevoEstado === "En Mantenimiento") {
+                await pool.query(
+                    `INSERT INTO mantenimiento (dispositivo_id, descripcion, estado_mantenimiento, tecnico_id, fecha)
+                     VALUES (?, 'Inicio de mantenimiento', 'En Proceso', ?, NOW())`,
+                    [req.params.id, tecnico_id]
+                );
+            }
+
+            if (nuevoEstado === "Listo para Entrega") {
+                await pool.query(
+                    `INSERT INTO mantenimiento (dispositivo_id, descripcion, estado_mantenimiento, tecnico_id, fecha)
+                     VALUES (?, 'Mantenimiento completado - listo para entrega', 'Completado', ?, NOW())`,
+                    [req.params.id, tecnico_id]
+                );
+            }
+
+            if (nuevoEstado === "Entregado") {
+                await pool.query(
+                    `INSERT INTO mantenimiento (dispositivo_id, descripcion, estado_mantenimiento, tecnico_id, fecha)
+                     VALUES (?, 'Dispositivo entregado al cliente', 'Completado', ?, NOW())`,
+                    [req.params.id, tecnico_id]
+                );
             }
         }
 
@@ -90,7 +112,7 @@ exports.update = async (req, res) => {
 
                 if (nuevoEstado === "En Mantenimiento") {
                     eventoCorreo = EVENTOS.INICIO_MANTENIMIENTO;
-                } else if (nuevoEstado === "Listo para Entrega" || nuevoEstado === "Listo para entrega") {
+                } else if (nuevoEstado === "Listo para Entrega") {
                     eventoCorreo = EVENTOS.FIN_MANTENIMIENTO;
                 } else if (nuevoEstado === "Entregado" || req.body.fecha_salida) {
                     eventoCorreo = EVENTOS.SALIDA;
@@ -116,6 +138,7 @@ exports.update = async (req, res) => {
             res.status(404).json({ error: 'Dispositivo no encontrado' });
         }
     } catch (error) {
+        console.error("Error en update dispositivo:", error.message);
         res.status(500).json({ error: error.message });
     }
 };

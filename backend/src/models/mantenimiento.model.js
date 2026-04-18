@@ -48,10 +48,6 @@ class MantenimientoModel {
       [dispositivo_id, descripcion, costo || 0, estado_mantenimiento || 'En Proceso', tecnico_id || null]
     );
 
-    // Cambiar dispositivo a "En Mantenimiento" (id=2)
-    const estado_id = await estadoIdPorNombre('En Mantenimiento') || 2;
-    await pool.query('UPDATE dispositivos SET estado_id = ? WHERE id = ?', [estado_id, dispositivo_id]);
-
     return result.insertId;
   }
 
@@ -66,24 +62,10 @@ class MantenimientoModel {
       params.push(tecnico_id);
     }
 
-    if (estado_mantenimiento === 'Completado' || estado_mantenimiento === 'Cancelado') {
-      query += ', fecha_fin = NOW()';
-    }
-
     query += ' WHERE id = ?';
     params.push(id);
 
     const [result] = await pool.query(query, params);
-
-    // Si completó → dispositivo pasa a "Listo para Entrega" (id=3)
-    if (estado_mantenimiento === 'Completado') {
-      const mtnto = await this.findById(id);
-      if (mtnto) {
-        const estado_id = await estadoIdPorNombre('Listo para Entrega') || 3;
-        await pool.query('UPDATE dispositivos SET estado_id = ? WHERE id = ?', [estado_id, mtnto.dispositivo_id]);
-      }
-    }
-
     return result.affectedRows;
   }
 
