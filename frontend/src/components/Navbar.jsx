@@ -27,10 +27,12 @@ function Navbar({ onLogout }) {
       alignItems: 'center',
       borderBottom: '1px solid var(--border)',
       position: 'relative',
-      zIndex: 10
+      zIndex: 10,
+      flexWrap: 'wrap',
+      gap: '1rem'
     }}>
 
-      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '2rem' }}>
+      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
 
         {/* 🔥 BOTÓN COSMIC */}
         <label className="cosmic-toggle">
@@ -73,11 +75,12 @@ function Navbar({ onLogout }) {
             cursor: 'pointer',
             borderLeft: '1px solid var(--border)',
             paddingLeft: '1.5rem',
-            position: 'relative'
+            position: 'relative',
+            minWidth: 'fit-content'
           }}
           onClick={() => setMenuAbierto(!menuAbierto)}
         >
-          <div style={{ textAlign: 'right' }}>
+          <div style={{ textAlign: 'right', display: window.innerWidth < 480 ? 'none' : 'block' }}>
             <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600 }}>
               {usuario?.nombre}
             </p>
@@ -89,43 +92,50 @@ function Navbar({ onLogout }) {
           <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>▼</span>
 
           {menuAbierto && (
-            <div style={{
-              position: 'absolute',
-              top: '60px',
-              right: '0',
-              background: 'var(--bg-card)',
-              border: '1px solid var(--border)',
-              borderRadius: '8px',
-              padding: '10px',
-              width: '180px',
-              boxShadow: '0 5px 15px rgba(0,0,0,0.15)',
-              zIndex: 9999
-            }}>
-              <p style={{ padding: '8px', cursor: 'pointer', margin: 0 }}>
-                <img src={usuarioIcon} alt="" style={{ width: '14px', marginRight: '6px' }} />
-                Perfil
-              </p>
+            <>
+              <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 9998
+              }} onClick={() => setMenuAbierto(false)} />
+              <div style={{
+                position: 'absolute',
+                top: '60px',
+                right: '0',
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border)',
+                borderRadius: '8px',
+                padding: '10px',
+                width: '180px',
+                boxShadow: '0 5px 15px rgba(0,0,0,0.15)',
+                zIndex: 9999
+              }}>
+                
 
-              <p style={{ padding: '8px', cursor: 'pointer', margin: 0 }}
-                onClick={() => navigate('/cambiar-correo')}>
-                <img src={correo} alt="" style={{ width: '14px', marginRight: '6px' }} />
-                Cambiar correo
-              </p>
+                <p style={{ padding: '8px', cursor: 'pointer', margin: 0 }}
+                  onClick={() => { navigate('/cambiar-correo'); setMenuAbierto(false); }}>
+                  <img src={correo} alt="" style={{ width: '14px', marginRight: '6px' }} />
+                  Cambiar correo
+                </p>
 
-              <p style={{ padding: '8px', cursor: 'pointer', margin: 0 }}
-                onClick={() => navigate('/cambiar-contrasena')}>
-                <img src={candado} alt="" style={{ width: '16px', marginRight: '6px' }} />
-                Cambiar contraseña
-              </p>
+                <p style={{ padding: '8px', cursor: 'pointer', margin: 0 }}
+                  onClick={() => { navigate('/cambiar-contrasena'); setMenuAbierto(false); }}>
+                  <img src={candado} alt="" style={{ width: '16px', marginRight: '6px' }} />
+                  Cambiar contraseña
+                </p>
 
-              <hr style={{ borderColor: 'var(--border)' }} />
+                <hr style={{ borderColor: 'var(--border)' }} />
 
-              <p style={{ padding: '8px', cursor: 'pointer', color: '#ef4444', margin: 0 }}
-                onClick={onLogout}>
-                <img src={cerrarsesion} alt="" style={{ width: '16px', marginRight: '6px' }} />
-                Cerrar sesión
-              </p>
-            </div>
+                <p style={{ padding: '8px', cursor: 'pointer', color: '#ef4444', margin: 0 }}
+                  onClick={() => { onLogout(); setMenuAbierto(false); }}>
+                  <img src={cerrarsesion} alt="" style={{ width: '16px', marginRight: '6px' }} />
+                  Cerrar sesión
+                </p>
+              </div>
+            </>
           )}
         </div>
 

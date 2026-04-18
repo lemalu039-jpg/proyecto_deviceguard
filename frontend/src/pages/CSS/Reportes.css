@@ -77,3 +77,63 @@
 .reporte-fechas input:focus {
   border-color: #151E3D;
 }
+
+/* ── RESPONSIVE MOBILE ─────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .reportes-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .cards {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  .subtitle {
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .reportes-container {
+    padding: 1rem 0.75rem;
+  }
+
+  .card {
+    padding: 1.5rem 1rem;
+  }
+
+  .card img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .card h3 {
+    font-size: 0.9rem;
+    height: auto;
+    margin-bottom: 0.8rem;
+  }
+
+  .reporte-fechas {
+    margin-bottom: 0.8rem;
+  }
+
+  .reporte-fechas label {
+    font-size: 0.7rem;
+  }
+
+  .reporte-fechas input {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .card button {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+}

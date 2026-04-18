@@ -1,0 +1,179 @@
+/* Base - default para mobile */
+.calendario-layout {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.75rem !important;
+}
+
+.calendario-card {
+  width: 100% !important;
+  position: relative !important;
+  overflow-y: hidden !important;
+  overflow-x: auto !important;
+}
+
+.calendario-card::-webkit-scrollbar {
+  height: 8px !important;
+}
+
+.calendario-card::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.calendario-card::-webkit-scrollbar-thumb {
+  background: rgba(4, 146, 194, 0.6) !important;
+  border-radius: 4px !important;
+}
+
+.calendario-card::-webkit-scrollbar-thumb:hover {
+  background: rgba(4, 146, 194, 0.9) !important;
+}
+
+/* Firefox scrollbar */
+.calendario-card {
+  scrollbar-color: rgba(4, 146, 194, 0.6) transparent;
+  scrollbar-width: thin;
+}
+
+.calendario-scroll-btn {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  background: rgba(4, 146, 194, 0.9) !important;
+  color: white !important;
+  border: none !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 10 !important;
+  font-size: 18px !important;
+  transition: all 0.2s ease !important;
+}
+
+.calendario-scroll-btn:hover {
+  background: rgba(4, 146, 194, 1) !important;
+  transform: translateY(-50%) scale(1.1) !important;
+}
+
+.calendario-scroll-btn-left {
+  left: 5px !important;
+}
+
+.calendario-scroll-btn-right {
+  right: 5px !important;
+}
+
+.calendario-sidebar {
+  width: 100% !important;
+}
+
+.calendario-grid {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  min-width: 100% !important;
+}
+
+.calendario-day-cell {
+  min-height: 70px !important;
+  padding: 0.4rem !important;
+}
+
+/* Desktop - 2 columnas */
+@media (min-width: 1024px) {
+  .calendario-layout {
+    display: grid !important;
+    grid-template-columns: 1fr 280px !important;
+    gap: 1.5rem !important;
+  }
+
+  .calendario-card {
+    grid-column: 1 !important;
+    overflow: visible !important;
+  }
+
+  .calendario-card::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .calendario-scroll-btn {
+    display: none !important;
+  }
+
+  .calendario-sidebar {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+}
+
+/* Tablet - 1 columna */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .calendario-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  .calendario-card {
+    overflow: visible !important;
+  }
+
+  .calendario-card::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .calendario-scroll-btn {
+    display: none !important;
+  }
+}
+
+/* Mobile optimizado - CON SCROLL VISIBLE */
+@media (max-width: 768px) {
+  .calendario-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  .calendario-card {
+    position: relative !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+  }
+
+  .calendario-grid {
+    grid-template-columns: repeat(7, 1fr) !important;
+    min-width: 100% !important;
+  }
+
+  .calendario-day-cell {
+    min-height: 75px !important;
+    font-size: 0.75rem !important;
+    padding: 0.35rem !important;
+  }
+
+  .calendario-header {
+    font-size: 0.75rem !important;
+  }
+
+  .calendario-scroll-btn {
+    display: flex !important;
+  }
+}
+
+/* Extra small */
+@media (max-width: 480px) {
+  .calendario-day-cell {
+    min-height: 65px !important;
+    font-size: 0.7rem !important;
+  }
+
+  .calendario-scroll-btn {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 16px !important;
+  }
+}
