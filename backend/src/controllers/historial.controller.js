@@ -1,5 +1,6 @@
 const HistorialModel = require('../models/historial.model');
 const DispositivoModel = require('../models/dispositivos.model');
+const pool = require('../database/connection');
 
 exports.getByDispositivo = async (req, res) => {
     try {
@@ -11,7 +12,17 @@ exports.getByDispositivo = async (req, res) => {
             return res.status(404).json({ error: 'Dispositivo no encontrado' });
         }
 
-        res.json({ dispositivo, historial });
+        // Traer mantenimientos del dispositivo con técnico
+        const [mantenimientos] = await pool.query(`
+            SELECT m.id, m.descripcion, m.estado_mantenimiento, m.fecha,
+                   u.nombre AS tecnico_nombre
+            FROM mantenimiento m
+            LEFT JOIN usuarios u ON m.tecnico_id = u.id
+            WHERE m.dispositivo_id = ?
+            ORDER BY m.fecha DESC
+        `, [id]);
+
+        res.json({ dispositivo, historial, mantenimientos });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

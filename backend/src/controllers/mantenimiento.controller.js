@@ -24,11 +24,19 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        // tecnico_id se toma del header x-usuario-id (interceptor de axios)
-        const tecnico_id = req.headers['x-usuario-id'] || req.body.tecnico_id || null;
-        const data = { ...req.body, tecnico_id };
+        const tecnico_id = req.headers['x-usuario-id'];
+
+        const data = {
+            ...req.body,
+            tecnico_id,
+            estado_mantenimiento: 'En Proceso',
+            fecha_inicio: new Date()
+        };
+
         const insertId = await MantenimientoModel.create(data);
+
         res.status(201).json({ id: insertId, ...data });
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -36,12 +44,23 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
     try {
-        const affectedRows = await MantenimientoModel.update(req.params.id, req.body);
+        const { estado_mantenimiento } = req.body;
+
+        let data = { ...req.body };
+
+        // 🔥 Si se completa → cerrar mantenimiento
+        if (estado_mantenimiento === 'Completado') {
+            data.fecha_fin = new Date();
+        }
+
+        const affectedRows = await MantenimientoModel.update(req.params.id, data);
+
         if (affectedRows > 0) {
             res.json({ message: 'Mantenimiento actualizado exitosamente' });
         } else {
             res.status(404).json({ error: 'Mantenimiento no encontrado' });
         }
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

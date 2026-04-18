@@ -238,7 +238,6 @@ function Login({ onLogin }) {
           {vista === 'login' ? (
             <>
               <div style={s.panelLogo}>DeviceGuard</div>
-              <div style={s.panelBadge}>SENA</div>
               <div style={s.panelTitle}>¡Bienvenido!</div>
               <div style={s.panelSub}>¿No tienes cuenta aún?<br />Regístrate y comienza<br />a gestionar dispositivos</div>
               <button style={s.btnOutline} onClick={irRegistro} type="button">Registrarse</button>
@@ -246,7 +245,6 @@ function Login({ onLogin }) {
           ) : (
             <>
               <div style={s.panelLogo}>DeviceGuard</div>
-              <div style={s.panelBadge}>SENA</div>
               <div style={s.panelTitle}>¡Bienvenido de nuevo!</div>
               <div style={s.panelSub}>¿Ya tienes cuenta?<br />Inicia sesión para<br />continuar</div>
               <button style={s.btnOutline} onClick={irLogin} type="button">Iniciar sesión</button>
