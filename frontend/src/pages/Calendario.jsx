@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getDispositivos, updateDispositivo } from '../services/api';
+import { getDispositivos, updateDispositivo, deleteDispositivo } from '../services/api';
 
 function Calendario() {
   const [dispositivos, setDispositivos] = useState([]);
@@ -67,7 +67,7 @@ function Calendario() {
       return {
         ...e,
         nombre: `Entrega: ${disp.nombre || 'Dispositivo'}`,
-        estado: disp.estado || 'Listo para entrega',
+        estado: e.estado || disp.estado || 'Listo para entrega',
         ubicacion: disp.ubicacion,
         tipo: 'Compromiso',
         serial: disp.serial,
@@ -92,7 +92,7 @@ function Calendario() {
         ...e,
         _fecha: new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2])),
         nombre: `Entrega: ${disp.nombre || 'Dispositivo'}`,
-        estado: 'Listo para entrega',
+        estado: e.estado || 'Listo para entrega',
         ubicacion: disp.ubicacion,
         tipo: 'Compromiso',
         serial: disp.serial,
@@ -125,28 +125,44 @@ function Calendario() {
     setModalSalida(true);
   };
 
+  const obtenerTextoAccion = (estado) => {
+    const est = (estado || '').trim().toLowerCase();
+
+    if (est === 'listo para entrega' || est === 'listo_para_entrega') {
+      return { boton: 'Registrar entrega', modal: 'Registrar Entrega', nuevoEstado: 'Entregado' };
+    }
+    if (est === 'en revision' || est === 'en_revision' || est === 'revision') {
+      return { boton: 'Registrar mantenimiento', modal: 'Registrar Mantenimiento', nuevoEstado: 'En Mantenimiento' };
+    }
+    if (est === 'en mantenimiento' || est === 'en_mantenimiento' || est === 'mantenimiento') {
+      return { boton: 'Registrar salida', modal: 'Registrar Salida', nuevoEstado: 'Listo para entrega' };
+    }
+    return { boton: 'Registrar salida', modal: 'Registrar Salida', nuevoEstado: 'Entregado' };
+  };
+
   const confirmarSalida = async () => {
     if (!eventoSalida) return;
     setCargandoSalida(true);
     try {
       const ahora = new Date();
       const id = eventoSalida._dispOrig?.id || eventoSalida.id || eventoSalida.id_dispositivo;
-      console.log('Registrando salida para dispositivo ID:', id);
+      const accion = obtenerTextoAccion(eventoSalida.estado);
+      console.log('Registrando acción para dispositivo ID:', id);
       console.log('Evento:', eventoSalida);
       await updateDispositivo(id, {
-        estado: 'Entregado',
+        estado: accion.nuevoEstado,
         fecha_salida: ahora.toISOString().split('T')[0],
         hora_salida: ahora.toTimeString().slice(0, 5),
       });
-      setMensajeSalida('Salida registrada correctamente.');
+      setMensajeSalida('Acción registrada correctamente.');
       const res = await getDispositivos();
       setDispositivos(res.data);
 
-     
+
       if (eventoSalida.isCustom && eventoSalida.id_evento) {
         const eventosActualizados = eventosCustom.map(e =>
           e.id_evento === eventoSalida.id_evento
-            ? { ...e, estado: 'Entregado' }
+            ? { ...e, estado: accion.nuevoEstado }
             : e
         );
         setEventosCustom(eventosActualizados);
@@ -159,8 +175,8 @@ function Calendario() {
         setMensajeSalida('');
       }, 1500);
     } catch (error) {
-      console.error('Error al registrar salida:', error);
-      setMensajeSalida('Error al registrar la salida. Intenta de nuevo.');
+      console.error('Error al registrar acción:', error);
+      setMensajeSalida('Error al registrar la acción. Intenta de nuevo.');
     } finally {
       setCargandoSalida(false);
     }
@@ -174,11 +190,25 @@ function Calendario() {
     setModalDetalle(true);
   };
 
-  const eliminarEvento = (ev) => {
+  const eliminarEvento = async (ev) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este evento?')) {
-      const eventosActualizados = eventosCustom.filter(e => e.id_evento !== ev.id_evento);
-      setEventosCustom(eventosActualizados);
-      localStorage.setItem('eventosCustom', JSON.stringify(eventosActualizados));
+      try {
+        if (ev.isCustom) {
+          // Eliminar evento personalizado del localStorage
+          const eventosActualizados = eventosCustom.filter(e => e.id_evento !== ev.id_evento);
+          setEventosCustom(eventosActualizados);
+          localStorage.setItem('eventosCustom', JSON.stringify(eventosActualizados));
+        } else {
+          // Eliminar dispositivo del sistema
+          const id = ev._dispOrig?.id || ev.id || ev.id_dispositivo;
+          await deleteDispositivo(id);
+          const res = await getDispositivos();
+          setDispositivos(res.data);
+        }
+      } catch (error) {
+        console.error('Error al eliminar:', error);
+        alert('Error al eliminar. Intenta de nuevo.');
+      }
     }
   };
 
@@ -308,12 +338,12 @@ function Calendario() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '5px' }}>
                           <span style={{ fontSize: '.62rem', fontWeight: 700, padding: '1px 7px', borderRadius: '20px', background: col.bg, color: col.color }}>{ev.estado}</span>
                           {!esUsuario && ev.estado !== 'Entregado' && (
-                            <button style={s.btnSalida} onClick={() => abrirModalSalida(ev)}>Registrar salida</button>
+                            <button style={s.btnSalida} onClick={() => abrirModalSalida(ev)}>{obtenerTextoAccion(ev.estado).boton}</button>
                           )}
                           {!esUsuario && ev.estado === 'Entregado' && (
                             <span style={{ fontSize: '.62rem', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: '#dcfce7', color: '#15803d' }}>Entregado</span>
                           )}
-                          {ev.isCustom && (
+                          {!esUsuario && (
                             <button style={{ fontSize: '.6rem', fontWeight: 700, padding: '3px 8px', borderRadius: '20px', border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b', marginTop: '4px' }} onClick={() => eliminarEvento(ev)}>Eliminar</button>
                           )}
                         </div>
@@ -344,7 +374,7 @@ function Calendario() {
                           <div style={{ fontSize: '.76rem', fontWeight: 600, color: 'var(--text-main)' }}>{ev.nombre}</div>
                           <div style={{ fontSize: '.68rem', color: 'var(--text-muted)' }}>{ev.ubicacion || 'Sin ubicación'}</div>
                         </div>
-                        {ev.isCustom && (
+                        {!esUsuario && (
                           <button style={{ fontSize: '.5rem', padding: '2px 5px', background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }} onClick={() => eliminarEvento(ev)}>✕</button>
                         )}
                       </div>
@@ -435,12 +465,12 @@ function Calendario() {
         <div style={s.overlay} onClick={() => !cargandoSalida && setModalSalida(false)}>
           <div style={{ ...s.modalBox, width: '380px' }} onClick={e => e.stopPropagation()}>
             <div style={s.modalHeader}>
-              <span style={{ color: '#fff', fontWeight: 700, fontSize: '.95rem' }}>Registrar Salida</span>
+              <span style={{ color: '#fff', fontWeight: 700, fontSize: '.95rem' }}>{obtenerTextoAccion(eventoSalida.estado).modal}</span>
               <button onClick={() => !cargandoSalida && setModalSalida(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
             </div>
             <div style={s.modalBody}>
               <p style={{ fontSize: '.82rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                ¿Confirmas la salida de este equipo? Su estado cambiará a <strong>Entregado</strong>.
+                ¿Confirmas esta acción? El estado cambiará a <strong>{obtenerTextoAccion(eventoSalida.estado).nuevoEstado}</strong>.
               </p>
               <div style={{ background: 'var(--table-head)', border: '1px solid var(--border)', borderRadius: '10px', padding: '1rem', marginBottom: '1rem' }}>
                 <div style={{ fontSize: '.88rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '.5rem' }}>{eventoSalida.nombre}</div>
