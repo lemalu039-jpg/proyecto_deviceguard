@@ -1,6 +1,5 @@
 const DispositivoModel = require('../models/dispositivos.model');
 const pool = require('../database/connection');
-const upload = require("../middlewares/upload");
 const { enviarCorreo, EVENTOS } = require("../services/email.service");
 
 exports.getAll = async (req, res) => {
@@ -27,8 +26,8 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        // usuario_id viene del header x-usuario-id (puesto por el interceptor de axios)
         const usuario_id = req.headers['x-usuario-id'] || req.body.usuario_id || null;
+        const upload = require("../middlewares/upload");
         let data = { ...req.body, archivo: req.file ? req.file.filename : null, usuario_id };
 
         const insertId = await DispositivoModel.create(data);
@@ -61,22 +60,6 @@ exports.update = async (req, res) => {
             const estadoActual = dispositivo.estado;
             const nuevoEstado = req.body.estado;
 
-            const transicionesPermitidas = {
-                "En Revision":        ["En Mantenimiento"],
-                "En Mantenimiento":   ["Listo para Entrega"],
-                "Listo para Entrega": ["Entregado"],
-            };
-
-            const permitidos = transicionesPermitidas[estadoActual];
-            if (permitidos && !permitidos.includes(nuevoEstado)) {
-                return res.status(400).json({
-                    error: `No se puede cambiar de "${estadoActual}" a "${nuevoEstado}".`
-                });
-            // Permite cambiar a Entregado desde cualquier estado
-            // Para otras transiciones, aplica reglas más restrictivas
-            const estadoActual = dispositivo.estado;
-            const nuevoEstado = req.body.estado;
-
             if (nuevoEstado !== 'Entregado') {
                 const transicionesPermitidas = {
                     "En Revision":        ["En Mantenimiento"],
@@ -105,7 +88,7 @@ exports.update = async (req, res) => {
                 );
             }
 
-            if (nuevoEstado === "Listo para Entrega") {
+            if (nuevoEstado === "Listo para Entrega" || nuevoEstado === "Listo para entrega") {
                 await pool.query(
                     `INSERT INTO mantenimiento (dispositivo_id, descripcion, estado_mantenimiento, tecnico_id, fecha)
                      VALUES (?, 'Mantenimiento completado - listo para entrega', 'Completado', ?, NOW())`,
@@ -133,7 +116,7 @@ exports.update = async (req, res) => {
 
                 if (nuevoEstado === "En Mantenimiento") {
                     eventoCorreo = EVENTOS.INICIO_MANTENIMIENTO;
-                } else if (nuevoEstado === "Listo para Entrega") {
+                } else if (nuevoEstado === "Listo para Entrega" || nuevoEstado === "Listo para entrega") {
                     eventoCorreo = EVENTOS.FIN_MANTENIMIENTO;
                 } else if (nuevoEstado === "Entregado" || req.body.fecha_salida) {
                     eventoCorreo = EVENTOS.SALIDA;
@@ -178,14 +161,14 @@ exports.delete = async (req, res) => {
 };
 
 exports.getBySerial = async (req, res) => {
-  try {
-    const dispositivo = await DispositivoModel.findBySerial(req.params.serial);
-    if (!dispositivo) {
-      return res.status(404).json({ message: "No encontrado" });
+    try {
+        const dispositivo = await DispositivoModel.findBySerial(req.params.serial);
+        if (!dispositivo) {
+            return res.status(404).json({ message: "No encontrado" });
+        }
+        res.json(dispositivo);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error servidor" });
     }
-    res.json(dispositivo);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error servidor" });
-  }
 };
