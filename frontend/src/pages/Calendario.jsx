@@ -67,7 +67,7 @@ function Calendario() {
       return {
         ...e,
         nombre: `Entrega: ${disp.nombre || 'Dispositivo'}`,
-        estado: 'Listo para entrega',
+        estado: disp.estado || 'Listo para entrega',
         ubicacion: disp.ubicacion,
         tipo: 'Compromiso',
         serial: disp.serial,
@@ -130,7 +130,9 @@ function Calendario() {
     setCargandoSalida(true);
     try {
       const ahora = new Date();
-      const id = eventoSalida._dispOrig?.id || eventoSalida.id;
+      const id = eventoSalida._dispOrig?.id || eventoSalida.id || eventoSalida.id_dispositivo;
+      console.log('Registrando salida para dispositivo ID:', id);
+      console.log('Evento:', eventoSalida);
       await updateDispositivo(id, {
         estado: 'Entregado',
         fecha_salida: ahora.toISOString().split('T')[0],
@@ -139,12 +141,25 @@ function Calendario() {
       setMensajeSalida('Salida registrada correctamente.');
       const res = await getDispositivos();
       setDispositivos(res.data);
+
+     
+      if (eventoSalida.isCustom && eventoSalida.id_evento) {
+        const eventosActualizados = eventosCustom.map(e =>
+          e.id_evento === eventoSalida.id_evento
+            ? { ...e, estado: 'Entregado' }
+            : e
+        );
+        setEventosCustom(eventosActualizados);
+        localStorage.setItem('eventosCustom', JSON.stringify(eventosActualizados));
+      }
+
       setTimeout(() => {
         setModalSalida(false);
         setEventoSalida(null);
         setMensajeSalida('');
       }, 1500);
-    } catch {
+    } catch (error) {
+      console.error('Error al registrar salida:', error);
       setMensajeSalida('Error al registrar la salida. Intenta de nuevo.');
     } finally {
       setCargandoSalida(false);
@@ -157,6 +172,14 @@ function Calendario() {
       ev;
     setEquipoDetalle(disp);
     setModalDetalle(true);
+  };
+
+  const eliminarEvento = (ev) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar este evento?')) {
+      const eventosActualizados = eventosCustom.filter(e => e.id_evento !== ev.id_evento);
+      setEventosCustom(eventosActualizados);
+      localStorage.setItem('eventosCustom', JSON.stringify(eventosActualizados));
+    }
   };
 
   const celdas = [];
@@ -284,8 +307,14 @@ function Calendario() {
                         <div style={{ fontSize: '.69rem', color: 'var(--text-muted)', marginTop: '1px' }}>{ev.tipo} · {ev.ubicacion || 'Sin ubicación'}</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '5px' }}>
                           <span style={{ fontSize: '.62rem', fontWeight: 700, padding: '1px 7px', borderRadius: '20px', background: col.bg, color: col.color }}>{ev.estado}</span>
-                          {!esUsuario && (
-                            <button style={s.btnSalida} onClick={() => abrirModalSalida(ev)}>↩ Registrar salida</button>
+                          {!esUsuario && ev.estado !== 'Entregado' && (
+                            <button style={s.btnSalida} onClick={() => abrirModalSalida(ev)}>Registrar salida</button>
+                          )}
+                          {!esUsuario && ev.estado === 'Entregado' && (
+                            <span style={{ fontSize: '.62rem', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: '#dcfce7', color: '#15803d' }}>Entregado</span>
+                          )}
+                          {ev.isCustom && (
+                            <button style={{ fontSize: '.6rem', fontWeight: 700, padding: '3px 8px', borderRadius: '20px', border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b', marginTop: '4px' }} onClick={() => eliminarEvento(ev)}>Eliminar</button>
                           )}
                         </div>
                       </div>
@@ -310,8 +339,15 @@ function Calendario() {
                       <div style={{ fontSize: '.52rem', color: col.color, fontWeight: 600, textTransform: 'uppercase' }}>{nombresMes[ev._fecha.getMonth()].slice(0, 3)}</div>
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '.76rem', fontWeight: 600, color: 'var(--text-main)' }}>{ev.nombre}</div>
-                      <div style={{ fontSize: '.68rem', color: 'var(--text-muted)' }}>{ev.ubicacion || 'Sin ubicación'}</div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                        <div>
+                          <div style={{ fontSize: '.76rem', fontWeight: 600, color: 'var(--text-main)' }}>{ev.nombre}</div>
+                          <div style={{ fontSize: '.68rem', color: 'var(--text-muted)' }}>{ev.ubicacion || 'Sin ubicación'}</div>
+                        </div>
+                        {ev.isCustom && (
+                          <button style={{ fontSize: '.5rem', padding: '2px 5px', background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }} onClick={() => eliminarEvento(ev)}>✕</button>
+                        )}
+                      </div>
                       <span style={{ fontSize: '.6rem', fontWeight: 700, padding: '1px 7px', borderRadius: '20px', background: col.bg, color: col.color, display: 'inline-block', marginTop: '3px' }}>{ev.estado}</span>
                     </div>
                   </div>
