@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { getDispositivos } from '../services/api';
+import './CSS/Estadisticas_responsive.css';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer
@@ -226,7 +227,7 @@ function Estadisticas() {
       ) : (
         <>
           {/* ── PANEL DE FILTROS ────────────────────────────────── */}
-          <div style={{ ...card, display: 'flex', alignItems: 'flex-end', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+          <div style={{ ...card, display: 'flex', alignItems: 'flex-end', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.25rem' }} className="estadisticas-filtros">
             <div style={{ width: '4px', height: '16px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px', alignSelf: 'center', flexShrink: 0 }}></div>
             <span style={{ fontSize: '.88rem', fontWeight: 700, color: 'var(--text-main)', alignSelf: 'center', marginRight: '.5rem' }}>Filtros</span>
 
@@ -319,7 +320,7 @@ function Estadisticas() {
           </div>
 
           {/* ── DONUT + BARRAS ──────────────────────────────────── */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }} className="estadisticas-donut-barras">
 
             {/* Donut */}
             <div style={card}>
@@ -328,9 +329,9 @@ function Estadisticas() {
                   {total} total
                 </span>
               ))}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }} className="estadisticas-donut-content">
                 <div style={{ position: 'relative', flexShrink: 0 }}>
-                  <svg width="130" height="130" viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+                  <svg width="130" height="130" viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }} className="estadisticas-donut-svg">
                     {total === 0 ? (
                       <circle cx="18" cy="18" r="15.92" fill="transparent" stroke="var(--border)" strokeWidth="5"/>
                     ) : (
@@ -424,7 +425,7 @@ function Estadisticas() {
             {conteoPorTipo.length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: '.82rem', textAlign: 'center', padding: '1rem' }}>Sin datos para este filtro</p>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '.75rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '.75rem' }} className="estadisticas-tipos-grid">
                 {conteoPorTipo.map(([tipo, count]) => (
                   <div key={tipo} style={{ background: 'var(--table-head)', border: '1px solid var(--border)', borderRadius: '10px', padding: '.85rem', textAlign: 'center' }}>
                     <div style={{ fontSize: '.72rem', color: 'var(--text-muted)', marginBottom: '.3rem', fontWeight: 500 }}>{tipo}</div>
@@ -448,8 +449,8 @@ function Estadisticas() {
                 {Math.min(dispositivosFiltrados.length, 10)} de {dispositivosFiltrados.length}
               </span>
             </div>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div style={{ overflowX: 'auto' }} className="estadisticas-table-wrapper">
+              <table style={{ width: '100%', borderCollapse: 'collapse' }} className="estadisticas-table">
                 <thead>
                   <tr>
                     <th style={thStyle}>Nombre</th>

@@ -120,3 +120,75 @@
   outline: none;
   font-family: inherit;
 }
+
+/* ── RESPONSIVE MOBILE ─────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .mant-wrapper {
+    padding: 1rem;
+  }
+
+  .mant-wrapper-tittle {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .mant-card {
+    padding: 1rem;
+  }
+
+  .mant-table {
+    font-size: 0.75rem;
+  }
+
+  .mant-table th {
+    font-size: 0.7rem;
+    padding: 8px 0;
+  }
+
+  .mant-table td {
+    padding: 10px 0;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mant-wrapper {
+    padding: 0.75rem;
+  }
+
+  .mant-wrapper-tittle {
+    font-size: 1rem;
+  }
+
+  .mant-card {
+    padding: 0.8rem;
+  }
+
+  .mant-card-title {
+    font-size: 0.9rem;
+    gap: 8px;
+  }
+
+  .mant-table th {
+    font-size: 0.65rem;
+  }
+
+  .mant-table td {
+    padding: 8px 0;
+    font-size: 0.7rem;
+  }
+
+  .mant-badge,
+  .badge-revision,
+  .badge-mantenimiento,
+  .badge-entregado {
+    font-size: 0.6rem;
+    padding: 2px 8px;
+  }
+
+  .mant-select {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+  }
+}

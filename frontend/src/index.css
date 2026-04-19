@@ -342,3 +342,152 @@ aside div {
 aside:hover div {
   scrollbar-color: rgba(100,116,139,0.25) transparent;
 }
+
+/* ── RESPONSIVE MOBILE ─────────────────────────────────── */
+
+@media (max-width: 768px) {
+  /* LAYOUT */
+  .app-container {
+    flex-direction: column;
+  }
+
+  .page-container {
+    padding: 1.5rem 1rem;
+  }
+
+  /* NAVBAR */
+  header {
+    padding: 0.75rem 1rem !important;
+  }
+
+  /* SIDEBAR */
+  aside {
+    width: 100% !important;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    position: static !important;
+    height: auto !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border);
+    z-index: 999;
+  }
+
+  aside.active {
+    max-height: 500px;
+  }
+
+  /* HAMBURGER - mostrar solo en mobile */
+  aside::before {
+    content: '☰';
+    display: flex;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 9999;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+
+  /* MAIN CONTENT */
+  .main-content {
+    flex: 1;
+  }
+
+  /* BUTTONS */
+  .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  /* CARDS */
+  .card,
+  .card-light {
+    padding: 1rem;
+  }
+
+  /* FORM CONTROLS */
+  .form-control {
+    font-size: 16px;
+  }
+
+  /* TABLAS */
+  .table-container {
+    overflow-x: auto;
+  }
+
+  table {
+    font-size: 0.75rem;
+  }
+
+  th, td {
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-container {
+    padding: 1rem 0.75rem;
+  }
+
+  header {
+    padding: 0.5rem 0.75rem !important;
+    flex-wrap: wrap;
+  }
+
+  header div {
+    gap: 1rem !important;
+  }
+
+  .card,
+  .card-light {
+    padding: 0.75rem;
+  }
+
+  .btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  /* TABLAS EXTRA PEQUEÑO */
+  th, td {
+    padding: 0.5rem 0.25rem;
+  }
+}
+
+/* ── HAMBURGER MENU FUNCTIONALITY ─────────────────────── */
+@media (max-width: 768px) {
+  /* Hidden by default */
+  aside {
+    max-height: 0;
+  }
+
+  /* Show when focused/active */
+  aside:focus-within {
+    max-height: 500px;
+  }
+
+  aside.active {
+    max-height: 500px;
+  }
+
+  /* Overlay en mobile */
+  .overlay-sidebar {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .overlay-sidebar.active {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+    }
+  }
+}

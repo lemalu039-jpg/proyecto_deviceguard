@@ -320,9 +320,124 @@
 /* responsive */
 
 @media (max-width: 640px) {
+  .salida-wrapper {
+    padding: 1rem;
+  }
+
+  .salida-banner {
+    padding: 1.5rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .salida-banner h2 {
+    font-size: 1.2rem;
+  }
+
+  .salida-banner p {
+    font-size: 0.8rem;
+  }
+
   .salida-table th,
   .salida-table td {
     padding: .5rem .6rem;
     font-size: .75rem;
+  }
+
+  .salida-modal-label {
+    font-size: 0.7rem;
+  }
+
+  .salida-modal-input {
+    padding: 0.45rem 0.6rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .salida-wrapper {
+    padding: 0.75rem;
+  }
+
+  .salida-banner {
+    padding: 1.2rem 0.8rem;
+    border-radius: 12px;
+  }
+
+  .salida-banner h2 {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .salida-banner p {
+    font-size: 0.75rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .salida-banner-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .salida-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .salida-card-title {
+    font-size: 0.85rem;
+    gap: 6px;
+  }
+
+  .salida-table {
+    font-size: 0.7rem;
+  }
+
+  .salida-table th {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.65rem;
+  }
+
+  .salida-table td {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.65rem;
+  }
+
+  .salida-btn-edit,
+  .salida-btn-del {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .modal-body {
+    padding: 1.2rem 1rem !important;
+  }
+
+  .modal-header {
+    padding: 1rem !important;
+  }
+
+  .salida-modal-label {
+    font-size: 0.65rem;
+  }
+
+  .salida-modal-input {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .salida-btn-primary,
+  .salida-btn-cancel {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+
+  .badge-mantenimiento {
+    padding: 2px 8px;
+    font-size: 0.6rem;
+  }
+
+  .salida-info-text {
+    font-size: 0.75rem;
+    padding: 8px;
   }
 }

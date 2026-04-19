@@ -522,3 +522,90 @@
 
 .equipo-badge.super-admin { background: #fef3c7; color: #92400e; }
 .equipo-badge.tecnico { background: #dbeafe; color: #1e40af; }
+
+/* ── RESPONSIVE MOBILE ─────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .equipo-root {
+    gap: 1.5rem;
+  }
+
+  .equipo-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .equipo-btn-add {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .equipo-cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .equipo-tabla-wrap { overflow-x: auto; }
+
+  .equipo-tabla th,
+  .equipo-tabla td {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  .equipo-modal {
+    padding: 1.2rem;
+    width: 90%;
+  }
+
+  .equipo-form-grid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .equipo-btn-submit { width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .equipo-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .equipo-card {
+    padding: 1.2rem;
+  }
+
+  .equipo-tabla {
+    font-size: 0.7rem;
+  }
+
+  .equipo-tabla th,
+  .equipo-tabla td {
+    padding: 0.4rem 0.6rem;
+  }
+
+  .equipo-tabla-header {
+    padding: 0.8rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .equipo-modal {
+    padding: 1rem;
+  }
+
+  .equipo-form-group label {
+    font-size: 0.75rem;
+  }
+
+  .equipo-acciones {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .equipo-btn-editar,
+  .equipo-btn-eliminar {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getDispositivos, updateDispositivo, deleteDispositivo } from '../services/api';
+import './CSS/Calendario_responsive.css';
 
 function Calendario() {
   const [dispositivos, setDispositivos] = useState([]);
@@ -219,12 +220,12 @@ function Calendario() {
   for (let i = 1; i <= restantes; i++) celdas.push({ dia: i, actual: false });
 
   const s = {
-    wrap: { padding: '1.5rem', fontFamily: 'system-ui, sans-serif' },
+    wrap: { padding: '1rem', fontFamily: 'system-ui, sans-serif' },
     topRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' },
     navWrap: { display: 'flex', alignItems: 'center', gap: '.75rem' },
     navBtn: { width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.9rem', color: 'var(--text-main)' },
     mesLabel: { fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)', minWidth: '180px', textAlign: 'center' },
-    layout: { display: 'grid', gridTemplateColumns: '1fr 270px', gap: '1rem', alignItems: 'start' },
+    layout: { display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'stretch' },
     calCard: { background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' },
     calHeader: { display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', background: 'var(--table-head)', borderBottom: '1px solid var(--border)' },
     dow: { padding: '.5rem 0', textAlign: 'center', fontSize: '.68rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' },
@@ -265,14 +266,14 @@ function Calendario() {
         </div>
       </div>
 
-      <div style={s.layout}>
+      <div style={s.layout} className="calendario-layout">
 
         {/* grilla calendario */}
-        <div style={s.calCard}>
-          <div style={s.calHeader}>
-            {diasSemana.map(d => <div key={d} style={s.dow}>{d}</div>)}
+        <div style={s.calCard} className="calendario-card">
+          <div style={s.calHeader} className="calendario-header-row">
+            {diasSemana.map(d => <div key={d} style={s.dow} className="calendario-header">{d}</div>)}
           </div>
-          <div style={s.calGrid}>
+          <div style={s.calGrid} className="calendario-grid">
             {celdas.map((celda, idx) => {
               const eventos = celda.actual ? eventosDia(celda.dia) : [];
               const today = celda.actual && esHoy(celda.dia);
@@ -280,6 +281,7 @@ function Calendario() {
               return (
                 <div key={idx}
                   onClick={() => celda.actual && setDiaSeleccionado(celda.dia === diaSeleccionado ? null : celda.dia)}
+                  className="calendario-day-cell"
                   style={{
                     minHeight: '80px', padding: '.4rem .5rem',
                     borderRight: '1px solid var(--border)', borderBottom: '1px solid var(--border)',
@@ -312,7 +314,7 @@ function Calendario() {
         </div>
 
         {/* panel lateral */}
-        <div>
+        <div className="calendario-sidebar">
 
           {diaSeleccionado && (
             <div style={s.sideCard}>

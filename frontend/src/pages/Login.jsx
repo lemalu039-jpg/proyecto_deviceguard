@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './CSS/Login.css';
 import logo from '../assets/icons/logo-deviceguard.svg';  
 import candado from '../assets/icons/candado.svg';
 import correo from '../assets/icons/correo.svg';
@@ -166,67 +167,67 @@ function Login({ onLogin }) {
   };
 
   return (
-    <div style={s.page}>
-      <div style={s.card}>
+    <div style={s.page} className="login-page">
+      <div style={s.card} className="login-card">
 
      
-        <div style={s.formWrap}>
+        <div style={s.formWrap} className="login-form-wrap">
           {vista === 'login' ? (
             <form onSubmit={handleLogin}>
-              <div style={s.iconWrap}>
-               <img 
-                   src={logo} 
+              <div style={s.iconWrap} className="login-icon-wrap">
+               <img
+                   src={logo}
                    alt="DeviceGuard Logo"
                    style={{ width: '120px', height: '120px', objectFit: 'contain' }}
                 />
               </div>
-              <div style={s.title}>Iniciar sesión</div>
-              {errorLogin && <div style={s.alertErr}>{errorLogin}</div>}
-              <div style={s.field}>
+              <div style={s.title} className="login-title">Iniciar sesión</div>
+              {errorLogin && <div style={s.alertErr} className="login-alert">{errorLogin}</div>}
+              <div style={s.field} className="login-field">
                 <img src={correo} alt="correo" style={{ width: "16px", marginRight: "6px" }} />
                 <input className="login-input" style={s.input} type="email" placeholder="correo@deviceguard.com"
                   value={email} onChange={e => setEmail(e.target.value)} disabled={loadingLogin} />
               </div>
-              <div style={s.field}>
+              <div style={s.field} className="login-field">
                 <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
                 <input className="login-input" style={s.input} type={mostrarPassword ? "text" : "password"} placeholder="••••••••••"
                   value={password} onChange={e => setPassword(e.target.value)} disabled={loadingLogin} />
               </div>
-              <div style={s.forgot}>¿Olvidaste tu contraseña?</div>
-              <button type="submit" style={loadingLogin ? s.btnOff : s.btnMain} disabled={loadingLogin}>
+              <div style={s.forgot} className="login-forgot">¿Olvidaste tu contraseña?</div>
+              <button type="submit" style={loadingLogin ? s.btnOff : s.btnMain} className="login-btn" disabled={loadingLogin}>
                 {loadingLogin ? 'Iniciando sesión...' : 'Inicia sesión'}
               </button>
             </form>
           ) : (
             <form onSubmit={handleRegistro}>
-              <div style={s.title}>Crear cuenta</div>
-              {errorReg && <div style={s.alertErr}>{errorReg}</div>}
-              {exitoReg && <div style={s.alertOk}>{exitoReg}</div>}
-              <div style={s.row2}>
+              <div style={s.title} className="login-title">Crear cuenta</div>
+              {errorReg && <div style={s.alertErr} className="login-alert">{errorReg}</div>}
+              {exitoReg && <div style={s.alertOk} className="login-alert">{exitoReg}</div>}
+              <div style={s.row2} className="login-row2">
                 <div style={{ flex: 1 }}>
-                  <div style={s.field}>
+                  <div style={s.field} className="login-field">
                     <img src={usuario} alt="usuario" style={{ width: "14px", marginRight: "6px" }} />
                     <input className="login-input" style={s.input} type="text" placeholder="Nombre completo"
                       value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} disabled={loadingReg} />
                   </div>
                 </div>
               </div>
-              <div style={s.field}>
+              <div style={s.field} className="login-field">
                 <img src={correo} alt="correo" style={{ width: "16px", marginRight: "6px" }} />
                 <input className="login-input" style={s.input} type="email" placeholder="Correo electrónico"
                   value={form.correo} onChange={e => setForm({ ...form, correo: e.target.value })} disabled={loadingReg} />
               </div>
-              <div style={s.field}>
+              <div style={s.field} className="login-field">
                 <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
                 <input className="login-input" style={s.input} type="password" placeholder="Contraseña (mín. 6 caracteres)"
                   value={form.contrasena} onChange={e => setForm({ ...form, contrasena: e.target.value })} disabled={loadingReg} />
               </div>
-              <div style={s.field}>
+              <div style={s.field} className="login-field">
                 <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
                 <input className="login-input" style={s.input} type="password" placeholder="Confirmar contraseña"
                   value={form.confirmar} onChange={e => setForm({ ...form, confirmar: e.target.value })} disabled={loadingReg} />
               </div>
-              <button type="submit" style={loadingReg ? s.btnOff : s.btnMain} disabled={loadingReg}>
+              <button type="submit" style={loadingReg ? s.btnOff : s.btnMain} className="login-btn" disabled={loadingReg}>
                 {loadingReg ? 'Creando cuenta...' : 'Crear cuenta'}
               </button>
             </form>
@@ -234,20 +235,20 @@ function Login({ onLogin }) {
         </div>
 
       
-        <div style={s.panel}>
+        <div style={s.panel} className="login-panel">
           {vista === 'login' ? (
             <>
               <div style={s.panelLogo}>DeviceGuard</div>
-              <div style={s.panelTitle}>¡Bienvenido!</div>
-              <div style={s.panelSub}>¿No tienes cuenta aún?<br />Regístrate y comienza<br />a gestionar dispositivos</div>
-              <button style={s.btnOutline} onClick={irRegistro} type="button">Registrarse</button>
+              <div style={s.panelTitle} className="login-panel-title">¡Bienvenido!</div>
+              <div style={s.panelSub} className="login-panel-sub">¿No tienes cuenta aún?<br />Regístrate y comienza<br />a gestionar dispositivos</div>
+              <button style={s.btnOutline} className="login-btn-outline" onClick={irRegistro} type="button">Registrarse</button>
             </>
           ) : (
             <>
               <div style={s.panelLogo}>DeviceGuard</div>
-              <div style={s.panelTitle}>¡Bienvenido de nuevo!</div>
-              <div style={s.panelSub}>¿Ya tienes cuenta?<br />Inicia sesión para<br />continuar</div>
-              <button style={s.btnOutline} onClick={irLogin} type="button">Iniciar sesión</button>
+              <div style={s.panelTitle} className="login-panel-title">¡Bienvenido de nuevo!</div>
+              <div style={s.panelSub} className="login-panel-sub">¿Ya tienes cuenta?<br />Inicia sesión para<br />continuar</div>
+              <button style={s.btnOutline} className="login-btn-outline" onClick={irLogin} type="button">Iniciar sesión</button>
             </>
           )}
         </div>

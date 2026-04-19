@@ -1,4 +1,6 @@
 ﻿import { NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import "./Sidebar.css";
 import dashboard_ from "../assets/icons/dashboard_.svg";
 import dispositivos_ from "../assets/icons/dispositivos_.svg";
 import correo_ from "../assets/icons/correo_.svg";
@@ -11,6 +13,19 @@ import equipo_ from "../assets/icons/equipo_.svg";
 import ajustes from "../assets/icons/ajustes.svg";
 
 function Sidebar({ usuario: usuarioProp }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const usuario = usuarioProp || JSON.parse(localStorage.getItem("usuario") || "{}");
   const rol = usuario.rol;
   const esUsuario = rol === "usuario";
@@ -55,31 +70,48 @@ function Sidebar({ usuario: usuarioProp }) {
   );
 
   return (
-    <aside style={{ width: "260px", background: "var(--bg-card)", borderRight: "1px solid var(--border)",
-      display: "flex", flexDirection: "column", flexShrink: 0, height: "100vh", position: "sticky", top: 0 }}>
-      <div style={{ padding: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem", borderBottom: "1px solid var(--border)" }}>
-        <h1 style={{ fontSize: "1.25rem", fontWeight: 700, margin: 0, color: "var(--text-main)", letterSpacing: "-0.5px" }}>DeviceGuard</h1>
+    <>
+      {/* HAMBURGER MENU BUTTON - Solo en mobile */}
+      <div className="sidebar-hamburger">
+        <button onClick={() => setSidebarOpen(!sidebarOpen)}>
+          ☰
+        </button>
       </div>
-      <div style={{ flexGrow: 1, overflowY: "auto", padding: "1rem 0" }}>
-        <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem", padding: "0 1rem" }}>
-          {menuItems.map(item => (
-            <NavLink key={item.path} to={item.path} style={navStyle}>{renderIcon(item)}</NavLink>
-          ))}
-        </nav>
-        {pageItems.length > 0 && (
-          <>
-            <div style={{ padding: "1.5rem 1.5rem 0.75rem 1.5rem" }}>
-              <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text-muted)", letterSpacing: "1px" }}>PAGINAS</span>
-            </div>
-            <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem", padding: "0 1rem" }}>
-              {pageItems.map(item => (
-                <NavLink key={item.path} to={item.path} style={navStyle}>{renderIcon(item)}</NavLink>
-              ))}
-            </nav>
-          </>
-        )}
-      </div>
-    </aside>
+
+      <aside style={{ width: "260px", background: "var(--bg-card)", borderRight: "1px solid var(--border)",
+        display: "flex", flexDirection: "column", flexShrink: 0, height: "100vh", position: "sticky", top: 0 }} className={sidebarOpen ? "active" : ""}>
+        <div style={{ padding: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem", borderBottom: "1px solid var(--border)" }}>
+          <h1 style={{ fontSize: "1.25rem", fontWeight: 700, margin: 0, color: "var(--text-main)", letterSpacing: "-0.5px" }}>DeviceGuard</h1>
+        </div>
+        <div style={{ flexGrow: 1, overflowY: "auto", padding: "1rem 0" }}>
+          <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem", padding: "0 1rem" }}>
+            {menuItems.map(item => (
+              <NavLink key={item.path} to={item.path} style={navStyle} onClick={() => setSidebarOpen(false)}>{renderIcon(item)}</NavLink>
+            ))}
+          </nav>
+          {pageItems.length > 0 && (
+            <>
+              <div style={{ padding: "1.5rem 1.5rem 0.75rem 1.5rem" }}>
+                <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text-muted)", letterSpacing: "1px" }}>PAGINAS</span>
+              </div>
+              <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem", padding: "0 1rem" }}>
+                {pageItems.map(item => (
+                  <NavLink key={item.path} to={item.path} style={navStyle} onClick={() => setSidebarOpen(false)}>{renderIcon(item)}</NavLink>
+                ))}
+              </nav>
+            </>
+          )}
+        </div>
+      </aside>
+
+      {/* OVERLAY para cerrar sidebar */}
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+    </>
   );
 }
 

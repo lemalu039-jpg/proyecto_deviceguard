@@ -179,15 +179,8 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
 
   return (
     <div className="disp-wrap">
-      <div style={{
-  padding: "10px",
-  background: "#f1f5f9",
-  borderRadius: "8px",
-  marginBottom: "15px"
-}}>
-  <h4>Generadores</h4>
-  <p>Serial: {serial}</p>
-</div>
+      {/* Generador visible solo en consola */}
+      {console.log('Serial generado:', serial)}
 
       {/* banner */}
       <div className="disp-banner">

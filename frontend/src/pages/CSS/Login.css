@@ -1,0 +1,141 @@
+/* Login Responsive */
+
+/* Mobile - Compactar mucho */
+@media (max-width: 768px) {
+  .login-page {
+    padding: 0.5rem !important;
+  }
+
+  .login-card {
+    minHeight: 'auto' !important;
+    maxWidth: '100%' !important;
+    minHeight: 'auto' !important;
+    minHeight: 100vh !important;
+    flexDirection: column !important;
+  }
+
+  .login-form-wrap {
+    position: static !important;
+    width: 100% !important;
+    padding: 1.25rem 1rem !important;
+    minHeight: auto !important;
+  }
+
+  .login-panel {
+    position: static !important;
+    width: 100% !important;
+    padding: 1.5rem 1rem !important;
+    minHeight: auto !important;
+  }
+
+  .login-title {
+    fontSize: '1.1rem' !important;
+    marginBottom: '0.75rem' !important;
+  }
+
+  .login-field {
+    marginBottom: '0.5rem' !important;
+    padding: '0 0.55rem' !important;
+  }
+
+  .login-input {
+    padding: '0.45rem 0.35rem' !important;
+    fontSize: '0.78rem' !important;
+  }
+
+  .login-btn {
+    padding: '0.55rem' !important;
+    fontSize: '0.8rem' !important;
+    marginTop: '0.5rem' !important;
+  }
+
+  .login-icon-wrap {
+    width: '70px' !important;
+    height: '70px' !important;
+    margin: '0.5rem auto 0.75rem' !important;
+  }
+
+  .login-icon-wrap img {
+    width: '80px' !important;
+    height: '80px' !important;
+  }
+
+  .login-panel-title {
+    fontSize: '1.15rem' !important;
+    marginBottom: '0.3rem' !important;
+  }
+
+  .login-panel-sub {
+    fontSize: '0.72rem' !important;
+    marginBottom: '1rem' !important;
+    lineHeight: 1.5 !important;
+  }
+
+  .login-btn-outline {
+    padding: '0.45rem 1.25rem' !important;
+    fontSize: '0.76rem' !important;
+  }
+
+  .login-alert {
+    fontSize: '0.7rem' !important;
+    padding: '0.4rem 0.6rem' !important;
+    marginBottom: '0.5rem' !important;
+  }
+
+  .login-forgot {
+    fontSize: '0.65rem' !important;
+    marginTop: '-0.3rem' !important;
+    marginBottom: '0.5rem' !important;
+  }
+
+  .login-row2 {
+    gap: '4px' !important;
+  }
+}
+
+/* Extra small */
+@media (max-width: 480px) {
+  .login-form-wrap {
+    padding: 1rem 0.75rem !important;
+  }
+
+  .login-panel {
+    padding: 1.25rem 0.75rem !important;
+  }
+
+  .login-field {
+    marginBottom: '0.45rem' !important;
+  }
+
+  .login-title {
+    fontSize: '1rem' !important;
+  }
+
+  .login-input {
+    padding: '0.4rem 0.3rem' !important;
+    fontSize: '0.75rem' !important;
+  }
+
+  .login-icon-wrap {
+    width: '60px' !important;
+    height: '60px' !important;
+    margin: '0.4rem auto 0.6rem' !important;
+  }
+
+  .login-icon-wrap img {
+    width: '70px' !important;
+    height: '70px' !important;
+  }
+}
+
+/* Scrollable en mobile */
+@media (max-width: 768px) {
+  .login-form-wrap {
+    overflowY: 'auto' !important;
+    maxHeight: '100vh' !important;
+  }
+
+  .login-panel {
+    overflowY: 'auto' !important;
+  }
+}
