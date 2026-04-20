@@ -8,13 +8,13 @@ function Reportes() {
   const [fechaUsuarios, setFechaUsuarios] = useState({ desde: "", hasta: "" });
   const [fechaDispositivos, setFechaDispositivos] = useState({ desde: "", hasta: "" });
 
-  const descargar = (blob, headers, nombreBase) => {
+  const descargar = (blob, headers, nombreBase, formato) => {
     const ahora = new Date();
     const fecha = ahora.toISOString().split("T")[0];
     const hora  = ahora.toTimeString().slice(0, 5).replace(":", "-");
 
     // Intentar usar el nombre que manda el backend
-    let nombreArchivo = `${nombreBase}_${fecha}_${hora}.xlsx`;
+    let nombreArchivo = `${nombreBase}_${fecha}_${hora}.${formato}`;
     const disposition = headers["content-disposition"];
     if (disposition && disposition.includes("filename=")) {
       const match = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
@@ -31,7 +31,8 @@ function Reportes() {
     window.URL.revokeObjectURL(url);
   };
 
-  const generarUsuarios = async () => {
+  // EXCEL
+  const generarUsuariosExcel = async () => {
     try {
       const params = {};
       if (fechaUsuarios.desde) params.desde = fechaUsuarios.desde;
@@ -40,13 +41,14 @@ function Reportes() {
         "http://localhost:5000/api/reportes/usuarios-excel",
         { responseType: "blob", params }
       );
-      descargar(res.data, res.headers, "reporte_usuarios");
+      descargar(res.data, res.headers, "reporte_usuarios", "xlsx");
     } catch (error) {
       console.error(error);
+      alert("Error al descargar Excel de usuarios");
     }
   };
 
-  const generarDispositivos = async () => {
+  const generarDispositivosExcel = async () => {
     try {
       const params = {};
       if (fechaDispositivos.desde) params.desde = fechaDispositivos.desde;
@@ -55,9 +57,43 @@ function Reportes() {
         "http://localhost:5000/api/reportes/dispositivos-excel",
         { responseType: "blob", params }
       );
-      descargar(res.data, res.headers, "reporte_dispositivos");
+      descargar(res.data, res.headers, "reporte_dispositivos", "xlsx");
     } catch (error) {
       console.error("Error al descargar dispositivos:", error);
+      alert("Error al descargar Excel de dispositivos");
+    }
+  };
+
+  // PDF
+  const generarUsuariosPdf = async () => {
+    try {
+      const params = {};
+      if (fechaUsuarios.desde) params.desde = fechaUsuarios.desde;
+      if (fechaUsuarios.hasta) params.hasta = fechaUsuarios.hasta;
+      const res = await axios.get(
+        "http://localhost:5000/api/reportes/usuarios-pdf",
+        { responseType: "blob", params }
+      );
+      descargar(res.data, res.headers, "reporte_usuarios", "pdf");
+    } catch (error) {
+      console.error(error);
+      alert("Error al descargar PDF de usuarios");
+    }
+  };
+
+  const generarDispositivosPdf = async () => {
+    try {
+      const params = {};
+      if (fechaDispositivos.desde) params.desde = fechaDispositivos.desde;
+      if (fechaDispositivos.hasta) params.hasta = fechaDispositivos.hasta;
+      const res = await axios.get(
+        "http://localhost:5000/api/reportes/dispositivos-pdf",
+        { responseType: "blob", params }
+      );
+      descargar(res.data, res.headers, "reporte_dispositivos", "pdf");
+    } catch (error) {
+      console.error("Error al descargar dispositivos:", error);
+      alert("Error al descargar PDF de dispositivos");
     }
   };
 
@@ -68,10 +104,10 @@ function Reportes() {
 
       <div className="cards">
 
-        {/* Usuarios */}
+        {/* Usuarios - EXCEL */}
         <div className="card">
           <img src={usuariosIcon} alt="usuarios" />
-          <h3>Reporte Usuarios</h3>
+          <h3>Reporte Usuarios (Excel)</h3>
           <div className="reporte-fechas">
             <label>Desde
               <input type="date" value={fechaUsuarios.desde}
@@ -82,13 +118,30 @@ function Reportes() {
                 onChange={e => setFechaUsuarios(f => ({ ...f, hasta: e.target.value }))} />
             </label>
           </div>
-          <button onClick={generarUsuarios}>Generar Reporte</button>
+          <button onClick={generarUsuariosExcel}>Generar Excel</button>
         </div>
 
-        {/* Dispositivos */}
+        {/* Usuarios - PDF */}
+        <div className="card">
+          <img src={usuariosIcon} alt="usuarios" />
+          <h3>Reporte Usuarios (PDF)</h3>
+          <div className="reporte-fechas">
+            <label>Desde
+              <input type="date" value={fechaUsuarios.desde}
+                onChange={e => setFechaUsuarios(f => ({ ...f, desde: e.target.value }))} />
+            </label>
+            <label>Hasta
+              <input type="date" value={fechaUsuarios.hasta}
+                onChange={e => setFechaUsuarios(f => ({ ...f, hasta: e.target.value }))} />
+            </label>
+          </div>
+          <button onClick={generarUsuariosPdf}>Generar PDF</button>
+        </div>
+
+        {/* Dispositivos - EXCEL */}
         <div className="card">
           <img src={dispositivosIcon} alt="dispositivos" />
-          <h3>Reporte Dispositivos</h3>
+          <h3>Reporte Dispositivos (Excel)</h3>
           <div className="reporte-fechas">
             <label>Desde
               <input type="date" value={fechaDispositivos.desde}
@@ -99,7 +152,24 @@ function Reportes() {
                 onChange={e => setFechaDispositivos(f => ({ ...f, hasta: e.target.value }))} />
             </label>
           </div>
-          <button onClick={generarDispositivos}>Generar Reporte</button>
+          <button onClick={generarDispositivosExcel}>Generar Excel</button>
+        </div>
+
+        {/* Dispositivos - PDF */}
+        <div className="card">
+          <img src={dispositivosIcon} alt="dispositivos" />
+          <h3>Reporte Dispositivos (PDF)</h3>
+          <div className="reporte-fechas">
+            <label>Desde
+              <input type="date" value={fechaDispositivos.desde}
+                onChange={e => setFechaDispositivos(f => ({ ...f, desde: e.target.value }))} />
+            </label>
+            <label>Hasta
+              <input type="date" value={fechaDispositivos.hasta}
+                onChange={e => setFechaDispositivos(f => ({ ...f, hasta: e.target.value }))} />
+            </label>
+          </div>
+          <button onClick={generarDispositivosPdf}>Generar PDF</button>
         </div>
 
       </div>
