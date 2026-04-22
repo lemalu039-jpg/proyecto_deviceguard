@@ -39,6 +39,30 @@ class UsuarioModel {
         return rows[0];
     }
     
+    static async guardarTokenRecuperacion(id, token, expires) {
+        const [result] = await pool.query(
+            'UPDATE usuarios SET reset_token = ?, reset_token_expires = ? WHERE id = ?',
+            [token, expires, id]
+        );
+        return result.affectedRows;
+    }
+
+    static async findByResetToken(token) {
+        const [rows] = await pool.query(
+            'SELECT * FROM usuarios WHERE reset_token = ? AND reset_token_expires > NOW()',
+            [token]
+        );
+        return rows[0];
+    }
+
+    static async borrarTokenRecuperacion(id) {
+        const [result] = await pool.query(
+            'UPDATE usuarios SET reset_token = NULL, reset_token_expires = NULL WHERE id = ?',
+            [id]
+        );
+        return result.affectedRows;
+    }
+    
     static async cambiarCorreo(id, correo) {
     const [result] = await pool.query(
         'UPDATE usuarios SET correo = ? WHERE id = ?',

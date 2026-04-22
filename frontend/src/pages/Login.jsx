@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './CSS/Login.css';
 import logo from '../assets/icons/logo-deviceguard.svg';  
@@ -9,6 +9,17 @@ import usuario from '../assets/icons/usuario.svg';
 function Login({ onLogin }) {
   const [vista, setVista] = useState('login');
   const [panelSlide, setPanelSlide] = useState(false);
+  const [resetToken, setResetToken] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (token) {
+      setResetToken(token);
+      setVista('restablecer');
+      setPanelSlide(false);
+    }
+  }, []);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,7 +32,18 @@ function Login({ onLogin }) {
   const [loadingReg, setLoadingReg] = useState(false);
   const [mostrarPassword, setMostrarPassword] = useState(false);
 
-  const irRegistro = () => {
+  // Estados para Recuperar Contraseña
+  const [emailRecuperar, setEmailRecuperar] = useState('');
+  const [errorRecuperar, setErrorRecuperar] = useState('');
+  const [exitoRecuperar, setExitoRecuperar] = useState('');
+  const [loadingRecuperar, setLoadingRecuperar] = useState(false);
+
+  // Estados para Restablecer Contraseña
+  const [nuevaContrasena, setNuevaContrasena] = useState('');
+  const [confirmarNueva, setConfirmarNueva] = useState('');
+  const [errorRestablecer, setErrorRestablecer] = useState('');
+  const [exitoRestablecer, setExitoRestablecer] = useState('');
+  const [loadingRestablecer, setLoadingRestablecer] = useState(false);  const irRegistro = () => {
     setPanelSlide(true);
     setTimeout(() => setVista('registro'), 280);
   };
@@ -29,6 +51,51 @@ function Login({ onLogin }) {
   const irLogin = () => {
     setPanelSlide(false);
     setTimeout(() => setVista('login'), 280);
+  };
+
+  const irRecuperar = () => {
+    setPanelSlide(false);
+    setTimeout(() => setVista('recuperar'), 280);
+  };
+
+  const handleRecuperar = async (e) => {
+    e.preventDefault();
+    setErrorRecuperar('');
+    setExitoRecuperar('');
+    if (!emailRecuperar) { setErrorRecuperar('Ingresa tu correo electrónico.'); return; }
+    setLoadingRecuperar(true);
+    try {
+      const res = await axios.post('http://localhost:5000/api/usuarios/recuperar', { correo: emailRecuperar });
+      setExitoRecuperar(res.data.message || 'Se han enviado las instrucciones al correo.');
+      setTimeout(() => irLogin(), 5000);
+    } catch (err) {
+      setErrorRecuperar('Error al procesar la solicitud');
+    } finally {
+      setLoadingRecuperar(false);
+    }
+  };
+
+  const handleRestablecer = async (e) => {
+    e.preventDefault();
+    setErrorRestablecer('');
+    setExitoRestablecer('');
+    if (!nuevaContrasena || !confirmarNueva) { setErrorRestablecer('Completa todos los campos'); return; }
+    if (nuevaContrasena !== confirmarNueva) { setErrorRestablecer('Las contraseñas no coinciden'); return; }
+    if (nuevaContrasena.length < 6) { setErrorRestablecer('Mínimo 6 caracteres'); return; }
+    setLoadingRestablecer(true);
+    try {
+      const res = await axios.post('http://localhost:5000/api/usuarios/restablecer', { token: resetToken, nuevaContrasena });
+      setExitoRestablecer(res.data.message || 'Contraseña actualizada. Redirigiendo...');
+      setTimeout(() => {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        irLogin();
+      }, 3000);
+    } catch (err) {
+      if (err.response) setErrorRestablecer(err.response.data.error || 'Error al restablecer contraseña');
+      else setErrorRestablecer('Error al procesar la solicitud');
+    } finally {
+      setLoadingRestablecer(false);
+    }
   };
 
   const handleLogin = async (e) => {
@@ -193,12 +260,12 @@ function Login({ onLogin }) {
                 <input className="login-input" style={s.input} type={mostrarPassword ? "text" : "password"} placeholder="••••••••••"
                   value={password} onChange={e => setPassword(e.target.value)} disabled={loadingLogin} />
               </div>
-              <div style={s.forgot} className="login-forgot">¿Olvidaste tu contraseña?</div>
+              <div style={s.forgot} className="login-forgot" onClick={irRecuperar}>¿Olvidaste tu contraseña?</div>
               <button type="submit" style={loadingLogin ? s.btnOff : s.btnMain} className="login-btn" disabled={loadingLogin}>
                 {loadingLogin ? 'Iniciando sesión...' : 'Inicia sesión'}
               </button>
             </form>
-          ) : (
+          ) : vista === 'registro' ? (
             <form onSubmit={handleRegistro}>
               <div style={s.title} className="login-title">Crear cuenta</div>
               {errorReg && <div style={s.alertErr} className="login-alert">{errorReg}</div>}
@@ -231,6 +298,42 @@ function Login({ onLogin }) {
                 {loadingReg ? 'Creando cuenta...' : 'Crear cuenta'}
               </button>
             </form>
+          ) : vista === 'recuperar' ? (
+            <form onSubmit={handleRecuperar}>
+              <div style={s.title} className="login-title">Recuperar Contraseña</div>
+              <p style={{textAlign: 'center', fontSize: '0.85rem', marginBottom: '1rem', color: isDark ? '#cbd5e1' : '#555'}}>
+                Ingresa tu correo y te enviaremos las instrucciones.
+              </p>
+              {errorRecuperar && <div style={s.alertErr} className="login-alert">{errorRecuperar}</div>}
+              {exitoRecuperar && <div style={s.alertOk} className="login-alert">{exitoRecuperar}</div>}
+              <div style={s.field} className="login-field">
+                <img src={correo} alt="correo" style={{ width: "16px", marginRight: "6px" }} />
+                <input className="login-input" style={s.input} type="email" placeholder="Correo electrónico"
+                  value={emailRecuperar} onChange={e => setEmailRecuperar(e.target.value)} disabled={loadingRecuperar} />
+              </div>
+              <button type="submit" style={loadingRecuperar ? s.btnOff : s.btnMain} className="login-btn" disabled={loadingRecuperar}>
+                {loadingRecuperar ? 'Enviando...' : 'Enviar correo'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleRestablecer}>
+              <div style={s.title} className="login-title">Restablecer Contraseña</div>
+              {errorRestablecer && <div style={s.alertErr} className="login-alert">{errorRestablecer}</div>}
+              {exitoRestablecer && <div style={s.alertOk} className="login-alert">{exitoRestablecer}</div>}
+              <div style={s.field} className="login-field">
+                <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
+                <input className="login-input" style={s.input} type="password" placeholder="Nueva contraseña"
+                  value={nuevaContrasena} onChange={e => setNuevaContrasena(e.target.value)} disabled={loadingRestablecer} />
+              </div>
+              <div style={s.field} className="login-field">
+                <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
+                <input className="login-input" style={s.input} type="password" placeholder="Confirmar nueva contraseña"
+                  value={confirmarNueva} onChange={e => setConfirmarNueva(e.target.value)} disabled={loadingRestablecer} />
+              </div>
+              <button type="submit" style={loadingRestablecer ? s.btnOff : s.btnMain} className="login-btn" disabled={loadingRestablecer}>
+                {loadingRestablecer ? 'Guardando...' : 'Guardar contraseña'}
+              </button>
+            </form>
           )}
         </div>
 
@@ -243,12 +346,26 @@ function Login({ onLogin }) {
               <div style={s.panelSub} className="login-panel-sub">¿No tienes cuenta aún?<br />Regístrate y comienza<br />a gestionar dispositivos</div>
               <button style={s.btnOutline} className="login-btn-outline" onClick={irRegistro} type="button">Registrarse</button>
             </>
-          ) : (
+          ) : vista === 'registro' ? (
             <>
               <div style={s.panelLogo}>DeviceGuard</div>
               <div style={s.panelTitle} className="login-panel-title">¡Bienvenido de nuevo!</div>
               <div style={s.panelSub} className="login-panel-sub">¿Ya tienes cuenta?<br />Inicia sesión para<br />continuar</div>
               <button style={s.btnOutline} className="login-btn-outline" onClick={irLogin} type="button">Iniciar sesión</button>
+            </>
+          ) : vista === 'recuperar' ? (
+            <>
+              <div style={s.panelLogo}>DeviceGuard</div>
+              <div style={s.panelTitle} className="login-panel-title">Tranquilo</div>
+              <div style={s.panelSub} className="login-panel-sub">Suele pasar.<br />Ingresa tu correo y te ayudaremos<br />a recuperar el acceso.</div>
+              <button style={s.btnOutline} className="login-btn-outline" onClick={irLogin} type="button">Volver al Login</button>
+            </>
+          ) : (
+            <>
+              <div style={s.panelLogo}>DeviceGuard</div>
+              <div style={s.panelTitle} className="login-panel-title">Casi listo</div>
+              <div style={s.panelSub} className="login-panel-sub">Ingresa una nueva contraseña<br />para tu cuenta y asegúrate<br />de recordarla.</div>
+              <button style={s.btnOutline} className="login-btn-outline" onClick={irLogin} type="button">Volver al Login</button>
             </>
           )}
         </div>
