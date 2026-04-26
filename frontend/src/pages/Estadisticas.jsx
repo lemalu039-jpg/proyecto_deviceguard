@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { getDispositivos } from '../services/api';
 import './CSS/Estadisticas_responsive.css';
+import Pagination from '../components/Pagination';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer
@@ -36,6 +37,8 @@ function Estadisticas() {
   const [filtroEstado, setFiltroEstado] = useState('todos');
   const [filtroTipo,   setFiltroTipo]   = useState('todos');
   const [filtroLinea,  setFiltroLinea]  = useState('todos');
+  const [currentPage,  setCurrentPage]  = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,6 +103,8 @@ function Estadisticas() {
   useEffect(() => {
     if (filtroTipo !== 'todos' && !tiposDisponibles.includes(filtroTipo)) setFiltroTipo('todos');
   }, [tiposDisponibles]);
+
+  useEffect(() => { setCurrentPage(1); }, [filtroAnio, filtroMes, filtroEstado, filtroTipo]);
 
   // ── 3. Filtrar por estado y tipo ────────────────────────────────────
   const dispositivosFiltrados = useMemo(() => {
@@ -442,9 +447,9 @@ function Estadisticas() {
           <div style={{ background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>
             <div style={{ padding: '1.25rem 1.25rem .75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{ width: '4px', height: '16px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px' }}></div>
-              <span style={{ fontSize: '.88rem', fontWeight: 700, color: 'var(--text-main)' }}>Registros filtrados</span>
+              <span style={{ fontSize: '.88rem', fontWeight: 700, color: 'var(--text-main)' }}>Dispositivos</span>
               <span style={{ marginLeft: 'auto', fontSize: '.72rem', color: 'var(--text-muted)', background: 'var(--input-bg)', padding: '2px 9px', borderRadius: '20px' }}>
-                {Math.min(dispositivosFiltrados.length, 10)} de {dispositivosFiltrados.length}
+                {dispositivosFiltrados.length} resultado{dispositivosFiltrados.length !== 1 ? 's' : ''}
               </span>
             </div>
             <div style={{ overflowX: 'auto' }} className="estadisticas-table-wrapper">
@@ -460,7 +465,9 @@ function Estadisticas() {
                   </tr>
                 </thead>
                 <tbody>
-                  {dispositivosFiltrados.slice(0, 10).map((d, i) => (
+                  {dispositivosFiltrados
+                    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                    .map((d, i) => (
                     <tr key={d.id} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
                       <td style={tdStyle}><div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div></td>
                       <td style={tdStyle}>{d.tipo || 'N/A'}</td>
@@ -484,6 +491,12 @@ function Estadisticas() {
                 </tbody>
               </table>
             </div>
+            <Pagination
+              totalItems={dispositivosFiltrados.length}
+              itemsPerPage={itemsPerPage}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+            />
           </div>
 
         </>
