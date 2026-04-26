@@ -89,3 +89,9 @@
     transform: translateX(0) !important;
   }
 }
+
+[data-theme='dark'] aside {
+  background: linear-gradient(160deg, #0e1f38 0%, #0a1828 50%, #0c1d32 100%) !important;
+  border-right: 1px solid rgba(4, 146, 194, 0.18) !important;
+  box-shadow: 2px 0 20px rgba(4, 146, 194, 0.06) !important;
+}

@@ -35,7 +35,7 @@
 .disp-banner-title {
   font-size: 1.8rem;
   font-weight: 800;
-  color: var(--bg-card);
+  color: #ffffff;
   line-height: 1.2;
   margin-bottom: .6rem;
 }
@@ -233,7 +233,7 @@
 }
 
 .disp-table tbody tr:hover td {
-  background: #f8faff;
+  background: var(--hover);
 }
 
 .disp-table tbody tr:last-child td {

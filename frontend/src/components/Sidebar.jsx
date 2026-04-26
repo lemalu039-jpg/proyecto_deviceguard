@@ -1,4 +1,4 @@
-﻿import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "./Sidebar.css";
 import dashboard_ from "../assets/icons/dashboard_.svg";
@@ -11,6 +11,7 @@ import calendario_ from "../assets/icons/calendario_.svg";
 import estadisticas_ from "../assets/icons/estadisticas_.svg";
 import equipo_ from "../assets/icons/equipo_.svg";
 import ajustes from "../assets/icons/ajustes.svg";
+import settings from "../assets/icons/settings.svg";
 
 function Sidebar({ usuario: usuarioProp }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -39,25 +40,31 @@ function Sidebar({ usuario: usuarioProp }) {
     ...(!esUsuario ? [{ path: "/consultarfiltros", label: "Consulta con Filtros", icon: consultafiltros_ }] : []),
   ];
 
-  const pageItems = esUsuario ? [] : esTecnico ? [
+  const pageItems = esUsuario ? [
+    { path: "/ajustes-cuenta", label: "Ajustes de Cuenta", icon: settings },
+  ] : esTecnico ? [
     { path: "/gestion", label: "Gestion de mantenimiento", icon: ajustes },
     { path: "/registrarsalida", label: "Registrar Salida", icon: registrarsalida_ },
     { path: "/reportes", label: "Generar Reportes", icon: generar_reportes_ },
     { path: "/estadisticas", label: "Estadisticas", icon: estadisticas_ },
+    { path: "/ajustes-cuenta", label: "Ajustes de Cuenta", icon: settings },
   ] : [
     { path: "/reportes", label: "Generar Reportes", icon: generar_reportes_ },
     { path: "/registrarsalida", label: "Registrar Salida", icon: registrarsalida_ },
     { path: "/estadisticas", label: "Estadisticas", icon: estadisticas_ },
     { path: "/equipo", label: "Equipo", icon: equipo_ },
     { path: "/gestion", label: "Gestion de mantenimiento", icon: ajustes },
+    { path: "/ajustes-cuenta", label: "Ajustes de Cuenta", icon: settings },
   ];
 
   const navStyle = ({ isActive }) => ({
     display: "flex", alignItems: "center", gap: "1rem",
-    padding: "0.75rem 1rem", borderRadius: "var(--radius-sm)",
+    padding: "0.75rem 1rem", borderRadius: "10px",
     color: isActive ? "#ffffff" : "var(--text-muted)",
-    background: isActive ? "var(--sidebar-active-bg)" : "transparent",
-    fontWeight: isActive ? 600 : 500, fontSize: "0.9rem", textDecoration: "none",
+    background: isActive ? "linear-gradient(135deg, #0492C2, #0a6fa8)" : "transparent",
+    fontWeight: isActive ? 700 : 500, fontSize: "0.9rem", textDecoration: "none",
+    boxShadow: isActive ? "0 4px 15px rgba(4, 146, 194, 0.35)" : "none",
+    transition: "all 0.2s ease",
   });
 
   const renderIcon = (item) => ({ isActive }) => (
@@ -78,10 +85,10 @@ function Sidebar({ usuario: usuarioProp }) {
         </button>
       </div>
 
-      <aside style={{ width: "260px", background: "var(--bg-card)", borderRight: "1px solid var(--border)",
+      <aside style={{ width: "260px", background: "var(--bg-sidebar)", borderRight: "1px solid var(--border)",
         display: "flex", flexDirection: "column", flexShrink: 0, height: "100vh", position: "sticky", top: 0 }} className={sidebarOpen ? "active" : ""}>
-        <div style={{ padding: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem", borderBottom: "1px solid var(--border)" }}>
-          <h1 style={{ fontSize: "1.25rem", fontWeight: 700, margin: 0, color: "var(--text-main)", letterSpacing: "-0.5px" }}>DeviceGuard</h1>
+        <div style={{ padding: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem", borderBottom: "1px solid var(--border)", background: "var(--bg-sidebar)" }}>
+          <h1 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, letterSpacing: "-0.5px", background: "linear-gradient(135deg, #0492C2, #82EEFD)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>DeviceGuard</h1>
         </div>
         <div style={{ flexGrow: 1, overflowY: "auto", padding: "1rem 0" }}>
           <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem", padding: "0 1rem" }}>
@@ -101,6 +108,21 @@ function Sidebar({ usuario: usuarioProp }) {
               </nav>
             </>
           )}
+        </div>
+
+        {/* User Profile Info fixed at bottom */}
+        <div style={{ padding: "1.2rem 1.5rem", borderTop: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "0.75rem", background: "var(--bg-sidebar)", marginTop: "auto" }}>
+          <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: "bold", fontSize: "1.1rem" }}>
+            {usuario?.nombre ? usuario.nombre.charAt(0).toUpperCase() : "U"}
+          </div>
+          <div style={{ flex: 1, overflow: "hidden" }}>
+            <p style={{ margin: 0, fontSize: "0.85rem", fontWeight: 600, color: "var(--text-main)", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
+              {usuario?.nombre || "Usuario"}
+            </p>
+            <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-muted)" }}>
+              {usuario?.rol === "super_admin" ? "Super Admin" : usuario?.rol === "tecnico" ? "Técnico" : "Usuario"}
+            </p>
+          </div>
         </div>
       </aside>
 

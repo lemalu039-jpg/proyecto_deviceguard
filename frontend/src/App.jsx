@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
+import Breadcrumbs from './components/Breadcrumbs';
 import { ThemeProvider } from './context/ThemeContext';
 
 // Pages
@@ -23,6 +23,7 @@ import GestionMantenimiento from './pages/GestionMantenimiento';
 import Equipo from './pages/Equipo';
 import Calendario from './pages/Calendario';
 import HistorialDispositivo from './pages/HistorialDispositivo';
+import AjustesCuenta from './pages/AjustesCuenta';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -61,7 +62,7 @@ function App() {
       <div className="app-container">
         <Sidebar onLogout={handleLogout} usuario={usuario} />
         <div className="main-content">
-          <Navbar onLogout={handleLogout} />
+          <Breadcrumbs />
           <div className="page-container">
             {children}
           </div>
@@ -98,6 +99,7 @@ function App() {
           <Route path="/equipo" element={<ProtectedRoute><Equipo /></ProtectedRoute>} />
           <Route path="/calendario" element={<ProtectedRoute><Calendario /></ProtectedRoute>} />
           <Route path="/historial/:id" element={<ProtectedRoute><HistorialDispositivo /></ProtectedRoute>} />
+          <Route path="/ajustes-cuenta" element={<ProtectedRoute><AjustesCuenta onLogout={handleLogout} /></ProtectedRoute>} />
         </Routes>
       </Router>
     </ThemeProvider>

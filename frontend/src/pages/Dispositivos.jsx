@@ -3,6 +3,7 @@ import { getDispositivos, createDispositivo, updateDispositivo, deleteDispositiv
 import { Modal } from 'bootstrap';
 import './CSS/Dispositivos.css';
 import { generarSerial } from "../ejemplo/generador";
+import Pagination from '../components/Pagination';
 
 const Icon = ({ d, size = 14 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -18,6 +19,8 @@ useEffect(() => {
   }, []);
 const [serial, setSerial] = useState(""); // Estado para almacenar el serial generado del ejemplo
   const [dispositivos, setDispositivos] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 7;
   const [form, setForm] = useState({
     nombre: '', tipo: '', serial: '', marca: '',
     ubicacion: '', estado: 'Disponible',
@@ -361,7 +364,7 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
               </tr>
             </thead>
             <tbody>
-              {dispositivos.map(d => (
+              {dispositivos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(d => (
                 <tr key={d.id}>
                   <td>
                     <div className="disp-dev-name">{d.nombre}</div>
@@ -397,6 +400,12 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
             </tbody>
           </table>
         </div>
+        <Pagination
+          totalItems={dispositivos.length}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
     </div>

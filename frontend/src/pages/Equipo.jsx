@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUsuarios, createUsuario, updateUsuario, deleteUsuario } from "../services/api";
+import { getUsuarios, createUsuario, updateUsuario, deleteUsuario, toggleUsuarioStatus } from "../services/api";
 import "./CSS/Equipo.css";
+import Pagination from "../components/Pagination";
 
 const Icon = ({ d, size = 16 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -19,6 +20,8 @@ const colorPorId = (id) => COLORES[id % COLORES.length];
 function Equipo() {
   const [usuarios, setUsuarios] = useState([]);
   const [busqueda, setBusqueda] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 7;
   const usuarioActual = JSON.parse(localStorage.getItem("usuario") || "{}");
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
@@ -126,6 +129,17 @@ function Equipo() {
     }
   };
 
+  const handleToggleStatus = async (u) => {
+    try {
+      const nuevoEstado = u.activo === 1 ? 0 : 1;
+      await toggleUsuarioStatus(u.id, nuevoEstado);
+      mostrarToast(`Usuario ${nuevoEstado ? 'activado' : 'desactivado'} correctamente`);
+      cargarUsuarios();
+    } catch {
+      mostrarToast("Error al cambiar estado del usuario", true);
+    }
+  };
+
   return (
     <div className="equipo-root">
       {/* Header */}
@@ -180,10 +194,16 @@ function Equipo() {
             type="text"
             placeholder="Buscar por nombre o correo..."
             value={busqueda}
-            onChange={e => setBusqueda(e.target.value)}
+            onChange={e => {
+              setBusqueda(e.target.value);
+              setCurrentPage(1);
+            }}
           />
           {busqueda && (
-            <button onClick={() => setBusqueda("")}>
+            <button onClick={() => {
+              setBusqueda("");
+              setCurrentPage(1);
+            }}>
               <Icon d="M18 6L6 18M6 6l12 12" size={14} />
             </button>
           )}
@@ -209,7 +229,13 @@ function Equipo() {
                 if (filtrados.length === 0) return (
                   <tr><td colSpan="5" className="equipo-tabla-empty">No se encontraron usuarios</td></tr>
                 );
-                return filtrados.map(u => (
+                
+                // Paginación
+                const indexOfLastItem = currentPage * itemsPerPage;
+                const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                const currentItems = filtrados.slice(indexOfFirstItem, indexOfLastItem);
+
+                return currentItems.map(u => (
                   <tr key={u.id}>
                     <td>
                       <div className="equipo-tabla-user">
@@ -222,11 +248,13 @@ function Equipo() {
                     <td>{u.correo}</td>
                     <td>
                       <span className={`equipo-badge ${
+                        u.activo === 0 ? "inactivo" :
                         u.rol === "super_admin" ? "super-admin" : 
                         u.rol === "tecnico" ? "tecnico" : 
                         "usuario"
                       }`}>
-                        {u.rol === "super_admin" ? "Super Admin" : 
+                        {u.activo === 0 ? "Suspendido" : 
+                         u.rol === "super_admin" ? "Super Admin" : 
                          u.rol === "tecnico" ? "Técnico" : 
                          "Usuario"}
                       </span>
@@ -238,9 +266,17 @@ function Equipo() {
                           <Icon d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" size={14} />
                           Editar
                         </button>
-                        <button className="equipo-btn-eliminar" onClick={() => abrirEliminar(u)} title="Eliminar">
+                        <button 
+                          className="equipo-btn-eliminar" 
+                          onClick={() => handleToggleStatus(u)} 
+                          title={u.activo === 0 ? "Activar" : "Suspender"}
+                          style={{ background: u.activo === 0 ? "#16a34a" : "#dc2626", color: "#ffffff" }}
+                        >
+                          <Icon d={u.activo === 0 ? "M5 13l4 4L19 7" : "M18.36 6.64a9 9 0 11-12.73 0M12 2v10"} size={14} />
+                          {u.activo === 0 ? "Activar" : "Suspender"}
+                        </button>
+                        <button className="equipo-btn-eliminar" onClick={() => abrirEliminar(u)} title="Eliminar" style={{ background: "#475569", color: "#ffffff" }}>
                           <Icon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" size={14} />
-                          Eliminar
                         </button>
                       </div>
                     </td>
@@ -250,6 +286,17 @@ function Equipo() {
             </tbody>
           </table>
         </div>
+        
+        {/* Usamos el componente Pagination, la cantidad de items depende de la búsqueda */}
+        <Pagination
+          totalItems={usuarios.filter(u =>
+            u.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
+            u.correo?.toLowerCase().includes(busqueda.toLowerCase())
+          ).length}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       {/* Modal Añadir */}

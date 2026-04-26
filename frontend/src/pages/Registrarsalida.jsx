@@ -6,6 +6,7 @@ import {
   updateDispositivo
 } from "../services/api";
 import "./CSS/Registrarsalida.css";
+import Pagination from "../components/Pagination";
 
 function SalidaDispositivos() {
   const [salidas, setSalidas] = useState([]);
@@ -15,6 +16,8 @@ function SalidaDispositivos() {
     hora: new Date().toTimeString().slice(0, 5), estado: ""
   });
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 7;
   const esSuperAdmin = JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'super_admin';
 
   useEffect(() => {
@@ -139,6 +142,8 @@ const handleSubmit = async (e) => {
     }
   };
 
+  const filteredSalidas = salidas.filter(s => s.estado === "En Mantenimiento");
+
   return (
     <div className="salida-wrapper">
 
@@ -226,10 +231,10 @@ const handleSubmit = async (e) => {
               </tr>
             </thead>
             <tbody>
-              {salidas.length === 0 ? (
+              {filteredSalidas.length === 0 ? (
                 <tr><td colSpan={esSuperAdmin ? 5 : 4} className="salida-empty">No hay registros</td></tr>
               ) : (
-                salidas.filter(s => s.estado === "En Mantenimiento").map(s => (
+                filteredSalidas.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(s => (
                   <tr key={s.id}>
                     <td style={{ fontWeight: 700, color: 'var(--text-main)' }}>{s.serial}</td>
                     <td>
@@ -252,6 +257,13 @@ const handleSubmit = async (e) => {
             </tbody>
           </table>
         </div>
+        
+        <Pagination
+          totalItems={filteredSalidas.length}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
     </div>

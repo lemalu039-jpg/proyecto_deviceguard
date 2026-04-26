@@ -50,7 +50,21 @@ exports.delete = async (req, res) => {
     try {
         const affectedRows = await UsuarioModel.delete(req.params.id);
         if (affectedRows > 0) {
-            res.json({ message: 'Usuario eliminado exitosamente' });
+            res.json({ message: 'Usuario desactivado (borrado lógico) exitosamente' });
+        } else {
+            res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.toggleStatus = async (req, res) => {
+    try {
+        const { activo } = req.body;
+        const affectedRows = await UsuarioModel.toggleStatus(req.params.id, activo ? 1 : 0);
+        if (affectedRows > 0) {
+            res.json({ message: `Estado del usuario actualizado a ${activo ? 'activo' : 'inactivo'}` });
         } else {
             res.status(404).json({ error: 'Usuario no encontrado' });
         }
@@ -70,7 +84,7 @@ exports.login = async (req, res) => {
         const usuario = await UsuarioModel.findByEmail(correo);
 
         if (!usuario) {
-            return res.status(401).json({ error: 'Credenciales inválidas' });
+            return res.status(401).json({ error: 'Credenciales inválidas o cuenta desactivada' });
         }
 
         if (usuario.contrasena !== contrasena) {
@@ -90,9 +104,7 @@ exports.login = async (req, res) => {
 
 exports.cambiarCorreo = async (req, res) => {
     try {
-
         const { id, correo } = req.body;
-
         
         const usuario = await UsuarioModel.findById(id);
 
@@ -100,7 +112,6 @@ exports.cambiarCorreo = async (req, res) => {
             return res.status(404).json({ error: "Usuario no encontrado" });
         }
 
-      
         const affectedRows = await UsuarioModel.update(id, {
             nombre: usuario.nombre,
             correo: correo,
@@ -118,23 +129,19 @@ exports.cambiarCorreo = async (req, res) => {
     }
 };
 
-
 exports.registro = async (req, res) => {
     try {
         const { nombre, correo, contrasena, rol } = req.body;
 
-     
         if (!nombre || !correo || !contrasena) {
             return res.status(400).json({ error: 'Nombre, correo y contraseña son requeridos' });
         }
 
-        
         const usuarioExistente = await UsuarioModel.findByEmail(correo);
         if (usuarioExistente) {
             return res.status(409).json({ error: 'Este correo ya está registrado' });
         }
 
-       
         const insertId = await UsuarioModel.create({
             nombre,
             correo,
@@ -150,10 +157,10 @@ exports.registro = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
-    exports.cambiarContrasena = async (req, res) => {
-    try {
+};
 
+exports.cambiarContrasena = async (req, res) => {
+    try {
         const { id, contrasena } = req.body;
 
         if (!id || !contrasena) {
@@ -180,20 +187,17 @@ exports.solicitarRecuperacion = async (req, res) => {
 
         const usuario = await UsuarioModel.findByEmail(correo);
         if (!usuario) {
-            // Se responde éxito igual por seguridad (evitar enumeración de correos)
+            // Se responde éxito igual por seguridad
             return res.json({ message: 'Si el correo existe, se han enviado las instrucciones.' });
         }
 
-        // Generar token y fecha de expiración (1 hora)
         const token = crypto.randomBytes(32).toString('hex');
         const expires = new Date(Date.now() + 3600000); // 1 hora
         
-        // Formatear la fecha para MySQL DATETIME: YYYY-MM-DD HH:MM:SS
         const expiresFormatted = expires.toISOString().slice(0, 19).replace('T', ' ');
 
         await UsuarioModel.guardarTokenRecuperacion(usuario.id, token, expiresFormatted);
 
-        // Configurar nodemailer
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -202,7 +206,6 @@ exports.solicitarRecuperacion = async (req, res) => {
             }
         });
 
-        // Enlazar al frontend (el frontend corre en puerto 5173 usualmente)
         const resetLink = `http://localhost:5173/login?token=${token}`;
 
         await transporter.sendMail({
@@ -238,10 +241,7 @@ exports.restablecerContrasena = async (req, res) => {
             return res.status(400).json({ error: 'El enlace de recuperación es inválido o ha expirado' });
         }
 
-        // Actualizar la contraseña usando el método existente
         await UsuarioModel.cambiarContrasena(usuario.id, nuevaContrasena);
-        
-        // Limpiar el token para que no se pueda volver a usar
         await UsuarioModel.borrarTokenRecuperacion(usuario.id);
 
         res.json({ message: 'Contraseña actualizada correctamente. Ya puedes iniciar sesión.' });

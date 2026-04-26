@@ -15,5 +15,6 @@ router.get('/:id', usuariosController.getById);
 router.post('/', verificarRol('super_admin'), usuariosController.create);
 router.put('/:id', verificarRol('super_admin'), usuariosController.update);
 router.delete('/:id', verificarRol('super_admin'), usuariosController.delete);
+router.put('/:id/status', verificarRol('super_admin'), usuariosController.toggleStatus);
 
 module.exports = router;
