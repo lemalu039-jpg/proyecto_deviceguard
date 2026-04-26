@@ -145,7 +145,7 @@ function Equipo() {
       {/* Header */}
       <div className="equipo-header">
         <h1 className="equipo-titulo">Equipo</h1>
-        <button className="equipo-btn-add" onClick={() => setModalAbierto(true)}>
+        <button className="equipo-btn-add" onClick={() => setModalAbierto(true)} style={{ background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '10px', padding: '0.6rem 1.4rem', fontSize: '0.875rem' }}>
           <Icon d="M12 5v14M5 12h14" size={16} />
           Añadir Usuario
         </button>
@@ -267,16 +267,13 @@ function Equipo() {
                           Editar
                         </button>
                         <button 
-                          className="equipo-btn-eliminar" 
+                          className="equipo-btn-suspender" 
                           onClick={() => handleToggleStatus(u)} 
                           title={u.activo === 0 ? "Activar" : "Suspender"}
-                          style={{ background: u.activo === 0 ? "#16a34a" : "#dc2626", color: "#ffffff" }}
+                          style={{ background: u.activo === 0 ? "#16a34a" : "#dc2626" }}
                         >
                           <Icon d={u.activo === 0 ? "M5 13l4 4L19 7" : "M18.36 6.64a9 9 0 11-12.73 0M12 2v10"} size={14} />
                           {u.activo === 0 ? "Activar" : "Suspender"}
-                        </button>
-                        <button className="equipo-btn-eliminar" onClick={() => abrirEliminar(u)} title="Eliminar" style={{ background: "#475569", color: "#ffffff" }}>
-                          <Icon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" size={14} />
                         </button>
                       </div>
                     </td>

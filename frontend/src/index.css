@@ -169,6 +169,14 @@ input, select, textarea {
   animation: fadeIn 0.4s ease-out;
 }
 
+/* ─── TÍTULO ESTÁNDAR DE PÁGINA ───────────────────────── */
+.page-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 1.5rem;
+}
+
 /* ─── SIDEBAR ───────────────────────── */
 
 .sidebar {

@@ -3,11 +3,7 @@
 }
 
 .mant-wrapper-tittle {
-  font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--text-main);
-    margin-bottom: 1.5rem;
-
+  margin-bottom: 1.5rem;
 }
 /* CARD */
 .mant-card {

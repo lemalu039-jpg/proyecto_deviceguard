@@ -92,7 +92,7 @@ function Reportes() {
 
   return (
     <div className="reportes-container">
-      <h1>Generar Reportes</h1>
+      <h1 className="page-title">Generar Reportes</h1>
       <p className="subtitle">Genera los reportes que vayan según tu necesidad</p>
 
       <div className="cards">

@@ -17,23 +17,30 @@
   font-weight: 700;
   color: var(--text-main);
 }
+}
 
 .equipo-btn-add {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--primary);
-  color: var(--bg-card);
+  background: var(--btn-gradient, linear-gradient(135deg, #0492C2, #82EEFD));
+  color: #fff;
   border: none;
-  padding: 0.65rem 1.3rem;
+  padding: 0.65rem 1.4rem;
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.3s ease;
 }
 
-.equipo-btn-add:hover { background: var(--primary-hover); }
+.equipo-btn-add:hover {
+  background: var(--btn-gradient-hover, linear-gradient(135deg, #0378a6, #5dd8f0));
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(4, 146, 194, 0.35);
+}
+
+.equipo-btn-add:active { transform: scale(0.98); }
 
 /* ── TARJETAS ─────────────────────────────────────────── */
 .equipo-cards-grid {
@@ -256,7 +263,8 @@
 }
 
 .equipo-modal {
-  background: #f0f2f8;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 16px;
   width: 100%;
   max-width: 620px;
@@ -267,6 +275,7 @@
   flex-direction: column;
   gap: 1.4rem;
   animation: fadeIn 0.2s ease;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 }
 
 @keyframes fadeIn {
@@ -377,20 +386,20 @@
 }
 
 .equipo-btn-submit {
-  background: var(--primary);
-  color: var(--bg-card);
+  background: var(--btn-gradient, var(--primary));
+  color: #fff;
   border: none;
   padding: 0.75rem;
   border-radius: 10px;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: opacity 0.15s;
   width: 60%;
   margin: 0 auto;
 }
 
-.equipo-btn-submit:hover { background: var(--primary-hover); }
+.equipo-btn-submit:hover { opacity: 0.88; }
 
 /* ── TOAST ────────────────────────────────────────────── */
 .equipo-toast {
@@ -439,22 +448,30 @@
 }
 
 .equipo-btn-editar {
-  background: #eef0fb;
-  color: #2d3a8c;
+  background: var(--btn-gradient, var(--primary));
+  color: #fff;
 }
 
 .equipo-btn-editar:hover {
-  background: #dde1f7;
+  background: var(--btn-gradient-hover, var(--primary-hover));
+  opacity: 0.9;
 }
 
-.equipo-btn-eliminar {
-  background: #fee2e2;
-  color: #dc2626;
+.equipo-btn-suspender {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.38rem 0.85rem;
+  border-radius: 7px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  transition: opacity 0.15s;
 }
 
-.equipo-btn-eliminar:hover {
-  background: #fecaca;
-}
+.equipo-btn-suspender:hover { opacity: 0.85; }
 
 /* ── MODAL CONFIRMACIÓN ───────────────────────────────── */
 .equipo-modal-confirm {

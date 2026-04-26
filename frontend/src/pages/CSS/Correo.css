@@ -12,8 +12,8 @@
 .cmail-sidebar {
   width: 260px;
   min-width: 260px;
-  background: var(--bg-card);
-  border-right: 1px solid #e8ecf4;
+  background: var(--table-head);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   padding: 1.2rem 0.8rem;
@@ -21,9 +21,13 @@
   overflow-y: auto;
 }
 
+[data-theme='light'] .cmail-sidebar {
+  background: #e8edf5;
+}
+
 .cmail-sidebar-top {
   padding: 0 0.4rem 1rem;
-  border-bottom: 1px solid #e8ecf4;
+  border-bottom: 1px solid var(--border);
   margin-bottom: 0.6rem;
 }
 
@@ -223,9 +227,16 @@
   letter-spacing: 0.05em;
   color: var(--text-muted);
   background: var(--table-head);
-  border-bottom: 1px solid #e8ecf4;
+  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border);
   position: sticky;
   top: 0;
+  z-index: 1;
+}
+
+[data-theme='light'] .cmail-table thead th {
+  background: #e8edf5;
+  color: #475569;
 }
 
 .cmail-table tbody tr {

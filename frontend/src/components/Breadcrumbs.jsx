@@ -2,8 +2,8 @@ import { Link, useLocation } from "react-router-dom";
 import "./Breadcrumbs.css";
 
 const PATH_NAMES = {
-  "/dashboard": "Dashboard",
-  "/dispositivos": "Registro de Dispositivos",
+  "/dashboard": "Inicio",
+  "/dispositivos": "Dispositivos",
   "/registrarsalida": "Registrar Salida",
   "/prestamos": "Préstamos",
   "/gestion": "Gestión de Mantenimiento",

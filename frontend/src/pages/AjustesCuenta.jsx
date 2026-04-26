@@ -52,7 +52,7 @@ function AjustesCuenta({ onLogout }) {
   return (
     <div className="ajustes-wrapper">
       <div className="ajustes-header">
-        <h1>Ajustes de Cuenta</h1>
+        <h1 className="page-title">Ajustes de Cuenta</h1>
         <p>Administra tu configuración personal y preferencias del sistema</p>
       </div>
 

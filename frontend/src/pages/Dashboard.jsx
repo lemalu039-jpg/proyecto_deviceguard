@@ -241,9 +241,7 @@ function Dashboard() {
 
   return (
     <div>
-      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>
-        Dashboard
-      </h1>
+      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>Inicio</h1>
 
       {loading ? (
         <p>Cargando información...</p>
