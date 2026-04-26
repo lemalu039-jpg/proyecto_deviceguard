@@ -2,12 +2,12 @@ const pool = require('../database/connection');
 
 class UsuarioModel {
     static async findAll() {
-        const [rows] = await pool.query('SELECT id, nombre, correo, rol, fecha_creacion FROM usuarios');
+        const [rows] = await pool.query('SELECT id, nombre, correo, rol, fecha_creacion, activo FROM usuarios');
         return rows;
     }
 
     static async findById(id) {
-        const [rows] = await pool.query('SELECT id, nombre, correo, rol, fecha_creacion FROM usuarios WHERE id = ?', [id]);
+        const [rows] = await pool.query('SELECT id, nombre, correo, rol, fecha_creacion, activo FROM usuarios WHERE id = ?', [id]);
         return rows[0];
     }
 
@@ -30,12 +30,18 @@ class UsuarioModel {
     }
 
     static async delete(id) {
-        const [result] = await pool.query('DELETE FROM usuarios WHERE id = ?', [id]);
+        // Borrado lógico en lugar de físico
+        const [result] = await pool.query('UPDATE usuarios SET activo = 0 WHERE id = ?', [id]);
+        return result.affectedRows;
+    }
+
+    static async toggleStatus(id, activo) {
+        const [result] = await pool.query('UPDATE usuarios SET activo = ? WHERE id = ?', [activo, id]);
         return result.affectedRows;
     }
 
     static async findByEmail(correo) {
-        const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
+        const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo = ? AND activo = 1', [correo]);
         return rows[0];
     }
     

@@ -119,7 +119,6 @@ function Calendario() {
     }
   };
 
-  // ── Salida — usa updateDispositivo en vez de fetch manual ──
   const abrirModalSalida = (ev) => {
     setEventoSalida(ev);
     setMensajeSalida('');
@@ -128,7 +127,6 @@ function Calendario() {
 
   const obtenerTextoAccion = (estado) => {
     const est = (estado || '').trim().toLowerCase();
-
     if (est === 'listo para entrega' || est === 'listo_para_entrega') {
       return { boton: 'Registrar entrega', modal: 'Registrar Entrega', nuevoEstado: 'Entregado' };
     }
@@ -148,8 +146,6 @@ function Calendario() {
       const ahora = new Date();
       const id = eventoSalida._dispOrig?.id || eventoSalida.id || eventoSalida.id_dispositivo;
       const accion = obtenerTextoAccion(eventoSalida.estado);
-      console.log('Registrando acción para dispositivo ID:', id);
-      console.log('Evento:', eventoSalida);
       await updateDispositivo(id, {
         estado: accion.nuevoEstado,
         fecha_salida: ahora.toISOString().split('T')[0],
@@ -158,7 +154,6 @@ function Calendario() {
       setMensajeSalida('Acción registrada correctamente.');
       const res = await getDispositivos();
       setDispositivos(res.data);
-
 
       if (eventoSalida.isCustom && eventoSalida.id_evento) {
         const eventosActualizados = eventosCustom.map(e =>
@@ -191,36 +186,17 @@ function Calendario() {
     setModalDetalle(true);
   };
 
-  const eliminarEvento = async (ev) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar este evento?')) {
-      try {
-        if (ev.isCustom) {
-          // Eliminar evento personalizado del localStorage
-          const eventosActualizados = eventosCustom.filter(e => e.id_evento !== ev.id_evento);
-          setEventosCustom(eventosActualizados);
-          localStorage.setItem('eventosCustom', JSON.stringify(eventosActualizados));
-        } else {
-          // Eliminar dispositivo del sistema
-          const id = ev._dispOrig?.id || ev.id || ev.id_dispositivo;
-          await deleteDispositivo(id);
-          const res = await getDispositivos();
-          setDispositivos(res.data);
-        }
-      } catch (error) {
-        console.error('Error al eliminar:', error);
-        alert('Error al eliminar. Intenta de nuevo.');
-      }
-    }
-  };
-
+  // ── Celdas: solo las necesarias (35 o 42) ──
   const celdas = [];
   for (let i = primerDia - 1; i >= 0; i--) celdas.push({ dia: diasEnMesAnterior - i, actual: false });
   for (let i = 1; i <= diasEnMes; i++) celdas.push({ dia: i, actual: true });
-  const restantes = 42 - celdas.length;
+  const totalFilas = celdas.length <= 35 ? 35 : 42;
+  const restantes = totalFilas - celdas.length;
   for (let i = 1; i <= restantes; i++) celdas.push({ dia: i, actual: false });
+  const numFilas = totalFilas / 7;
 
   const s = {
-    wrap: { padding: '1rem', fontFamily: 'system-ui, sans-serif' },
+    wrap: { padding: '1rem 1rem 0 1rem', fontFamily: 'system-ui, sans-serif' },
     topRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' },
     navWrap: { display: 'flex', alignItems: 'center', gap: '.75rem' },
     navBtn: { width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.9rem', color: 'var(--text-main)' },
@@ -229,7 +205,8 @@ function Calendario() {
     calCard: { background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' },
     calHeader: { display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', background: 'var(--table-head)', borderBottom: '1px solid var(--border)' },
     dow: { padding: '.5rem 0', textAlign: 'center', fontSize: '.68rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' },
-    calGrid: { display: 'grid', gridTemplateColumns: 'repeat(7,1fr)' },
+    // ── CLAVE: filas fijas según el mes ──
+    calGrid: { display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gridTemplateRows: `repeat(${numFilas}, 70px)` },
     sideCard: { background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', padding: '1rem', marginBottom: '1rem' },
     sideTitle: { display: 'flex', alignItems: 'center', gap: '6px', fontSize: '.83rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '.75rem' },
     sideDot: { width: '4px', height: '14px', background: 'linear-gradient(135deg,#0492C2,#82EEFD)', borderRadius: '2px' },
@@ -268,12 +245,11 @@ function Calendario() {
 
       <div style={s.layout} className="calendario-layout">
 
-        {/* grilla calendario */}
         <div style={s.calCard} className="calendario-card">
           <div style={s.calHeader} className="calendario-header-row">
             {diasSemana.map(d => <div key={d} style={s.dow} className="calendario-header">{d}</div>)}
           </div>
-          <div style={s.calGrid} className="calendario-grid">
+          <div className="calendario-grid" style={{ '--num-filas': numFilas }}>
             {celdas.map((celda, idx) => {
               const eventos = celda.actual ? eventosDia(celda.dia) : [];
               const today = celda.actual && esHoy(celda.dia);
@@ -283,7 +259,8 @@ function Calendario() {
                   onClick={() => celda.actual && setDiaSeleccionado(celda.dia === diaSeleccionado ? null : celda.dia)}
                   className="calendario-day-cell"
                   style={{
-                    minHeight: '80px', padding: '.4rem .5rem',
+                    overflow: 'hidden',
+                    padding: '.3rem .4rem',
                     borderRight: '1px solid var(--border)', borderBottom: '1px solid var(--border)',
                     cursor: celda.actual ? 'pointer' : 'default',
                     background: sel ? 'var(--hover)' : today ? 'rgba(4,146,194,.08)' : celda.actual ? 'transparent' : 'var(--bg-main)',
@@ -313,7 +290,6 @@ function Calendario() {
           </div>
         </div>
 
-        {/* panel lateral */}
         <div className="calendario-sidebar">
 
           {diaSeleccionado && (
@@ -344,9 +320,6 @@ function Calendario() {
                           )}
                           {!esUsuario && ev.estado === 'Entregado' && (
                             <span style={{ fontSize: '.62rem', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: '#dcfce7', color: '#15803d' }}>Entregado</span>
-                          )}
-                          {!esUsuario && (
-                            <button style={{ fontSize: '.6rem', fontWeight: 700, padding: '3px 8px', borderRadius: '20px', border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b', marginTop: '4px' }} onClick={() => eliminarEvento(ev)}>Eliminar</button>
                           )}
                         </div>
                       </div>
@@ -388,21 +361,6 @@ function Calendario() {
             )}
           </div>
 
-          <div style={s.sideCard}>
-            <div style={s.sideTitle}><div style={s.sideDot}></div>Leyenda</div>
-            {[
-              { label: 'Disponible',        bg: '#dcfce7', color: '#15803d' },
-              { label: 'En Revisión',       bg: '#f3e8ff', color: '#7e22ce' },
-              { label: 'En Mantenimiento',  bg: '#ffedd5', color: '#c2410c' },
-              { label: 'Dado de Baja',      bg: '#fef2f2', color: '#991b1b' },
-              { label: 'Listo para entrega',bg: '#fefce8', color: '#854d0e' },
-            ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '.74rem', color: 'var(--text-muted)', marginBottom: '.4rem' }}>
-                <div style={{ width: '12px', height: '12px', borderRadius: '3px', background: item.bg, border: `1px solid ${item.color}`, flexShrink: 0 }}></div>
-                {item.label}
-              </div>
-            ))}
-          </div>
 
         </div>
       </div>
@@ -523,7 +481,6 @@ function Calendario() {
                 <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)' }}>{equipoDetalle.nombre || '—'}</div>
                 <div style={{ fontSize: '.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>{equipoDetalle.tipo || 'Equipo'}</div>
               </div>
-
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.75rem', marginBottom: '1rem' }}>
                 {[
                   { label: 'Marca',     value: equipoDetalle.marca     || '—' },
@@ -537,21 +494,18 @@ function Calendario() {
                   </div>
                 ))}
               </div>
-
               {equipoDetalle.descripcion && (
                 <div style={{ background: 'var(--table-head)', border: '1px solid var(--border)', borderRadius: '8px', padding: '.65rem .8rem', marginBottom: '1rem' }}>
                   <div style={{ fontSize: '.62rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px' }}>Descripción</div>
                   <div style={{ fontSize: '.78rem', color: 'var(--text-main)', lineHeight: 1.6 }}>{equipoDetalle.descripcion}</div>
                 </div>
               )}
-
               {equipoDetalle.archivo && (
                 <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
                   <img src={`http://localhost:5000/uploads/${equipoDetalle.archivo}`} alt={equipoDetalle.nombre}
                     style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border)' }} />
                 </div>
               )}
-
               <button onClick={() => setModalDetalle(false)}
                 style={{ width: '100%', padding: '.65rem', background: 'linear-gradient(135deg,#0492C2,#82EEFD)', border: 'none', color: '#fff', borderRadius: '8px', cursor: 'pointer', fontWeight: 700 }}>
                 Cerrar

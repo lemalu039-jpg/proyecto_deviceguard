@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import "./CSS/ConsultarFiltros.css";
 import { getDispositivos } from "../services/api";
+import Pagination from "../components/Pagination";
 
 function ConsultarFiltros() {
   const [data, setData] = useState([]);
   const [filtros, setFiltros] = useState({ fecha: "", nombre: "", ubicacion: "", estado: "" });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 7;
   const esSuperAdmin = JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'super_admin';
 
   useEffect(() => {
@@ -19,6 +22,7 @@ function ConsultarFiltros() {
 
   const handleChange = (e) => {
     setFiltros({ ...filtros, [e.target.name]: e.target.value });
+    setCurrentPage(1); // Reset page on filter change
   };
 
   const limpiarFiltros = () => {
@@ -28,6 +32,7 @@ function ConsultarFiltros() {
       ubicacion: "",
       estado: "",
     });
+    setCurrentPage(1);
   };
 
   const dataFiltrada = data.filter((d) => {
@@ -110,7 +115,7 @@ function ConsultarFiltros() {
             {dataFiltrada.length === 0 ? (
               <tr><td colSpan={esSuperAdmin ? 6 : 5}>No hay resultados</td></tr>
             ) : (
-              dataFiltrada.map((d) => (
+              dataFiltrada.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((d) => (
                 <tr key={d.id}>
                   <td>{d.nombre}</td>
                   <td>{d.ubicacion}</td>
@@ -136,6 +141,13 @@ function ConsultarFiltros() {
           </tbody>
         </table>
       </div>
+      
+      <Pagination
+        totalItems={dataFiltrada.length}
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
 
     </div>
   );

@@ -74,6 +74,7 @@
 .calendario-grid {
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;
+  grid-template-rows: repeat(var(--num-filas), 70px) !important;
   min-width: 100% !important;
 }
 
@@ -88,11 +89,13 @@
     display: grid !important;
     grid-template-columns: 1fr 280px !important;
     gap: 1.5rem !important;
+    align-items: start !important;
   }
 
   .calendario-card {
     grid-column: 1 !important;
     overflow: visible !important;
+    align-self: start !important;
   }
 
   .calendario-card::-webkit-scrollbar {
@@ -146,6 +149,7 @@
 
   .calendario-grid {
     grid-template-columns: repeat(7, 1fr) !important;
+    grid-template-rows: repeat(var(--num-filas), 75px) !important;
     min-width: 100% !important;
   }
 

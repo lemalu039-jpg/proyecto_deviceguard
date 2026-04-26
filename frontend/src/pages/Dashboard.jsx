@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDispositivos, getUsuarios } from '../services/api';
 import { estadosDispositivo } from "../ejemplo/generador2";
+import Pagination from '../components/Pagination';
 
 function Dashboard() {
   useEffect(() => {
@@ -26,6 +27,8 @@ function Dashboard() {
   const [dispositivos, setDispositivos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [imagenActiva, setImagenActiva] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 7;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,7 +53,7 @@ function Dashboard() {
           entregado:      dispositivos.filter(d => d.estado === 'Entregado').length,
           usuarios:        usuariosRes.data.length
         });
-        setDispositivos(dispositivos.slice(0, 5));
+        setDispositivos(dispositivos);
       } catch (error) {
         console.error('Error fetching dashboard data', error);
       } finally {
@@ -187,7 +190,7 @@ function Dashboard() {
   const cardW = 'calc(25% - 0.75rem)';
 
   const renderCard = (card, i) => (
-    <div key={i} style={{
+    <div key={i} className={`card-3d animate-fade-in-up delay-${(i + 1) * 100}`} style={{
       background: 'var(--bg-card)',
       borderRadius: '12px',
       border: '1px solid var(--border)',
@@ -260,7 +263,7 @@ function Dashboard() {
       )}
 
       <h3 style={{ marginBottom: '1rem', fontWeight: 600, color: 'var(--text-main)' }}>
-        Lista de dispositivos recientes
+        Lista de dispositivos
       </h3>
 
       <div style={{ background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>
@@ -278,7 +281,7 @@ function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {dispositivos.map((d, i) => (
+              {dispositivos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((d, i) => (
                 <tr key={d.id} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
                   <td style={tdStyle}>
                     <div style={{
@@ -331,6 +334,13 @@ function Dashboard() {
           </table>
         </div>
       </div>
+
+      <Pagination
+        totalItems={dispositivos.length}
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
       {imagenActiva && (
   <div 
     onClick={() => setImagenActiva(null)}

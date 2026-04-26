@@ -19,6 +19,15 @@ function Login({ onLogin }) {
       setVista('restablecer');
       setPanelSlide(false);
     }
+
+    const originalTheme = document.body.getAttribute('data-theme');
+    document.body.setAttribute('data-theme', 'light');
+    
+    return () => {
+      if (originalTheme) {
+        document.body.setAttribute('data-theme', originalTheme);
+      }
+    };
   }, []);
 
   const [email, setEmail] = useState('');
@@ -157,7 +166,7 @@ function Login({ onLogin }) {
     }
   };
 
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const isDark = false; // Siempre modo claro en login
 
   const s = {
     page: {

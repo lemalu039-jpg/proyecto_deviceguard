@@ -14,6 +14,7 @@ class DispositivoModel {
       FROM dispositivos d
       LEFT JOIN estados e  ON d.estado_id = e.id
       LEFT JOIN usuarios u ON d.usuario_id = u.id
+      WHERE d.activo = 1
       ORDER BY d.id DESC
     `);
     return rows;
@@ -26,7 +27,7 @@ class DispositivoModel {
       FROM dispositivos d
       LEFT JOIN estados e  ON d.estado_id = e.id
       LEFT JOIN usuarios u ON d.usuario_id = u.id
-      WHERE d.id = ?
+      WHERE d.id = ? AND d.activo = 1
     `, [id]);
     return rows[0];
   }
@@ -91,7 +92,8 @@ class DispositivoModel {
   }
 
   static async delete(id) {
-    const [result] = await pool.query('DELETE FROM dispositivos WHERE id = ?', [id]);
+    // Borrado lógico en lugar de físico
+    const [result] = await pool.query('UPDATE dispositivos SET activo = 0 WHERE id = ?', [id]);
     return result.affectedRows;
   }
 

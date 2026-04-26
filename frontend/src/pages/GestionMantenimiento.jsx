@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { getDispositivos, updateDispositivo } from "../services/api";
 import "./CSS/GestionMantenimiento.css";
+import Pagination from "../components/Pagination";
 
 function GestionMantenimiento() {
   const [dispositivos, setDispositivos] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 7;
 
   useEffect(() => {
     loadData();
@@ -69,7 +72,7 @@ function GestionMantenimiento() {
         </thead>
 
         <tbody>
-          {dispositivos.map(d => (
+          {dispositivos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(d => (
             <tr key={d.id}>
               <td>{d.nombre}</td>
               <td>{d.serial}</td>
@@ -106,6 +109,13 @@ function GestionMantenimiento() {
         </tbody>
       </table>
     </div>
+
+    <Pagination
+      totalItems={dispositivos.length}
+      itemsPerPage={itemsPerPage}
+      currentPage={currentPage}
+      onPageChange={setCurrentPage}
+    />
 
   </div>
 </div>

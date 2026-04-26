@@ -11,6 +11,9 @@ function Home() {
     const page = pageRef.current;
     if (!page) return;
 
+    const originalTheme = document.body.getAttribute('data-theme');
+    document.body.setAttribute('data-theme', 'light');
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(e => {
         if (e.isIntersecting) {
@@ -24,12 +27,16 @@ function Home() {
       observer.observe(el);
     });
 
-    
     page.querySelectorAll('.hero .anim-up').forEach(el => {
       el.classList.add('visible');
     });
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (originalTheme) {
+        document.body.setAttribute('data-theme', originalTheme);
+      }
+    };
   }, []);
 
   const scrollTo = (id) => {
@@ -39,11 +46,10 @@ function Home() {
   return (
     <div className="home-page" ref={pageRef}>
 
-    
       <nav className="nav">
         <div className="nav-logo">
           <div className="nav-icon">
-            <img src={candado} alt="logo" style={{ width: '80px', height: '80px' }} />
+            <img src={candado} alt="logo" style={{ width: '72px', height: '42px' }} />
           </div>
           <span className="nav-brand">Device<span>Guard</span></span>
         </div>
@@ -56,7 +62,6 @@ function Home() {
         <button className="nav-btn" onClick={() => navigate('/login')}>Ingresar</button>
       </nav>
 
-   
       <div className="hero" id="hero">
         <div className="hero-glow"></div>
         <div className="hero-tag anim-up">
@@ -79,7 +84,6 @@ function Home() {
 
       <div className="divider"></div>
 
-    
       <div className="section" id="features">
         <div className="sec-tag anim-left">¿Qué hace DeviceGuard?</div>
         <div className="sec-title anim-left d1">Todo lo que necesitas<br />en un solo lugar</div>
@@ -92,7 +96,7 @@ function Home() {
               </svg>
             </div>
             <div className="feat-title">Registro y control</div>
-            <div className="feat-desc">Registra dispositivos de clientes con su información, estado y fecha de ingreso al sistema.</div> 
+            <div className="feat-desc">Registra dispositivos de clientes con su información, estado y fecha de ingreso al sistema.</div>
           </div>
           <div className="feat anim-up d1">
             <div className="feat-icon feat-icon-pink">
@@ -110,7 +114,7 @@ function Home() {
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
             </div>
-            <div className="feat-title">Salida de dipositivos</div>
+            <div className="feat-title">Salida de dispositivos</div>
             <div className="feat-desc">Controla la entrega de equipos y registra la fecha y hora de salida.</div>
           </div>
           <div className="feat anim-up d3">
@@ -127,17 +131,16 @@ function Home() {
 
       <div className="divider"></div>
 
-
       <div className="section" id="about">
         <div className="sec-tag anim-left">Nosotros</div>
         <div className="sec-title anim-left d1">¿Quiénes somos?</div>
         <div className="about-grid">
           <p className="sec-sub anim-left d2">
-           DeviceGuard es un sistema diseñado para gestionar dispositivos 
-           electrónicos de clientes externos dentro de una empresa de 
-           mantenimiento.<br /><br />
-            Permite llevar control del proceso completo: desde el registro del equipo, 
-            su mantenimiento y hasta su entrega final, mejorando la organización y 
+            DeviceGuard es un sistema diseñado para gestionar dispositivos
+            electrónicos de clientes externos dentro de una empresa de
+            mantenimiento.<br /><br />
+            Permite llevar control del proceso completo: desde el registro del equipo,
+            su mantenimiento y hasta su entrega final, mejorando la organización y
             trazabilidad del servicio técnico.
           </p>
           <div className="about-list anim-right">
@@ -180,7 +183,6 @@ function Home() {
 
       <div className="divider"></div>
 
-      {/* MISIÓN */}
       <div className="section">
         <div className="mission-grid">
           <div className="mission-card anim-left">
@@ -200,7 +202,6 @@ function Home() {
         </div>
       </div>
 
-   
       <div className="contact-section" id="contact">
         <div className="sec-tag">Contacto</div>
         <div className="sec-title" style={{ marginTop: '.3rem' }}>¿Tienes alguna pregunta?</div>
@@ -229,8 +230,6 @@ function Home() {
           Ingresar al sistema ↗
         </button>
       </div>
-
-      
 
     </div>
   );
