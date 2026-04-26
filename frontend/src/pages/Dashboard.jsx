@@ -260,9 +260,10 @@ function Dashboard() {
         </div>
       )}
 
-      <h3 style={{ marginBottom: '1rem', fontWeight: 600, color: 'var(--text-main)' }}>
-        Lista de dispositivos
-      </h3>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+        <div style={{ width: '4px', height: '18px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px', flexShrink: 0 }}></div>
+        <span style={{ fontSize: '.92rem', fontWeight: 700, color: 'var(--text-main)' }}>Lista de dispositivos</span>
+      </div>
 
       <div style={{ background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto' }}>

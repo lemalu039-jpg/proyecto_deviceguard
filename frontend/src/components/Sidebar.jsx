@@ -73,8 +73,8 @@ function Sidebar({ usuario: usuarioProp }) {
       <>
         <img src={item.icon} alt={item.label}
           style={{
-            width: isLargeIcon ? "16px" : "18px",
-            height: isLargeIcon ? "16px" : "18px",
+            width: isLargeIcon ? "20px" : "22px",
+            height: isLargeIcon ? "20px" : "22px",
             objectFit: "contain",
             flexShrink: 0,
             filter: isActive

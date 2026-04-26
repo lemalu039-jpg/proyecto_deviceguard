@@ -165,11 +165,9 @@ function Calendario() {
         localStorage.setItem('eventosCustom', JSON.stringify(eventosActualizados));
       }
 
-      setTimeout(() => {
-        setModalSalida(false);
-        setEventoSalida(null);
-        setMensajeSalida('');
-      }, 1500);
+      setModalSalida(false);
+      setEventoSalida(null);
+      setMensajeSalida('');
     } catch (error) {
       console.error('Error al registrar acción:', error);
       setMensajeSalida('Error al registrar la acción. Intenta de nuevo.');
