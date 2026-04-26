@@ -50,7 +50,7 @@ function GestionMantenimiento() {
  return (
   <div className="mant-wrapper">
 <div className="mant-wrapper-tittle">
-    <h1>Gestión de mantenimiento</h1>
+      <h1 className="page-title">Gestión de mantenimiento</h1>
 </div>
 
   <div className="mant-card">

@@ -218,9 +218,7 @@ function Estadisticas() {
   return (
     <div style={{ padding: '1.5rem', fontFamily: 'system-ui, sans-serif' }}>
 
-      <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '1.25rem' }}>
-        Estadísticas
-      </h1>
+      <h1 className="page-title">Estadísticas</h1>
 
       {loading ? (
         <p style={{ color: 'var(--text-muted)' }}>Cargando estadísticas...</p>

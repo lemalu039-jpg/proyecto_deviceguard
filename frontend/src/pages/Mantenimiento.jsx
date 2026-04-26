@@ -65,7 +65,7 @@ function Mantenimiento() {
 
   return (
     <div>
-      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.875rem' }}>Mantenimiento de Dispositivos</h1>
+      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>Mantenimiento de Dispositivos</h1>
 
       <div className="card" style={{ marginBottom: '2rem' }}>
         <h3 style={{ marginBottom: '1rem' }}>{editingId ? 'Actualizar Mantenimiento' : 'Registrar Nuevo Mantenimiento'}</h3>

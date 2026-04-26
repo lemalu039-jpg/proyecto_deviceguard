@@ -95,3 +95,11 @@
   border-right: 1px solid rgba(4, 146, 194, 0.18) !important;
   box-shadow: 2px 0 20px rgba(4, 146, 194, 0.06) !important;
 }
+
+[data-theme='dark'] aside img {
+  --icon-filter: brightness(0) invert(0.65);
+}
+
+[data-theme='light'] aside img {
+  --icon-filter: brightness(0) invert(0.4);
+}

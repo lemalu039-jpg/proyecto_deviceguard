@@ -219,9 +219,7 @@ function Calendario() {
 
   return (
     <div style={s.wrap}>
-      <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '1.25rem' }}>
-        Calendario
-      </h1>
+      <h1 className="page-title">Calendario</h1>
 
       <div style={s.topRow}>
         <div style={s.navWrap}>

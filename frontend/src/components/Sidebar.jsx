@@ -33,8 +33,8 @@ function Sidebar({ usuario: usuarioProp }) {
   const esTecnico = rol === "tecnico";
 
   const menuItems = [
-    { path: "/dashboard", label: "Dashboard", icon: dashboard_ },
-    ...(!esTecnico ? [{ path: "/dispositivos", label: "Registro de Dispositivos", icon: dispositivos_ }] : []),
+    { path: "/dashboard", label: "Inicio", icon: dashboard_ },
+    ...(!esTecnico ? [{ path: "/dispositivos", label: "Dispositivos", icon: dispositivos_ }] : []),
     { path: "/correo", label: "Correo", icon: correo_ },
     { path: "/calendario", label: "Calendario", icon: calendario_ },
     ...(!esUsuario ? [{ path: "/consultarfiltros", label: "Consulta con Filtros", icon: consultafiltros_ }] : []),
@@ -67,14 +67,24 @@ function Sidebar({ usuario: usuarioProp }) {
     transition: "all 0.2s ease",
   });
 
-  const renderIcon = (item) => ({ isActive }) => (
-    <>
-      <img src={item.icon} alt={item.label}
-        style={{ width: "35px", height: "22px", objectFit: "contain",
-          filter: isActive ? "brightness(0) invert(1)" : "none" }} />
-      {item.label}
-    </>
-  );
+  const renderIcon = (item) => ({ isActive }) => {
+    const isLargeIcon = item.icon === ajustes || item.icon === settings;
+    return (
+      <>
+        <img src={item.icon} alt={item.label}
+          style={{
+            width: isLargeIcon ? "16px" : "18px",
+            height: isLargeIcon ? "16px" : "18px",
+            objectFit: "contain",
+            flexShrink: 0,
+            filter: isActive
+              ? "brightness(0) invert(1)"
+              : "var(--icon-filter, brightness(0) invert(0.5))"
+          }} />
+        {item.label}
+      </>
+    );
+  };
 
   return (
     <>
