@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { getDispositivos, createDispositivo, updateDispositivo, deleteDispositivo, getDispositivoBySerial } from '../services/api';
 import { Modal } from 'bootstrap';
 import './CSS/Dispositivos.css';
-import { generarSerial } from "../ejemplo/generador";
 import Pagination from '../components/Pagination';
 
 const Icon = ({ d, size = 14 }) => (
@@ -13,11 +12,6 @@ const Icon = ({ d, size = 14 }) => (
 );
 
 function Dispositivos() {
-useEffect(() => {
-    console.log("Serial generado:", generarSerial());
-    setSerial(generarSerial());
-  }, []);
-const [serial, setSerial] = useState(""); // Estado para almacenar el serial generado del ejemplo
   const [dispositivos, setDispositivos] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
@@ -53,6 +47,8 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
   };
 
   const esSuperAdmin = JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'super_admin';
+  const [filtroBusqueda, setFiltroBusqueda] = React.useState('');
+  const [filtroEstadoDisp, setFiltroEstadoDisp] = React.useState('');
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -118,7 +114,7 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('¿Seguro que deseas eliminar este dispositivo?')) {
+    if (window.confirm('Â¿Seguro que deseas eliminar este dispositivo?')) {
       await deleteDispositivo(id);
       loadData();
     }
@@ -141,7 +137,7 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
       const res = await getDispositivoBySerial(reingreso.serial.trim());
       setReingreso(r => ({ ...r, dispositivo: res.data, buscando: false, confirmando: true }));
     } catch {
-      setReingreso(r => ({ ...r, error: 'El dispositivo no está registrado', buscando: false }));
+      setReingreso(r => ({ ...r, error: 'El dispositivo no estÃ¡ registrado', buscando: false }));
     }
   };
 
@@ -182,9 +178,6 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
 
   return (
     <div className="disp-wrap">
-      {/* Generador visible solo en consola */}
-      {console.log('Serial generado:', serial)}
-
       {/* banner */}
       <div className="disp-banner">
         <div className="disp-banner-lines"></div>
@@ -217,12 +210,12 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
                   <div className="col-md-6">
                     <label className="disp-modal-label">Nombre</label>
                     <input type="text" name="nombre" value={form.nombre} onChange={handleChange}
-                      placeholder="Ej: Portátil HP ProBook" required className="disp-modal-input" />
+                      placeholder="Ej: PortÃ¡til HP ProBook" required className="disp-modal-input" />
                   </div>
                   <div className="col-md-6">
                     <label className="disp-modal-label">Tipo</label>
                     <input type="text" name="tipo" value={form.tipo} onChange={handleChange}
-                      placeholder="Ej: Portátil, Proyector..." required className="disp-modal-input" />
+                      placeholder="Ej: PortÃ¡til, Proyector..." required className="disp-modal-input" />
                   </div>
                   <div className="col-md-6">
                     <label className="disp-modal-label">Serial</label>
@@ -242,10 +235,10 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
                   </div>
                   <div className="col-md-6">
                     <label className="disp-modal-label">Estado</label>
-                    <input type="text" value="En Revisión" disabled className="disp-modal-input" />
+                    <input type="text" value="En RevisiÃ³n" disabled className="disp-modal-input" />
                   </div>
                   <div className="col-12">
-                    <label className="disp-modal-label">Descripción del equipo</label>
+                    <label className="disp-modal-label">DescripciÃ³n del equipo</label>
                     <textarea
                       name="descripcion"
                       value={form.descripcion}
@@ -313,20 +306,20 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
                   ].map(({ label, value }) => (
                     <div key={label} className="reingreso-info-row">
                       <span className="reingreso-info-label">{label}</span>
-                      <span className="reingreso-info-val">{value || '—'}</span>
+                      <span className="reingreso-info-val">{value || 'â€”'}</span>
                     </div>
                   ))}
                   {reingreso.dispositivo.descripcion && (
                     <div className="reingreso-info-row" style={{ flexDirection: 'column', gap: '3px' }}>
-                      <span className="reingreso-info-label">Descripción</span>
+                      <span className="reingreso-info-label">DescripciÃ³n</span>
                       <span className="reingreso-info-val" style={{ fontSize: '.78rem' }}>
                         {reingreso.dispositivo.descripcion}
                       </span>
                     </div>
                   )}
                   <div className="reingreso-confirm-msg">
-                    ¿Deseas reingresar este dispositivo?<br />
-                    <span>Su estado cambiará a <strong>En Revisión</strong></span>
+                    Â¿Deseas reingresar este dispositivo?<br />
+                    <span>Su estado cambiarÃ¡ a <strong>En RevisiÃ³n</strong></span>
                   </div>
                 </div>
               )}
@@ -350,6 +343,32 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
           <span>Lista de dispositivos</span>
           <span className="disp-count">{dispositivos.length} registrados</span>
         </div>
+        {/* Filtros */}
+        <div style={{ display: 'flex', gap: '.5rem', padding: '.75rem 1.25rem', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="Buscar por nombre, serial o marca..."
+            value={filtroBusqueda}
+            onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
+            style={{ flex: 1, minWidth: '180px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
+          />
+          <select
+            value={filtroEstadoDisp}
+            onChange={e => { setFiltroEstadoDisp(e.target.value); setCurrentPage(1); }}
+            style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none' }}
+          >
+            <option value="">Todos los estados</option>
+            <option value="En Revision">En Revision</option>
+            <option value="En Mantenimiento">En Mantenimiento</option>
+            <option value="Listo para Entrega">Listo para Entrega</option>
+            <option value="Entregado">Entregado</option>
+          </select>
+          {(filtroBusqueda || filtroEstadoDisp) && (
+            <button onClick={() => { setFiltroBusqueda(''); setFiltroEstadoDisp(''); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
+              Limpiar
+            </button>
+          )}
+        </div>
         <div className="disp-table-wrap">
           <table className="disp-table">
             <thead>
@@ -364,7 +383,14 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
               </tr>
             </thead>
             <tbody>
-              {dispositivos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(d => (
+              {(() => {
+                const filtrados = dispositivos.filter(d => {
+                  const texto = `${d.nombre} ${d.serial} ${d.marca}`.toLowerCase();
+                  const okBusqueda = !filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase());
+                  const okEstado = !filtroEstadoDisp || d.estado === filtroEstadoDisp;
+                  return okBusqueda && okEstado;
+                });
+                return filtrados.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(d => (
                 <tr key={d.id}>
                   <td>
                     <div className="disp-dev-name">{d.nombre}</div>
@@ -376,7 +402,7 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
                   <td>
                     {formatFecha(d.fecha_registro)}<br />
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      {d.hora_registro || '—'}
+                      {d.hora_registro || 'â€”'}
                     </span>
                   </td>
                   <td>
@@ -393,15 +419,22 @@ const [serial, setSerial] = useState(""); // Estado para almacenar el serial gen
                     </button>
                   </td>
                 </tr>
-              ))}
-              {dispositivos.length === 0 && (
-                <tr><td colSpan="7" className="disp-empty">No hay dispositivos registrados</td></tr>
+                ));
+              })()}
+              {dispositivos.filter(d => {
+                const texto = `${d.nombre} ${d.serial} ${d.marca}`.toLowerCase();
+                return (!filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase())) && (!filtroEstadoDisp || d.estado === filtroEstadoDisp);
+              }).length === 0 && (
+                <tr><td colSpan="7" className="disp-empty">No hay dispositivos que coincidan con los filtros</td></tr>
               )}
             </tbody>
           </table>
         </div>
         <Pagination
-          totalItems={dispositivos.length}
+          totalItems={dispositivos.filter(d => {
+            const texto = `${d.nombre} ${d.serial} ${d.marca}`.toLowerCase();
+            return (!filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase())) && (!filtroEstadoDisp || d.estado === filtroEstadoDisp);
+          }).length}
           itemsPerPage={itemsPerPage}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
