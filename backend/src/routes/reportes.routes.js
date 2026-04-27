@@ -6,6 +6,9 @@ const {
   generarExcelDispositivos,
   generarPdfUsuarios,
   generarPdfDispositivos,
+  previewUsuarios,
+  previewDispositivos,
+  obtenerContador,
 } = require("../controllers/reportes.controller");
 
 // EXCEL
@@ -16,8 +19,12 @@ router.get("/dispositivos-excel", generarExcelDispositivos);
 router.get("/usuarios-pdf", generarPdfUsuarios);
 router.get("/dispositivos-pdf", generarPdfDispositivos);
 
-console.log("Usuarios:", generarExcelUsuarios);
-console.log("Dispositivos:", generarExcelDispositivos);
+// PREVIEW (vista previa con filtro de búsqueda)
+router.get("/preview/usuarios", previewUsuarios);
+router.get("/preview/dispositivos", previewDispositivos);
+
+// CONTADOR de reportes generados
+router.get("/contador", obtenerContador);
 
 router.get("/", (req, res) => {
   res.send("REPORTES BASE FUNCIONA");
