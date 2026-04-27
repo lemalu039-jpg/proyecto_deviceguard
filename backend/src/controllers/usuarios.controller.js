@@ -1,6 +1,9 @@
 const UsuarioModel = require('../models/usuarios.model');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
+
+const SALT_ROUNDS = 10;
 
 exports.getAll = async (req, res) => {
     try {
@@ -87,7 +90,8 @@ exports.login = async (req, res) => {
             return res.status(401).json({ error: 'Credenciales inválidas o cuenta desactivada' });
         }
 
-        if (usuario.contrasena !== contrasena) {
+        const contrasenaValida = await bcrypt.compare(contrasena, usuario.contrasena);
+        if (!contrasenaValida) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
@@ -145,7 +149,7 @@ exports.registro = async (req, res) => {
         const insertId = await UsuarioModel.create({
             nombre,
             correo,
-            contrasena,
+            contrasena: await bcrypt.hash(contrasena, SALT_ROUNDS),
             rol: rol || 'usuario'
         });
 
@@ -167,7 +171,7 @@ exports.cambiarContrasena = async (req, res) => {
             return res.status(400).json({ error: "Datos incompletos" });
         }
 
-        const affectedRows = await UsuarioModel.cambiarContrasena(id, contrasena);
+        const affectedRows = await UsuarioModel.cambiarContrasena(id, await bcrypt.hash(contrasena, SALT_ROUNDS));
 
         if (affectedRows > 0) {
             res.json({ message: "Contraseña actualizada correctamente" });
@@ -241,7 +245,7 @@ exports.restablecerContrasena = async (req, res) => {
             return res.status(400).json({ error: 'El enlace de recuperación es inválido o ha expirado' });
         }
 
-        await UsuarioModel.cambiarContrasena(usuario.id, nuevaContrasena);
+        await UsuarioModel.cambiarContrasena(usuario.id, await bcrypt.hash(nuevaContrasena, SALT_ROUNDS));
         await UsuarioModel.borrarTokenRecuperacion(usuario.id);
 
         res.json({ message: 'Contraseña actualizada correctamente. Ya puedes iniciar sesión.' });

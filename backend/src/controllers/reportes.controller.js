@@ -2,6 +2,62 @@ const ExcelJS = require("exceljs");
 const PDFDocument = require("pdfkit");
 const db = require("../database/connection");
 
+// ── Contador en memoria (persiste mientras el servidor esté activo) ──
+let contadorReportes = 0;
+
+const incrementarContador = () => { contadorReportes++; };
+
+const obtenerContador = (req, res) => {
+  res.json({ total: contadorReportes });
+};
+
+// ── Vista previa de usuarios ──
+const previewUsuarios = async (req, res) => {
+  try {
+    const { busqueda } = req.query;
+    let query = "SELECT id, nombre, correo, rol, fecha_creacion FROM usuarios WHERE 1=1";
+    const params = [];
+    if (busqueda) {
+      query += " AND (nombre LIKE ? OR correo LIKE ? OR rol LIKE ?)";
+      const like = `%${busqueda}%`;
+      params.push(like, like, like);
+    }
+    query += " ORDER BY id DESC LIMIT 200";
+    const [rows] = await db.query(query, params);
+    res.json({ total: rows.length, datos: rows });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener vista previa de usuarios" });
+  }
+};
+
+// ── Vista previa de dispositivos ──
+const previewDispositivos = async (req, res) => {
+  try {
+    const { busqueda } = req.query;
+    let query = `
+      SELECT d.id, d.nombre, d.serial, COALESCE(e.nombre, 'Sin estado') AS estado,
+             u.nombre AS usuario, d.fecha_registro
+      FROM dispositivos d
+      LEFT JOIN estados e ON d.estado_id = e.id
+      LEFT JOIN usuarios u ON d.usuario_id = u.id
+      WHERE d.activo = 1
+    `;
+    const params = [];
+    if (busqueda) {
+      query += " AND (d.nombre LIKE ? OR d.serial LIKE ? OR e.nombre LIKE ? OR u.nombre LIKE ?)";
+      const like = `%${busqueda}%`;
+      params.push(like, like, like, like);
+    }
+    query += " ORDER BY d.id DESC LIMIT 200";
+    const [rows] = await db.query(query, params);
+    res.json({ total: rows.length, datos: rows });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener vista previa de dispositivos" });
+  }
+};
+
 const generarExcelDispositivos = async (req, res) => {
   try {
     const { desde, hasta } = req.query;
@@ -60,6 +116,7 @@ const generarExcelDispositivos = async (req, res) => {
     res.setHeader("Content-Disposition", `attachment; filename=${nombreArchivo}`);
 
     await workbook.xlsx.write(res);
+    incrementarContador();
     res.end();
 
   } catch (error) {
@@ -115,6 +172,7 @@ const generarExcelUsuarios = async (req, res) => {
     res.setHeader("Content-Disposition", `attachment; filename=${nombreArchivo}`);
 
     await workbook.xlsx.write(res);
+    incrementarContador();
     res.end();
 
   } catch (error) {
@@ -184,6 +242,7 @@ const generarPdfDispositivos = async (req, res) => {
     });
 
     doc.end();
+    incrementarContador();
   } catch (error) {
     console.error(error);
     res.status(500).send("Error al generar PDF");
@@ -243,6 +302,7 @@ const generarPdfUsuarios = async (req, res) => {
     });
 
     doc.end();
+    incrementarContador();
   } catch (error) {
     console.error("ERROR:", error);
     res.status(500).send("Error al generar PDF");
@@ -254,4 +314,7 @@ module.exports = {
   generarExcelDispositivos,
   generarPdfUsuarios,
   generarPdfDispositivos,
+  previewUsuarios,
+  previewDispositivos,
+  obtenerContador,
 };

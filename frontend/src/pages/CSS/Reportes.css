@@ -15,6 +15,167 @@
   font-size: 0.95rem;
 }
 
+/* ── STAT CARDS ─────────────────────────────────────────── */
+.reportes-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.1rem 1.5rem;
+  min-width: 180px;
+  flex: 1;
+  box-shadow: 0 2px 10px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.stat-card .stat-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1;
+}
+
+/* ── PREVIEW SECTION ────────────────────────────────────── */
+.reportes-preview {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 10px var(--shadow);
+}
+
+.preview-header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+
+.preview-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.preview-select {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-main);
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.preview-select:focus {
+  border-color: var(--primary);
+}
+
+.preview-search {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-main);
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.preview-search:focus {
+  border-color: var(--primary);
+}
+
+/* ── TABLE ──────────────────────────────────────────────── */
+.preview-table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+}
+
+.preview-table thead tr {
+  background: #e8eaf6;
+  color: #2d3192;
+}
+
+[data-theme='dark'] .preview-table thead tr {
+  background: var(--primary);
+  color: #fff;
+}
+
+.preview-table th {
+  padding: 0.65rem 0.9rem;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.preview-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.preview-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.preview-table tbody tr:hover {
+  background: var(--bg-hover, rgba(4, 146, 194, 0.06));
+}
+
+.preview-table td {
+  padding: 0.6rem 0.9rem;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.preview-empty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.preview-loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ── EXPORT CARDS ───────────────────────────────────────── */
 .cards {
   display: flex;
   gap: 1.5rem;
@@ -127,11 +288,30 @@
   width: 100%;
 }
 
-/* ── RESPONSIVE MOBILE ─────────────────────────────────── */
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 1.2rem;
+}
 
+/* ── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width: 768px) {
   .reportes-container {
     padding: 1.5rem 1rem;
+  }
+
+  .reportes-stats {
+    gap: 0.75rem;
+  }
+
+  .stat-card {
+    min-width: 140px;
+  }
+
+  .preview-header {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .cards {
@@ -139,12 +319,8 @@
     gap: 1.5rem;
   }
 
-  .card {
+  .reporte-card {
     width: 100%;
-  }
-
-  .subtitle {
-    margin-bottom: 1.5rem;
   }
 }
 
@@ -153,12 +329,7 @@
     padding: 1rem 0.75rem;
   }
 
-  .card {
-    padding: 1.5rem 1rem;
-  }
-
-  .card img {
-    width: 80px;
-    height: 80px;
+  .stat-card .stat-value {
+    font-size: 1.6rem;
   }
 }
