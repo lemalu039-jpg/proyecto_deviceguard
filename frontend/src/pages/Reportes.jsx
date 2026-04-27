@@ -7,6 +7,17 @@ import dispositivosIcon from "../assets/icons/reportes_dispositivos.svg";
 function Reportes() {
   const [fechaUsuarios, setFechaUsuarios] = useState({ desde: "", hasta: "" });
   const [fechaDispositivos, setFechaDispositivos] = useState({ desde: "", hasta: "" });
+  const [totalReportes, setTotalReportes] = useState(() => {
+    return parseInt(localStorage.getItem('totalReportes') || '0');
+  });
+
+  const incrementarReportes = () => {
+    setTotalReportes(prev => {
+      const nuevo = prev + 1;
+      localStorage.setItem('totalReportes', String(nuevo));
+      return nuevo;
+    });
+  };
 
   const descargar = (blob, headers, nombreBase, formato) => {
     const ahora = new Date();
@@ -39,6 +50,7 @@ function Reportes() {
       const params = { desde: fechaUsuarios.desde, hasta: fechaUsuarios.hasta };
       const res = await axios.get("http://localhost:5000/api/reportes/usuarios-excel", { responseType: "blob", params });
       descargar(res.data, res.headers, "reporte_usuarios", "xlsx");
+      incrementarReportes();
     } catch (error) {
       console.error(error);
       alert("Error al descargar Excel de usuarios");
@@ -54,6 +66,7 @@ function Reportes() {
       const params = { desde: fechaUsuarios.desde, hasta: fechaUsuarios.hasta };
       const res = await axios.get("http://localhost:5000/api/reportes/usuarios-pdf", { responseType: "blob", params });
       descargar(res.data, res.headers, "reporte_usuarios", "pdf");
+      incrementarReportes();
     } catch (error) {
       console.error(error);
       alert("Error al descargar PDF de usuarios");
@@ -69,6 +82,7 @@ function Reportes() {
       const params = { desde: fechaDispositivos.desde, hasta: fechaDispositivos.hasta };
       const res = await axios.get("http://localhost:5000/api/reportes/dispositivos-excel", { responseType: "blob", params });
       descargar(res.data, res.headers, "reporte_dispositivos", "xlsx");
+      incrementarReportes();
     } catch (error) {
       console.error(error);
       alert("Error al descargar Excel de dispositivos");
@@ -84,6 +98,7 @@ function Reportes() {
       const params = { desde: fechaDispositivos.desde, hasta: fechaDispositivos.hasta };
       const res = await axios.get("http://localhost:5000/api/reportes/dispositivos-pdf", { responseType: "blob", params });
       descargar(res.data, res.headers, "reporte_dispositivos", "pdf");
+      incrementarReportes();
     } catch (error) {
       console.error(error);
       alert("Error al descargar PDF de dispositivos");

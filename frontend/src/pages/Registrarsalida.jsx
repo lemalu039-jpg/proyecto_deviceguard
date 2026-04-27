@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Modal } from 'bootstrap';
 import {
   getDispositivos,
@@ -19,6 +19,8 @@ function SalidaDispositivos() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
   const esSuperAdmin = JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'super_admin';
+  const [filtroBusqueda, setFiltroBusqueda] = useState('');
+  const [filtroEstado, setFiltroEstado] = useState('');
 
   useEffect(() => {
     loadData();
@@ -82,7 +84,7 @@ const handleSubmit = async (e) => {
     }
 
     if (dispositivo.estado !== "En Mantenimiento") {
-      alert("Solo puedes registrar salida si el dispositivo está en mantenimiento.");
+      alert("Solo puedes registrar salida si el dispositivo estÃ¡ en mantenimiento.");
       return;
     }
 
@@ -108,7 +110,7 @@ const handleSubmit = async (e) => {
 };
 
   const handleDelete = async (id) => {
-    if (window.confirm("¿Finalizar proceso del dispositivo?")) {
+    if (window.confirm("Â¿Finalizar proceso del dispositivo?")) {
       const dispositivo = salidas.find(d => d.id === id);
       if (!dispositivo) return;
       await updateDispositivo(id, {
@@ -142,7 +144,13 @@ const handleSubmit = async (e) => {
     }
   };
 
-  const filteredSalidas = salidas.filter(s => s.estado === "En Mantenimiento");
+  const filteredSalidas = salidas.filter(s => {
+    const okEstadoBase = s.estado === "En Mantenimiento";
+    const texto = `${s.serial} ${s.nombre || ''} ${s.ubicacion || ''}`.toLowerCase();
+    const okBusqueda = !filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase());
+    const okEstado = !filtroEstado || s.estado === filtroEstado;
+    return okEstadoBase && okBusqueda && okEstado;
+  });
 
   return (
     <div className="salida-wrapper">
@@ -189,9 +197,9 @@ const handleSubmit = async (e) => {
 
                   </div>
                   <div className="col-12">
-  <label className="salida-modal-label">Información</label>
+  <label className="salida-modal-label">InformaciÃ³n</label>
   <p className="salida-info-text">
-    La salida se registra automáticamente (fecha, hora y estado).
+    La salida se registra automÃ¡ticamente (fecha, hora y estado).
   </p>
 </div>
 
@@ -218,6 +226,21 @@ const handleSubmit = async (e) => {
           <span>Lista de dispositivos</span>
           <span className="salida-count">{salidas.length} registrados</span>
         </div>
+        {/* Filtros */}
+        <div style={{ display: 'flex', gap: '.5rem', padding: '.75rem 1.25rem', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="Buscar por serial, nombre..."
+            value={filtroBusqueda}
+            onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
+            style={{ flex: 1, minWidth: '160px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
+          />
+          {(filtroBusqueda || filtroEstado) && (
+            <button onClick={() => { setFiltroBusqueda(''); setFiltroEstado(''); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
+              Limpiar
+            </button>
+          )}
+        </div>
 
         <div className="salida-table-wrap">
           <table className="salida-table">
@@ -239,16 +262,16 @@ const handleSubmit = async (e) => {
                     <td style={{ fontWeight: 700, color: 'var(--text-main)' }}>{s.serial}</td>
                     <td>
                       {s.fecha_registro?.split("T")[0]}<br />
-                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{s.hora_registro || '—'}</span>
+                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{s.hora_registro || '-'}</span>
                     </td>
                     <td>
-                      {s.fecha_salida ? s.fecha_salida.split("T")[0] : '—'}<br />
-                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{s.hora_salida || '—'}</span>
+                      {s.fecha_salida ? s.fecha_salida.split("T")[0] : '-'}<br />
+                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{s.hora_salida || '-'}</span>
                     </td>
                     <td><span className={getBadgeClass(s.estado)}>{s.estado}</span></td>
                     {esSuperAdmin && (
                       <td style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
-                        {s.registrado_por || '—'}
+                        {s.registrado_por || '-'}
                       </td>
                     )}
                   </tr>

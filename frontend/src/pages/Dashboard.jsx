@@ -7,12 +7,11 @@ import Pagination from '../components/Pagination';
 function Dashboard() {
   useEffect(() => {
   const generador = estadosDispositivo();
-
   console.log(generador.next().value);
   console.log(generador.next().value);
   console.log(generador.next().value);
   console.log(generador.next().value);
-  console.log(generador.next().value); // undefined
+  console.log(generador.next().value);
 }, []);
   const navigate = useNavigate();
   const [stats, setStats] = useState({
@@ -21,10 +20,13 @@ function Dashboard() {
     enRevision: 0,
     enMantenimiento: 0,
     entregado: 0,
-    usuarios: 0
+    usuarios: 0,
+    totalMantenimientos: 0
   });
 
   const [dispositivos, setDispositivos] = useState([]);
+  const [filtroEstado, setFiltroEstado] = useState('');
+  const [filtroBusqueda, setFiltroBusqueda] = useState('');
   const [loading, setLoading] = useState(true);
   const [imagenActiva, setImagenActiva] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,7 +41,6 @@ function Dashboard() {
         ]);
         const allDevices = devicesRes.data;
         
-        // Filtrar por usuario si el rol es 'usuario'
         const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
         const dispositivos = usuarioActual.rol === 'usuario'
           ? allDevices.filter(d => d.usuario_id === usuarioActual.id)
@@ -51,7 +52,8 @@ function Dashboard() {
           enRevision:      dispositivos.filter(d => d.estado === 'En Revision').length,
           enMantenimiento: dispositivos.filter(d => d.estado === 'En Mantenimiento').length,
           entregado:      dispositivos.filter(d => d.estado === 'Entregado').length,
-          usuarios:        usuariosRes.data.length
+          usuarios:        usuariosRes.data.length,
+          totalMantenimientos: parseInt(localStorage.getItem('totalReportes') || '0')
         });
         setDispositivos(dispositivos);
       } catch (error) {
@@ -178,12 +180,25 @@ function Dashboard() {
     {
       label: 'Entregado',
       value: stats.entregado,
-    accentColor: '#15803d',
+      accentColor: '#15803d',
       textColor: '#15803d',
       iconBg: 'rgba(19, 112, 15, 0.1)',
       icono: <IconoEntregado />,
       badge: { label: 'Entregado', bg: '#f3fef2', color: '#15803d' }
-    }
+    },
+    {
+      label: 'Total reportes',
+      value: stats.totalMantenimientos,
+      accentColor: '#0369a1',
+      textColor: '#0369a1',
+      iconBg: 'rgba(3, 105, 161, 0.1)',
+      icono: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0369a1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+      ),
+      badge: { label: 'Reportes enviados', bg: '#e0f2fe', color: '#0369a1' }
+    },
   ];
 
 
@@ -263,6 +278,31 @@ function Dashboard() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
         <div style={{ width: '4px', height: '18px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px', flexShrink: 0 }}></div>
         <span style={{ fontSize: '.92rem', fontWeight: 700, color: 'var(--text-main)' }}>Lista de dispositivos</span>
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: '.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <input
+            type="text"
+            placeholder="Buscar nombre, serial, ubicación..."
+            value={filtroBusqueda}
+            onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
+            style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none', minWidth: '200px' }}
+          />
+          <select
+            value={filtroEstado}
+            onChange={e => { setFiltroEstado(e.target.value); setCurrentPage(1); }}
+            style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none' }}
+          >
+            <option value="">Todos los estados</option>
+            <option value="En Revision">En Revision</option>
+            <option value="En Mantenimiento">En Mantenimiento</option>
+            <option value="Listo para Entrega">Listo para Entrega</option>
+            <option value="Entregado">Entregado</option>
+          </select>
+          {(filtroEstado || filtroBusqueda) && (
+            <button onClick={() => { setFiltroEstado(''); setFiltroBusqueda(''); setCurrentPage(1); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
+              Limpiar
+            </button>
+          )}
+        </div>
       </div>
 
       <div style={{ background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>
@@ -280,7 +320,13 @@ function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {dispositivos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((d, i) => (
+              {(() => {
+                const filtrados = dispositivos.filter(d => {
+                  const texto = `${d.nombre} ${d.serial} ${d.ubicacion}`.toLowerCase();
+                  const okBusqueda = !filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase());
+                  const okEstado = !filtroEstado || d.estado === filtroEstado;
+                  return okBusqueda && okEstado;
+                });                return filtrados.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((d, i) => (
                 <tr key={d.id} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
                   <td style={tdStyle}>
                     <div style={{
@@ -321,9 +367,12 @@ function Dashboard() {
                     </td>
                   )}
                 </tr>
-              ))}
-              {dispositivos.length === 0 && (
-                <tr>
+                ));
+              })()}
+              {dispositivos.filter(d => {
+                const texto = `${d.nombre} ${d.serial} ${d.ubicacion}`.toLowerCase();
+                return (!filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase())) && (!filtroEstado || d.estado === filtroEstado);
+              }).length === 0 && (                <tr>
                   <td colSpan="6" style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
                     No hay dispositivos registrados
                   </td>
@@ -335,7 +384,7 @@ function Dashboard() {
       </div>
 
       <Pagination
-        totalItems={dispositivos.length}
+        totalItems={(filtroEstado ? dispositivos.filter(d => d.estado === filtroEstado) : dispositivos).length}
         itemsPerPage={itemsPerPage}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
