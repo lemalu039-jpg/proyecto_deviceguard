@@ -60,11 +60,17 @@ const previewDispositivos = async (req, res) => {
 
 const generarExcelDispositivos = async (req, res) => {
   try {
-    const { desde, hasta } = req.query;
-    let query = "SELECT * FROM dispositivos WHERE 1=1";
+    const { desde, hasta, estado } = req.query;
+    let query = `
+      SELECT d.*, COALESCE(e.nombre, 'Sin estado') AS estado_nombre
+      FROM dispositivos d
+      LEFT JOIN estados e ON d.estado_id = e.id
+      WHERE d.activo = 1
+    `;
     const params = [];
-    if (desde) { query += " AND DATE(fecha_registro) >= ?"; params.push(desde); }
-    if (hasta) { query += " AND DATE(fecha_registro) <= ?"; params.push(hasta); }
+    if (desde) { query += " AND DATE(d.fecha_registro) >= ?"; params.push(desde); }
+    if (hasta) { query += " AND DATE(d.fecha_registro) <= ?"; params.push(hasta); }
+    if (estado && estado !== "todos") { query += " AND e.nombre = ?"; params.push(estado); }
 
     const [dispositivos] = await db.query(query, params);
 
@@ -87,22 +93,20 @@ const generarExcelDispositivos = async (req, res) => {
 
     // 📥 DATOS
     dispositivos.forEach(d => {
-  const fechaEntrada = d.fecha_registro
-    ? `${d.fecha_registro.toISOString().split("T")[0]} ${d.hora_registro || "00:00"}`
-    : "N/A";
-
-  const fechaSalida = d.fecha_salida
-    ? `${d.fecha_salida.toISOString().split("T")[0]} ${d.hora_salida || "00:00"}`
-    : "N/A";
-
-  worksheet.addRow({
-    id: d.id,
-    nombre: d.nombre,
-    estado: d.estado,
-    fecha_entrada: fechaEntrada,
-    fecha_salida: fechaSalida
-  });
-});
+      const fechaEntrada = d.fecha_registro
+        ? `${new Date(d.fecha_registro).toISOString().split("T")[0]} ${d.hora_registro || "00:00"}`
+        : "N/A";
+      const fechaSalida = d.fecha_salida
+        ? `${new Date(d.fecha_salida).toISOString().split("T")[0]} ${d.hora_salida || "00:00"}`
+        : "N/A";
+      worksheet.addRow({
+        id: d.id,
+        nombre: d.nombre,
+        estado: d.estado_nombre || d.estado,
+        fecha_entrada: fechaEntrada,
+        fecha_salida: fechaSalida
+      });
+    });
 
     worksheet.getRow(1).font = { bold: true };
 
@@ -127,11 +131,13 @@ const generarExcelDispositivos = async (req, res) => {
 
 const generarExcelUsuarios = async (req, res) => {
   try {
-    const { desde, hasta } = req.query;
-    let query = "SELECT * FROM usuarios WHERE 1=1";
+    const { desde, hasta, rol } = req.query;
+    console.log("generarExcelUsuarios → rol:", rol);
+    let query = "SELECT * FROM usuarios WHERE rol != 'super_admin'";
     const params = [];
     if (desde) { query += " AND DATE(fecha_creacion) >= ?"; params.push(desde); }
     if (hasta) { query += " AND DATE(fecha_creacion) <= ?"; params.push(hasta); }
+    if (rol && rol !== "todos") { query += " AND rol = ?"; params.push(rol); }
 
     const [usuarios] = await db.query(query, params);
 
@@ -183,11 +189,17 @@ const generarExcelUsuarios = async (req, res) => {
 
 const generarPdfDispositivos = async (req, res) => {
   try {
-    const { desde, hasta } = req.query;
-    let query = "SELECT * FROM dispositivos WHERE 1=1";
+    const { desde, hasta, estado } = req.query;
+    let query = `
+      SELECT d.*, COALESCE(e.nombre, 'Sin estado') AS estado_nombre
+      FROM dispositivos d
+      LEFT JOIN estados e ON d.estado_id = e.id
+      WHERE d.activo = 1
+    `;
     const params = [];
-    if (desde) { query += " AND DATE(fecha_registro) >= ?"; params.push(desde); }
-    if (hasta) { query += " AND DATE(fecha_registro) <= ?"; params.push(hasta); }
+    if (desde) { query += " AND DATE(d.fecha_registro) >= ?"; params.push(desde); }
+    if (hasta) { query += " AND DATE(d.fecha_registro) <= ?"; params.push(hasta); }
+    if (estado && estado !== "todos") { query += " AND e.nombre = ?"; params.push(estado); }
 
     const [dispositivos] = await db.query(query, params);
 
@@ -226,16 +238,16 @@ const generarPdfDispositivos = async (req, res) => {
     doc.font("Helvetica").fontSize(9);
     dispositivos.forEach(d => {
       const fechaEntrada = d.fecha_registro
-        ? `${d.fecha_registro.toISOString().split("T")[0]} ${d.hora_registro || "00:00"}`
+        ? `${new Date(d.fecha_registro).toISOString().split("T")[0]} ${d.hora_registro || "00:00"}`
         : "N/A";
       const fechaSalida = d.fecha_salida
-        ? `${d.fecha_salida.toISOString().split("T")[0]} ${d.hora_salida || "00:00"}`
+        ? `${new Date(d.fecha_salida).toISOString().split("T")[0]} ${d.hora_salida || "00:00"}`
         : "N/A";
 
       const y = doc.y;
       doc.text(String(d.id), startX, y, { width: columnWidth - 5 });
       doc.text(d.nombre, startX + columnWidth, y, { width: columnWidth - 5 });
-      doc.text(d.estado, startX + columnWidth * 2, y, { width: columnWidth - 5 });
+      doc.text(d.estado_nombre || d.estado || "—", startX + columnWidth * 2, y, { width: columnWidth - 5 });
       doc.text(fechaEntrada, startX + columnWidth * 3, y, { width: columnWidth - 5 });
       doc.text(fechaSalida, startX + columnWidth * 4, y, { width: columnWidth - 5 });
       doc.moveDown();
@@ -251,11 +263,13 @@ const generarPdfDispositivos = async (req, res) => {
 
 const generarPdfUsuarios = async (req, res) => {
   try {
-    const { desde, hasta } = req.query;
-    let query = "SELECT * FROM usuarios WHERE 1=1";
+    const { desde, hasta, rol } = req.query;
+    console.log("generarPdfUsuarios → rol:", rol);
+    let query = "SELECT * FROM usuarios WHERE rol != 'super_admin'";
     const params = [];
     if (desde) { query += " AND DATE(fecha_creacion) >= ?"; params.push(desde); }
     if (hasta) { query += " AND DATE(fecha_creacion) <= ?"; params.push(hasta); }
+    if (rol && rol !== "todos") { query += " AND rol = ?"; params.push(rol); }
 
     const [usuarios] = await db.query(query, params);
 

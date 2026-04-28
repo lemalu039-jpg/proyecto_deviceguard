@@ -240,12 +240,12 @@ header {
 }
 
 .btn-primary {
-  background: var(--btn-gradient, var(--primary));
+  background: linear-gradient(135deg, #0492C2, #82EEFD);
   color: white;
 }
 
 .btn-primary:hover {
-  background: var(--btn-gradient-hover, var(--primary-hover));
+  opacity: 0.88;
 }
 
 .btn-outline {

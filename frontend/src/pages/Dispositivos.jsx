@@ -196,7 +196,7 @@ function Dispositivos() {
 
       {/* modal registrar / editar */}
       <div className="modal fade" id="dispositivoModal" tabIndex="-1" aria-hidden="true" ref={modalRef}>
-        <div className="modal-dialog modal-lg modal-dialog-centered">
+        <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">
