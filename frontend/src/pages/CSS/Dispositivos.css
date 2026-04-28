@@ -76,11 +76,14 @@
 .disp-card-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: .92rem;
   font-weight: 700;
   color: var(--text-main);
   margin-bottom: 1rem;
+  padding: .75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
 }
 
 .disp-card-dot {
@@ -258,10 +261,11 @@
   display: inline-block;
   font-size: .68rem;
   font-weight: 700;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 20px;
   letter-spacing: .3px;
-   background: #fcfbdc;
+  white-space: nowrap;
+  background: #fcfbdc;
   color: #dacd1c;
 }
 
@@ -322,9 +326,10 @@
 
 .disp-btn-edit,
 .disp-btn-del {
-  display: inline-flex;   /* 🔥 clave */
-  align-items: center;    /* centra vertical */
-  gap: 6px;               /* 👈 separación icono-texto */
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
 }
 
 .disp-btn-del:hover {
@@ -656,3 +661,10 @@
 
 .reingreso-btn-confirm:hover { opacity: .88; }
 .reingreso-btn-confirm:disabled { opacity: .6; cursor: not-allowed; }
+
+/* Hora secundaria en columna de fecha */
+.disp-hora {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}

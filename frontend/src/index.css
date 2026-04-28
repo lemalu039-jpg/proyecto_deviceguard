@@ -274,6 +274,22 @@ header {
   border-color: var(--primary);
 }
 
+/* ─── FOCUS GLOBAL INPUTS / SELECTS ───────────────────────── */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #475569 !important;
+  border-width: 1.5px !important;
+  box-shadow: none !important;
+}
+
+[data-theme='dark'] input:focus,
+[data-theme='dark'] select:focus,
+[data-theme='dark'] textarea:focus {
+  border-color: #94a3b8 !important;
+}
+
 /* ─── TABLAS ───────────────────────── */
 
 .table-container {

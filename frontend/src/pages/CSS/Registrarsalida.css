@@ -72,11 +72,13 @@
 .salida-card-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: .92rem;
   font-weight: 700;
   color: var(--text-main);
-  margin-bottom: 1rem;
+  padding: .75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
 }
 
 .salida-card-dot {
@@ -440,4 +442,11 @@
     font-size: 0.75rem;
     padding: 8px;
   }
+}
+
+/* Hora secundaria en columna de fecha */
+.salida-hora {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 400;
 }

@@ -626,3 +626,10 @@
     justify-content: center;
   }
 }
+
+/* Hora secundaria en columna de fecha */
+.equipo-hora {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}

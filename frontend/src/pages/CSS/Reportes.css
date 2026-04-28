@@ -333,3 +333,32 @@
     font-size: 1.6rem;
   }
 }
+
+/* ── BADGES REPORTES ─────────────────────────────────────── */
+.rpt-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+/* Estados dispositivos */
+.rpt-badge-revision     { background: #f3e8ff; color: #7e22ce; }
+.rpt-badge-mantenimiento{ background: #ffedd5; color: #c2410c; }
+.rpt-badge-listo        { background: #fcfbdc; color: #a16207; }
+.rpt-badge-entregado    { background: #f3fef2; color: #15803d; }
+
+/* Roles usuarios — mismos colores que Equipo */
+.rpt-badge-superadmin   { background: #fef3c7; color: #92400e; }
+.rpt-badge-tecnico      { background: #dbeafe; color: #1e40af; }
+.rpt-badge-usuario      { background: #f0fdf4; color: #059669; }
+
+/* Hora secundaria en columna de fecha */
+.rpt-hora {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}

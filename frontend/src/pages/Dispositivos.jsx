@@ -36,7 +36,7 @@ function Dispositivos() {
   const loadData = async () => {
     try {
       const res = await getDispositivos();
-      const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const usuarioActual = (JSON.parse(localStorage.getItem('usuario')||'{}'));
       const dispositivos = usuarioActual.rol === 'usuario'
         ? res.data.filter(d => d.usuario_id === usuarioActual.id)
         : res.data;
@@ -46,7 +46,7 @@ function Dispositivos() {
     }
   };
 
-  const esSuperAdmin = JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'super_admin';
+  const esSuperAdmin = (JSON.parse(localStorage.getItem('usuario')||'{}')).rol === 'super_admin';
   const [filtroBusqueda, setFiltroBusqueda] = React.useState('');
   const [filtroEstadoDisp, setFiltroEstadoDisp] = React.useState('');
 
@@ -114,7 +114,7 @@ function Dispositivos() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Â¿Seguro que deseas eliminar este dispositivo?')) {
+    if (window.confirm('¿Seguro que deseas eliminar este dispositivo?')) {
       await deleteDispositivo(id);
       loadData();
     }
@@ -137,7 +137,7 @@ function Dispositivos() {
       const res = await getDispositivoBySerial(reingreso.serial.trim());
       setReingreso(r => ({ ...r, dispositivo: res.data, buscando: false, confirmando: true }));
     } catch {
-      setReingreso(r => ({ ...r, error: 'El dispositivo no estÃ¡ registrado', buscando: false }));
+      setReingreso(r => ({ ...r, error: 'El dispositivo no est� registrado', buscando: false }));
     }
   };
 
@@ -210,12 +210,12 @@ function Dispositivos() {
                   <div className="col-md-6">
                     <label className="disp-modal-label">Nombre</label>
                     <input type="text" name="nombre" value={form.nombre} onChange={handleChange}
-                      placeholder="Ej: PortÃ¡til HP ProBook" required className="disp-modal-input" />
+                      placeholder="Ej: Port�til HP ProBook" required className="disp-modal-input" />
                   </div>
                   <div className="col-md-6">
                     <label className="disp-modal-label">Tipo</label>
                     <input type="text" name="tipo" value={form.tipo} onChange={handleChange}
-                      placeholder="Ej: PortÃ¡til, Proyector..." required className="disp-modal-input" />
+                      placeholder="Ej: Port�til, Proyector..." required className="disp-modal-input" />
                   </div>
                   <div className="col-md-6">
                     <label className="disp-modal-label">Serial</label>
@@ -235,10 +235,10 @@ function Dispositivos() {
                   </div>
                   <div className="col-md-6">
                     <label className="disp-modal-label">Estado</label>
-                    <input type="text" value="En RevisiÃ³n" disabled className="disp-modal-input" />
+                    <input type="text" value="En Revisi�n" disabled className="disp-modal-input" />
                   </div>
                   <div className="col-12">
-                    <label className="disp-modal-label">DescripciÃ³n del equipo</label>
+                    <label className="disp-modal-label">Descripci�n del equipo</label>
                     <textarea
                       name="descripcion"
                       value={form.descripcion}
@@ -306,20 +306,20 @@ function Dispositivos() {
                   ].map(({ label, value }) => (
                     <div key={label} className="reingreso-info-row">
                       <span className="reingreso-info-label">{label}</span>
-                      <span className="reingreso-info-val">{value || 'â€”'}</span>
+                      <span className="reingreso-info-val">{value || '—'}</span>
                     </div>
                   ))}
                   {reingreso.dispositivo.descripcion && (
                     <div className="reingreso-info-row" style={{ flexDirection: 'column', gap: '3px' }}>
-                      <span className="reingreso-info-label">DescripciÃ³n</span>
+                      <span className="reingreso-info-label">Descripci�n</span>
                       <span className="reingreso-info-val" style={{ fontSize: '.78rem' }}>
                         {reingreso.dispositivo.descripcion}
                       </span>
                     </div>
                   )}
                   <div className="reingreso-confirm-msg">
-                    Â¿Deseas reingresar este dispositivo?<br />
-                    <span>Su estado cambiarÃ¡ a <strong>En RevisiÃ³n</strong></span>
+                    �Deseas reingresar este dispositivo?<br />
+                    <span>Su estado cambiar� a <strong>En Revisi�n</strong></span>
                   </div>
                 </div>
               )}
@@ -341,10 +341,6 @@ function Dispositivos() {
         <div className="disp-card-title">
           <div className="disp-card-dot"></div>
           <span>Lista de dispositivos</span>
-          <span className="disp-count">{dispositivos.length} registrados</span>
-        </div>
-        {/* Filtros */}
-        <div style={{ display: 'flex', gap: '.5rem', padding: '.75rem 1.25rem', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', alignItems: 'center' }}>
           <input
             type="text"
             placeholder="Buscar por nombre, serial o marca..."
@@ -355,7 +351,7 @@ function Dispositivos() {
           <select
             value={filtroEstadoDisp}
             onChange={e => { setFiltroEstadoDisp(e.target.value); setCurrentPage(1); }}
-            style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none' }}
+            style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none', flexShrink: 0 }}
           >
             <option value="">Todos los estados</option>
             <option value="En Revision">En Revision</option>
@@ -364,7 +360,7 @@ function Dispositivos() {
             <option value="Entregado">Entregado</option>
           </select>
           {(filtroBusqueda || filtroEstadoDisp) && (
-            <button onClick={() => { setFiltroBusqueda(''); setFiltroEstadoDisp(''); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={() => { setFiltroBusqueda(''); setFiltroEstadoDisp(''); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
               Limpiar
             </button>
           )}
@@ -402,13 +398,14 @@ function Dispositivos() {
                   <td>
                     {formatFecha(d.fecha_registro)}<br />
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      {d.hora_registro || 'â€”'}
+                      {d.hora_registro || '—'}
                     </span>
                   </td>
                   <td>
                     <span className={`disp-badge ${getBadgeClass(d.estado)}`}>{d.estado}</span>
                   </td>
-                  <td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                     <button className="disp-btn-edit" onClick={() => handleEdit(d)}>
                       <Icon d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
                       Editar
@@ -417,6 +414,7 @@ function Dispositivos() {
                       <Icon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
                       Eliminar
                     </button>
+                    </div>
                   </td>
                 </tr>
                 ));

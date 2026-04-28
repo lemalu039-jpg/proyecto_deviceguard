@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Modal } from 'bootstrap';
 import {
   getDispositivos,
@@ -18,7 +18,7 @@ function SalidaDispositivos() {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
-  const esSuperAdmin = JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'super_admin';
+  const esSuperAdmin = (JSON.parse(localStorage.getItem('usuario')||'{}')).rol === 'super_admin';
   const [filtroBusqueda, setFiltroBusqueda] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
 
@@ -84,7 +84,7 @@ const handleSubmit = async (e) => {
     }
 
     if (dispositivo.estado !== "En Mantenimiento") {
-      alert("Solo puedes registrar salida si el dispositivo estÃ¡ en mantenimiento.");
+      alert("Solo puedes registrar salida si el dispositivo está en mantenimiento.");
       return;
     }
 
@@ -110,7 +110,7 @@ const handleSubmit = async (e) => {
 };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Â¿Finalizar proceso del dispositivo?")) {
+    if (window.confirm("¿Finalizar proceso del dispositivo?")) {
       const dispositivo = salidas.find(d => d.id === id);
       if (!dispositivo) return;
       await updateDispositivo(id, {
@@ -197,9 +197,9 @@ const handleSubmit = async (e) => {
 
                   </div>
                   <div className="col-12">
-  <label className="salida-modal-label">InformaciÃ³n</label>
+  <label className="salida-modal-label">Información</label>
   <p className="salida-info-text">
-    La salida se registra automÃ¡ticamente (fecha, hora y estado).
+    La salida se registra automáticamente (fecha, hora y estado).
   </p>
 </div>
 
@@ -223,20 +223,16 @@ const handleSubmit = async (e) => {
       <div className="salida-card">
         <div className="salida-card-title">
           <div className="salida-card-dot"></div>
-          <span>Lista de dispositivos</span>
-          <span className="salida-count">{salidas.length} registrados</span>
-        </div>
-        {/* Filtros */}
-        <div style={{ display: 'flex', gap: '.5rem', padding: '.75rem 1.25rem', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ whiteSpace: 'nowrap' }}>Lista de dispositivos</span>
           <input
             type="text"
             placeholder="Buscar por serial, nombre..."
             value={filtroBusqueda}
             onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
-            style={{ flex: 1, minWidth: '160px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
+            style={{ flex: 1, minWidth: '160px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none', fontWeight: 400 }}
           />
-          {(filtroBusqueda || filtroEstado) && (
-            <button onClick={() => { setFiltroBusqueda(''); setFiltroEstado(''); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
+          {filtroBusqueda && (
+            <button onClick={() => { setFiltroBusqueda(''); setCurrentPage(1); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
               Limpiar
             </button>
           )}
@@ -261,12 +257,18 @@ const handleSubmit = async (e) => {
                   <tr key={s.id}>
                     <td style={{ fontWeight: 700, color: 'var(--text-main)' }}>{s.serial}</td>
                     <td>
-                      {s.fecha_registro?.split("T")[0]}<br />
-                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{s.hora_registro || '-'}</span>
+                      {s.fecha_registro
+                        ? new Date(s.fecha_registro).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
+                        : '-'}
+                      <br />
+                      <span className="salida-hora">{s.hora_registro || new Date(s.fecha_registro).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</span>
                     </td>
                     <td>
-                      {s.fecha_salida ? s.fecha_salida.split("T")[0] : '-'}<br />
-                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{s.hora_salida || '-'}</span>
+                      {s.fecha_salida
+                        ? new Date(s.fecha_salida).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
+                        : '-'}
+                      <br />
+                      <span className="salida-hora">{s.hora_salida || '-'}</span>
                     </td>
                     <td><span className={getBadgeClass(s.estado)}>{s.estado}</span></td>
                     {esSuperAdmin && (

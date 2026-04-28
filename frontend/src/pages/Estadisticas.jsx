@@ -37,6 +37,8 @@ function Estadisticas() {
   const [filtroEstado, setFiltroEstado] = useState('todos');
   const [filtroTipo,   setFiltroTipo]   = useState('todos');
   const [filtroLinea,  setFiltroLinea]  = useState('todos');
+  const [filtroBusqueda, setFiltroBusqueda] = useState('');
+  const [filtroTablaEstado, setFiltroTablaEstado] = useState('todos');
   const [currentPage,  setCurrentPage]  = useState(1);
   const itemsPerPage = 10;
 
@@ -104,7 +106,7 @@ function Estadisticas() {
     if (filtroTipo !== 'todos' && !tiposDisponibles.includes(filtroTipo)) setFiltroTipo('todos');
   }, [tiposDisponibles]);
 
-  useEffect(() => { setCurrentPage(1); }, [filtroAnio, filtroMes, filtroEstado, filtroTipo]);
+  useEffect(() => { setCurrentPage(1); }, [filtroAnio, filtroMes, filtroEstado, filtroTipo, filtroBusqueda, filtroTablaEstado]);
 
   // ── 3. Filtrar por estado y tipo ────────────────────────────────────
   const dispositivosFiltrados = useMemo(() => {
@@ -116,6 +118,16 @@ function Estadisticas() {
   }, [dispositivosPorMes, filtroEstado, filtroTipo]);
 
   const total = dispositivosFiltrados.length;
+
+  // ── Filtro adicional de la barra de búsqueda de la tabla ────────────
+  const dispositivosTabla = useMemo(() => {
+    return dispositivosFiltrados.filter(d => {
+      const texto = `${d.nombre} ${d.serial} ${d.marca}`.toLowerCase();
+      const okBusqueda = !filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase());
+      const okEstado   = filtroTablaEstado === 'todos' || d.estado === filtroTablaEstado;
+      return okBusqueda && okEstado;
+    });
+  }, [dispositivosFiltrados, filtroBusqueda, filtroTablaEstado]);
   const pct   = (n) => total > 0 ? Math.round((n / total) * 100) : 0;
 
   // ── Conteo por estado — siempre los 4 ──────────────────────────────
@@ -445,11 +457,36 @@ function Estadisticas() {
 
         
           <div style={{ background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>
-            <div style={{ padding: '1.25rem 1.25rem .75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '4px', height: '16px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px' }}></div>
-              <span style={{ fontSize: '.88rem', fontWeight: 700, color: 'var(--text-main)' }}>Dispositivos</span>
-              <span style={{ marginLeft: 'auto', fontSize: '.72rem', color: 'var(--text-muted)', background: 'var(--input-bg)', padding: '2px 9px', borderRadius: '20px' }}>
-                {dispositivosFiltrados.length} resultado{dispositivosFiltrados.length !== 1 ? 's' : ''}
+            <div style={{ padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', borderBottom: '1px solid var(--border)' }}>
+              <div style={{ width: '4px', height: '18px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px', flexShrink: 0 }}></div>
+              <span style={{ fontSize: '.92rem', fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap' }}>Dispositivos</span>
+              <input
+                type="text"
+                placeholder="Buscar nombre, serial, marca..."
+                value={filtroBusqueda ?? ''}
+                onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
+                style={{ flex: 1, minWidth: '180px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
+              />
+              <select
+                value={filtroTablaEstado ?? 'todos'}
+                onChange={e => { setFiltroTablaEstado(e.target.value); setCurrentPage(1); }}
+                style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none', flexShrink: 0 }}
+              >
+                <option value="todos">Todos los estados</option>
+                <option value="En Revision">En Revision</option>
+                <option value="En Mantenimiento">En Mantenimiento</option>
+                <option value="Listo para Entrega">Listo para Entrega</option>
+                <option value="Entregado">Entregado</option>
+              </select>
+              {(filtroBusqueda || filtroTablaEstado !== 'todos') && (
+                <button
+                  onClick={() => { setFiltroBusqueda(''); setFiltroTablaEstado('todos'); setCurrentPage(1); }}
+                  style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
+                  Limpiar
+                </button>
+              )}
+              <span style={{ fontSize: '.72rem', color: 'var(--text-muted)', background: 'var(--input-bg)', padding: '2px 9px', borderRadius: '20px', fontWeight: 600, flexShrink: 0 }}>
+                {dispositivosTabla.length} resultado{dispositivosTabla.length !== 1 ? 's' : ''}
               </span>
             </div>
             <div style={{ overflowX: 'auto' }} className="estadisticas-table-wrapper">
@@ -465,7 +502,7 @@ function Estadisticas() {
                   </tr>
                 </thead>
                 <tbody>
-                  {dispositivosFiltrados
+                  {dispositivosTabla
                     .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                     .map((d, i) => (
                     <tr key={d.id} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
@@ -474,14 +511,20 @@ function Estadisticas() {
                       <td style={tdStyle}>{d.marca || 'N/A'}</td>
                       <td style={tdStyle}>{d.ubicacion || 'N/A'}</td>
                       <td style={tdStyle}>
-                        {d.fecha_registro
-                          ? new Date(d.fecha_registro).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
-                          : 'N/A'}
+                        {d.fecha_registro ? (
+                          <>
+                            <span>{new Date(d.fecha_registro).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                            <br />
+                            <span className="est-hora">
+                              {d.hora_registro || new Date(d.fecha_registro).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </>
+                        ) : 'N/A'}
                       </td>
                       <td style={tdStyle}><span style={getBadgeStyle(d.estado)}>{d.estado}</span></td>
                     </tr>
                   ))}
-                  {dispositivosFiltrados.length === 0 && (
+                  {dispositivosTabla.length === 0 && (
                     <tr>
                       <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
                         No hay dispositivos para los filtros seleccionados
@@ -492,7 +535,7 @@ function Estadisticas() {
               </table>
             </div>
             <Pagination
-              totalItems={dispositivosFiltrados.length}
+              totalItems={dispositivosTabla.length}
               itemsPerPage={itemsPerPage}
               currentPage={currentPage}
               onPageChange={setCurrentPage}

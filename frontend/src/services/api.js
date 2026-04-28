@@ -72,7 +72,7 @@ export const updateMantenimiento = (id, data) => api.put(`/mantenimiento/${id}`,
 export const deleteMantenimiento = (id) => api.delete(`/mantenimiento/${id}`);
 
 // Correos externos
-export const getCorreos = () => api.get('/correo');
+export const getCorreos = (usuario_id) => api.get('/correo', { params: usuario_id ? { usuario_id } : {} });
 export const enviarCorreo = (data) => api.post('/correo/enviar', data);
 
 // Mensajería interna
