@@ -9,8 +9,8 @@ const API = "http://localhost:5000/api/reportes";
 const ITEMS_PER_PAGE = 10;
 
 function Reportes() {
-  const [fechaUsuarios, setFechaUsuarios] = useState({ desde: "", hasta: "" });
-  const [fechaDispositivos, setFechaDispositivos] = useState({ desde: "", hasta: "" });
+  const [fechaUsuarios, setFechaUsuarios] = useState({ desde: "", hasta: "", rol: "todos" });
+  const [fechaDispositivos, setFechaDispositivos] = useState({ desde: "", hasta: "", estado: "todos" });
 
   // ── Preview state ──
   const [tipoPreview, setTipoPreview] = useState("usuarios");
@@ -19,6 +19,13 @@ function Reportes() {
   const [previewTotal, setPreviewTotal] = useState(0);
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [paginaActual, setPaginaActual] = useState(1);
+
+  // ── Modal stats ──
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [modalTipo, setModalTipo] = useState("usuarios");
+
+  // ── Modal export ──
+  const [modalExport, setModalExport] = useState(null); // null | "usuarios" | "dispositivos"
 
   // ── Contador de reportes generados ──
   const [totalReportes, setTotalReportes] = useState(0);
@@ -30,6 +37,10 @@ function Reportes() {
       .catch(() => {});
   }, []);
 
+  const resetFiltros = () => {
+  setFechaUsuarios({ desde: "", hasta: "", rol: "todos" });
+  setFechaDispositivos({ desde: "", hasta: "", estado: "todos" });
+};
   // Recargar contador tras generar
   const recargarContador = () => {
     axios.get(`${API}/contador`)
@@ -98,10 +109,12 @@ function Reportes() {
     try {
       const res = await axios.get(`${API}/usuarios-excel`, {
         responseType: "blob",
-        params: { desde: fechaUsuarios.desde, hasta: fechaUsuarios.hasta },
+        params: { desde: fechaUsuarios.desde, hasta: fechaUsuarios.hasta, rol: fechaUsuarios.rol, _t: Date.now() },
       });
       descargar(res.data, res.headers, "reporte_usuarios", "xlsx");
       recargarContador();
+      setModalExport(null);
+      resetFiltros();
     } catch { alert("Error al descargar Excel de usuarios"); }
   };
 
@@ -113,10 +126,12 @@ function Reportes() {
     try {
       const res = await axios.get(`${API}/usuarios-pdf`, {
         responseType: "blob",
-        params: { desde: fechaUsuarios.desde, hasta: fechaUsuarios.hasta },
+        params: { desde: fechaUsuarios.desde, hasta: fechaUsuarios.hasta, rol: fechaUsuarios.rol, _t: Date.now() },
       });
       descargar(res.data, res.headers, "reporte_usuarios", "pdf");
       recargarContador();
+      setModalExport(null);
+      resetFiltros();
     } catch { alert("Error al descargar PDF de usuarios"); }
   };
 
@@ -128,10 +143,12 @@ function Reportes() {
     try {
       const res = await axios.get(`${API}/dispositivos-excel`, {
         responseType: "blob",
-        params: { desde: fechaDispositivos.desde, hasta: fechaDispositivos.hasta },
+        params: { desde: fechaDispositivos.desde, hasta: fechaDispositivos.hasta, estado: fechaDispositivos.estado, _t: Date.now() },
       });
       descargar(res.data, res.headers, "reporte_dispositivos", "xlsx");
       recargarContador();
+      setModalExport(null);
+      resetFiltros();
     } catch { alert("Error al descargar Excel de dispositivos"); }
   };
 
@@ -143,10 +160,12 @@ function Reportes() {
     try {
       const res = await axios.get(`${API}/dispositivos-pdf`, {
         responseType: "blob",
-        params: { desde: fechaDispositivos.desde, hasta: fechaDispositivos.hasta },
+        params: { desde: fechaDispositivos.desde, hasta: fechaDispositivos.hasta, estado: fechaDispositivos.estado, _t: Date.now() },
       });
       descargar(res.data, res.headers, "reporte_dispositivos", "pdf");
       recargarContador();
+      setModalExport(null);
+      resetFiltros();
     } catch { alert("Error al descargar PDF de dispositivos"); }
   };
 
@@ -219,7 +238,12 @@ function Reportes() {
 
   return (
     <div className="reportes-container">
-      <h1 className="page-title">Generar Reportes</h1>
+      <div className="page-title-row">
+        <h1 className="page-title">Generar Reportes</h1>
+        <button className="card-open-btn" onClick={() => setModalExport(true)}>
+          Exportar reportes
+        </button>
+      </div>
       <p className="subtitle">Genera los reportes que vayan según tu necesidad</p>
 
       {/* ── STAT CARDS ── */}
@@ -286,59 +310,160 @@ function Reportes() {
         />
       </div>
 
-      {/* ── EXPORT CARDS (funcionalidad original) ── */}
-      <p className="section-title">Exportar reportes</p>
-      <div className="cards">
 
-        {/* Usuarios */}
-        <div className="reporte-card">
-          <img src={usuariosIcon} alt="usuarios" />
-          <h3>Reporte Usuarios</h3>
-          <div className="reporte-fechas">
-            <label>Desde
-              <input type="date" value={fechaUsuarios.desde}
-                onChange={e => setFechaUsuarios(f => ({ ...f, desde: e.target.value }))} />
-            </label>
-            <label>Hasta
-              <input type="date" value={fechaUsuarios.hasta}
-                onChange={e => setFechaUsuarios(f => ({ ...f, hasta: e.target.value }))} />
-            </label>
-          </div>
-          <div className="btn-group">
-            <button onClick={generarUsuariosExcel} disabled={!fechaUsuarios.desde || !fechaUsuarios.hasta}>
-              Generar Excel
-            </button>
-            <button onClick={generarUsuariosPdf} disabled={!fechaUsuarios.desde || !fechaUsuarios.hasta}>
-              Generar PDF
-            </button>
+      {/* ── MODAL EXPORT ── */}
+      {modalExport && (
+        <div className="modal-overlay" onClick={() => { setModalExport(null); resetFiltros(); }}>
+          <div className="modal-content modal-export" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Exportar reportes</h2>
+              <button className="modal-close" onClick={() => { setModalExport(null); resetFiltros(); }}>✕</button>
+            </div>
+            <div className="modal-export-body">
+              <div className="cards">
+                {/* Usuarios */}
+                <div className="reporte-card">
+                  <img src={usuariosIcon} alt="usuarios" />
+                  <h3>Reporte Usuarios</h3>
+                  <div className="reporte-fechas">
+                    <label>Rol
+                      <select
+                        value={fechaUsuarios.rol}
+                        onChange={e => setFechaUsuarios(f => ({ ...f, rol: e.target.value }))}
+                      >
+                        <option value="todos">Todos</option>
+                        <option value="usuario">Usuarios</option>
+                        <option value="tecnico">Técnicos</option>
+                      </select>
+                    </label>
+                    <label>Desde
+                      <input type="date" value={fechaUsuarios.desde}
+                        onChange={e => setFechaUsuarios(f => ({ ...f, desde: e.target.value }))} />
+                    </label>
+                    <label>Hasta
+                      <input type="date" value={fechaUsuarios.hasta}
+                        onChange={e => setFechaUsuarios(f => ({ ...f, hasta: e.target.value }))} />
+                    </label>
+                  </div>
+                  <div className="btn-group">
+                    <button onClick={generarUsuariosExcel} disabled={!fechaUsuarios.desde || !fechaUsuarios.hasta}>
+                      Generar Excel
+                    </button>
+                    <button onClick={generarUsuariosPdf} disabled={!fechaUsuarios.desde || !fechaUsuarios.hasta}>
+                      Generar PDF
+                    </button>
+                  </div>
+                </div>
+
+                {/* Dispositivos */}
+                <div className="reporte-card">
+                  <img src={dispositivosIcon} alt="dispositivos" />
+                  <h3>Reporte Dispositivos</h3>
+                  <div className="reporte-fechas">
+                    <label>Estado
+                      <select
+                        value={fechaDispositivos.estado}
+                        onChange={e => setFechaDispositivos(f => ({ ...f, estado: e.target.value }))}
+                      >
+                        <option value="todos">Todos</option>
+                        <option value="En Revision">En Revisión</option>
+                        <option value="Listo para entrega">Listo para entrega</option>
+                        <option value="En Mantenimiento">En Mantenimiento</option>
+                        <option value="Entregado">Entregado</option>
+                      </select>
+                    </label>
+                    <label>Desde
+                      <input type="date" value={fechaDispositivos.desde}
+                        onChange={e => setFechaDispositivos(f => ({ ...f, desde: e.target.value }))} />
+                    </label>
+                    <label>Hasta
+                      <input type="date" value={fechaDispositivos.hasta}
+                        onChange={e => setFechaDispositivos(f => ({ ...f, hasta: e.target.value }))} />
+                    </label>
+                  </div>
+                  <div className="btn-group">
+                    <button onClick={generarDispositivosExcel} disabled={!fechaDispositivos.desde || !fechaDispositivos.hasta}>
+                      Generar Excel
+                    </button>
+                    <button onClick={generarDispositivosPdf} disabled={!fechaDispositivos.desde || !fechaDispositivos.hasta}>
+                      Generar PDF
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      )}
 
-        {/* Dispositivos */}
-        <div className="reporte-card">
-          <img src={dispositivosIcon} alt="dispositivos" />
-          <h3>Reporte Dispositivos</h3>
-          <div className="reporte-fechas">
-            <label>Desde
-              <input type="date" value={fechaDispositivos.desde}
-                onChange={e => setFechaDispositivos(f => ({ ...f, desde: e.target.value }))} />
-            </label>
-            <label>Hasta
-              <input type="date" value={fechaDispositivos.hasta}
-                onChange={e => setFechaDispositivos(f => ({ ...f, hasta: e.target.value }))} />
-            </label>
-          </div>
-          <div className="btn-group">
-            <button onClick={generarDispositivosExcel} disabled={!fechaDispositivos.desde || !fechaDispositivos.hasta}>
-              Generar Excel
-            </button>
-            <button onClick={generarDispositivosPdf} disabled={!fechaDispositivos.desde || !fechaDispositivos.hasta}>
-              Generar PDF
-            </button>
+      {/* ── MODAL STATS ── */}
+      {modalAbierto && (
+        <div className="modal-overlay" onClick={() => setModalAbierto(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>
+                {modalTipo === "preview"
+                  ? `Vista previa — ${tipoPreview === "usuarios" ? "Usuarios" : "Dispositivos"}`
+                  : "Reportes generados"}
+              </h2>
+              <button className="modal-close" onClick={() => setModalAbierto(false)}>✕</button>
+            </div>
+
+            {modalTipo === "preview" ? (
+              <>
+                <div className="modal-toolbar">
+                  <select
+                    className="preview-select"
+                    value={tipoPreview}
+                    onChange={e => { setTipoPreview(e.target.value); setBusqueda(""); }}
+                  >
+                    <option value="usuarios">Usuarios</option>
+                    <option value="dispositivos">Dispositivos</option>
+                  </select>
+                  <input
+                    className="preview-search"
+                    type="text"
+                    placeholder={
+                      tipoPreview === "usuarios"
+                        ? "Buscar por nombre, correo o rol..."
+                        : "Buscar por nombre, serial, estado o usuario..."
+                    }
+                    value={busqueda}
+                    onChange={e => setBusqueda(e.target.value)}
+                  />
+                </div>
+                <div className="preview-table-wrapper">
+                  {loadingPreview ? (
+                    <p className="preview-loading">Cargando datos...</p>
+                  ) : previewDatos.length === 0 ? (
+                    <p className="preview-empty">No se encontraron registros.</p>
+                  ) : (
+                    <table className="preview-table">
+                      <thead>
+                        <tr>{columnas.map(col => <th key={col}>{col}</th>)}</tr>
+                      </thead>
+                      <tbody>
+                        {datosPagina.map((row, i) => renderFila(row, i))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+                <Pagination
+                  totalItems={previewDatos.length}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  currentPage={paginaActual}
+                  onPageChange={setPaginaActual}
+                />
+              </>
+            ) : (
+              <div className="modal-reportes-info">
+                <p className="modal-reportes-num">{totalReportes}</p>
+                <p className="modal-reportes-label">reportes han sido generados en total</p>
+              </div>
+            )}
           </div>
         </div>
-
-      </div>
+      )}
     </div>
   );
 }

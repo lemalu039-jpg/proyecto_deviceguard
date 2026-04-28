@@ -23,7 +23,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--btn-gradient, linear-gradient(135deg, #0492C2, #82EEFD));
+  background: linear-gradient(135deg, #0492C2, #82EEFD);
   color: #fff;
   border: none;
   padding: 0.65rem 1.4rem;
@@ -31,13 +31,12 @@
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: opacity 0.2s, transform 0.15s;
 }
 
 .equipo-btn-add:hover {
-  background: var(--btn-gradient-hover, linear-gradient(135deg, #0378a6, #5dd8f0));
+  opacity: 0.88;
   transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(4, 146, 194, 0.35);
 }
 
 .equipo-btn-add:active { transform: scale(0.98); }
@@ -386,7 +385,7 @@
 }
 
 .equipo-btn-submit {
-  background: var(--btn-gradient, var(--primary));
+  background: linear-gradient(135deg, #0492C2, #82EEFD);
   color: #fff;
   border: none;
   padding: 0.75rem;
@@ -448,13 +447,12 @@
 }
 
 .equipo-btn-editar {
-  background: var(--btn-gradient, var(--primary));
+  background: linear-gradient(135deg, #0492C2, #82EEFD);
   color: #fff;
 }
 
 .equipo-btn-editar:hover {
-  background: var(--btn-gradient-hover, var(--primary-hover));
-  opacity: 0.9;
+  opacity: 0.88;
 }
 
 .equipo-btn-suspender {
