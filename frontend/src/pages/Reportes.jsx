@@ -20,12 +20,8 @@ function Reportes() {
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [paginaActual, setPaginaActual] = useState(1);
 
-  // ── Modal stats ──
-  const [modalAbierto, setModalAbierto] = useState(false);
-  const [modalTipo, setModalTipo] = useState("usuarios");
-
   // ── Modal export ──
-  const [modalExport, setModalExport] = useState(null); // null | "usuarios" | "dispositivos"
+  const [modalExport, setModalExport] = useState(false);
 
   // ── Contador de reportes generados ──
   const [totalReportes, setTotalReportes] = useState(0);
@@ -240,7 +236,13 @@ function Reportes() {
     <div className="reportes-container">
       <div className="page-title-row">
         <h1 className="page-title">Generar Reportes</h1>
-        <button className="card-open-btn" onClick={() => setModalExport(true)}>
+        <button
+          className="rpt-export-btn"
+          onClick={() => setModalExport(true)}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
           Exportar reportes
         </button>
       </div>
@@ -312,7 +314,7 @@ function Reportes() {
 
 
       {/* ── MODAL EXPORT ── */}
-      {modalExport && (
+      {modalExport === true && (
         <div className="modal-overlay" onClick={() => { setModalExport(null); resetFiltros(); }}>
           <div className="modal-content modal-export" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
@@ -396,74 +398,6 @@ function Reportes() {
         </div>
       )}
 
-      {/* ── MODAL STATS ── */}
-      {modalAbierto && (
-        <div className="modal-overlay" onClick={() => setModalAbierto(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>
-                {modalTipo === "preview"
-                  ? `Vista previa — ${tipoPreview === "usuarios" ? "Usuarios" : "Dispositivos"}`
-                  : "Reportes generados"}
-              </h2>
-              <button className="modal-close" onClick={() => setModalAbierto(false)}>✕</button>
-            </div>
-
-            {modalTipo === "preview" ? (
-              <>
-                <div className="modal-toolbar">
-                  <select
-                    className="preview-select"
-                    value={tipoPreview}
-                    onChange={e => { setTipoPreview(e.target.value); setBusqueda(""); }}
-                  >
-                    <option value="usuarios">Usuarios</option>
-                    <option value="dispositivos">Dispositivos</option>
-                  </select>
-                  <input
-                    className="preview-search"
-                    type="text"
-                    placeholder={
-                      tipoPreview === "usuarios"
-                        ? "Buscar por nombre, correo o rol..."
-                        : "Buscar por nombre, serial, estado o usuario..."
-                    }
-                    value={busqueda}
-                    onChange={e => setBusqueda(e.target.value)}
-                  />
-                </div>
-                <div className="preview-table-wrapper">
-                  {loadingPreview ? (
-                    <p className="preview-loading">Cargando datos...</p>
-                  ) : previewDatos.length === 0 ? (
-                    <p className="preview-empty">No se encontraron registros.</p>
-                  ) : (
-                    <table className="preview-table">
-                      <thead>
-                        <tr>{columnas.map(col => <th key={col}>{col}</th>)}</tr>
-                      </thead>
-                      <tbody>
-                        {datosPagina.map((row, i) => renderFila(row, i))}
-                      </tbody>
-                    </table>
-                  )}
-                </div>
-                <Pagination
-                  totalItems={previewDatos.length}
-                  itemsPerPage={ITEMS_PER_PAGE}
-                  currentPage={paginaActual}
-                  onPageChange={setPaginaActual}
-                />
-              </>
-            ) : (
-              <div className="modal-reportes-info">
-                <p className="modal-reportes-num">{totalReportes}</p>
-                <p className="modal-reportes-label">reportes han sido generados en total</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
