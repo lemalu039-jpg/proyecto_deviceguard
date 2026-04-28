@@ -8,7 +8,7 @@ function ConsultarFiltros() {
   const [filtros, setFiltros] = useState({ fecha: "", nombre: "", ubicacion: "", estado: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
-  const esSuperAdmin = JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'super_admin';
+  const esSuperAdmin = (JSON.parse(localStorage.getItem('usuario')||'{}')).rol === 'super_admin';
 
   useEffect(() => {
     loadData();
@@ -124,7 +124,7 @@ function ConsultarFiltros() {
                       ? new Date(d.fecha_registro).toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: '2-digit', month: 'short', year: 'numeric' })
                       : '—'}
                     <br />
-                    <span className="hora">{d.hora_registro || ""}</span>
+                    <span className="hora">{d.hora_registro || new Date(d.fecha_registro).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</span>
                   </td>
                   <td>{d.serial}</td>
                   <td>

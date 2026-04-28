@@ -7,6 +7,8 @@ function GestionMantenimiento() {
   const [dispositivos, setDispositivos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [busqueda, setBusqueda] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState("");
   const itemsPerPage = 7;
 
   useEffect(() => {
@@ -56,7 +58,28 @@ function GestionMantenimiento() {
   <div className="mant-card">
     <div className="mant-card-title">
       <div className="mant-dot"></div>
-      <span>Lista de dispositivos</span>
+      <span style={{ whiteSpace: 'nowrap' }}>Lista de dispositivos</span>
+      <input
+        type="text"
+        placeholder="Buscar por nombre o serial..."
+        value={busqueda}
+        onChange={e => { setBusqueda(e.target.value); setCurrentPage(1); }}
+        style={{ flex: 1, minWidth: '180px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none', fontWeight: 400 }}
+      />
+      <select
+        value={filtroEstado}
+        onChange={e => { setFiltroEstado(e.target.value); setCurrentPage(1); }}
+        style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none', flexShrink: 0 }}
+      >
+        <option value="">Todos los estados</option>
+        <option value="En Revision">En Revision</option>
+        <option value="Listo para Entrega">Listo para Entrega</option>
+      </select>
+      {(busqueda || filtroEstado) && (
+        <button onClick={() => { setBusqueda(''); setFiltroEstado(''); setCurrentPage(1); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
+          Limpiar
+        </button>
+      )}
     </div>
 
     <div className="mant-table-wrap">
@@ -72,7 +95,13 @@ function GestionMantenimiento() {
         </thead>
 
         <tbody>
-          {dispositivos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(d => (
+          {dispositivos
+            .filter(d => {
+              const okBusqueda = !busqueda || `${d.nombre} ${d.serial}`.toLowerCase().includes(busqueda.toLowerCase());
+              const okEstado   = !filtroEstado || d.estado === filtroEstado;
+              return okBusqueda && okEstado;
+            })
+            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(d => (
             <tr key={d.id}>
               <td>{d.nombre}</td>
               <td>{d.serial}</td>
@@ -111,7 +140,11 @@ function GestionMantenimiento() {
     </div>
 
     <Pagination
-      totalItems={dispositivos.length}
+      totalItems={dispositivos.filter(d => {
+        const okBusqueda = !busqueda || `${d.nombre} ${d.serial}`.toLowerCase().includes(busqueda.toLowerCase());
+        const okEstado   = !filtroEstado || d.estado === filtroEstado;
+        return okBusqueda && okEstado;
+      }).length}
       itemsPerPage={itemsPerPage}
       currentPage={currentPage}
       onPageChange={setCurrentPage}

@@ -20,8 +20,10 @@
   gap: 10px;
   font-weight: 700;
   font-size: 0.92rem;
-  color: #ffffff;
-  margin-bottom: 1rem;
+  color: var(--text-main);
+  padding: .75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
 }
 
 .mant-dot {

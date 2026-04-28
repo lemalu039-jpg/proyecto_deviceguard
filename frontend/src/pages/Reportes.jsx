@@ -173,6 +173,27 @@ function Reportes() {
   const columnasUsuarios = ["ID", "Nombre", "Correo", "Rol", "Fecha de creación"];
   const columnasDispositivos = ["ID", "Nombre", "Serial", "Estado", "Usuario", "Fecha de registro"];
 
+  const rolBadge = (rol) => {
+    const map = {
+      super_admin: { label: "Super Admin", cls: "rpt-badge-superadmin" },
+      tecnico:     { label: "Técnico",     cls: "rpt-badge-tecnico"    },
+      usuario:     { label: "Usuario",     cls: "rpt-badge-usuario"    },
+    };
+    const { label, cls } = map[rol] || { label: rol, cls: "" };
+    return <span className={`rpt-badge ${cls}`}>{label}</span>;
+  };
+
+  const estadoBadge = (estado) => {
+    const map = {
+      "En Revision":        { label: "En Revisión",       cls: "rpt-badge-revision"     },
+      "En Mantenimiento":   { label: "En Mantenimiento",  cls: "rpt-badge-mantenimiento" },
+      "Listo para Entrega": { label: "Listo para Entrega",cls: "rpt-badge-listo"         },
+      "Entregado":          { label: "Entregado",         cls: "rpt-badge-entregado"     },
+    };
+    const { label, cls } = map[estado] || { label: estado || "—", cls: "" };
+    return <span className={`rpt-badge ${cls}`}>{label}</span>;
+  };
+
   const renderFila = (row, i) => {
     if (tipoPreview === "usuarios") {
       return (
@@ -180,8 +201,16 @@ function Reportes() {
           <td>{row.id}</td>
           <td>{row.nombre}</td>
           <td>{row.correo}</td>
-          <td>{row.rol}</td>
-          <td>{row.fecha_creacion ? new Date(row.fecha_creacion).toLocaleDateString() : "—"}</td>
+          <td>{rolBadge(row.rol)}</td>
+          <td>
+            {row.fecha_creacion ? (
+              <>
+                <span>{new Date(row.fecha_creacion).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" })}</span>
+                <br />
+                <span className="rpt-hora">{new Date(row.fecha_creacion).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}</span>
+              </>
+            ) : "—"}
+          </td>
         </tr>
       );
     }
@@ -190,9 +219,17 @@ function Reportes() {
         <td>{row.id}</td>
         <td>{row.nombre}</td>
         <td>{row.serial}</td>
-        <td>{row.estado}</td>
+        <td>{estadoBadge(row.estado)}</td>
         <td>{row.usuario || "—"}</td>
-        <td>{row.fecha_registro ? new Date(row.fecha_registro).toLocaleDateString() : "—"}</td>
+        <td>
+          {row.fecha_registro ? (
+            <>
+              <span>{new Date(row.fecha_registro).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" })}</span>
+              <br />
+              <span className="rpt-hora">{row.hora_registro || new Date(row.fecha_registro).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}</span>
+            </>
+          ) : "—"}
+        </td>
       </tr>
     );
   };

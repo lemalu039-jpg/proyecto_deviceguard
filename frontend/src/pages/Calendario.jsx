@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { getDispositivos, updateDispositivo, deleteDispositivo } from '../services/api';
 import './CSS/Calendario_responsive.css';
 
@@ -10,21 +10,27 @@ function Calendario() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [nuevoEvento, setNuevoEvento] = useState({ id_dispositivo: '', fecha_estimada: '', nota: '' });
 
+  const [modalDetalle, setModalDetalle] = useState(false);
+  const [equipoDetalle, setEquipoDetalle] = useState(null);
   const [modalSalida, setModalSalida] = useState(false);
   const [eventoSalida, setEventoSalida] = useState(null);
   const [cargandoSalida, setCargandoSalida] = useState(false);
   const [mensajeSalida, setMensajeSalida] = useState('');
 
-  const [modalDetalle, setModalDetalle] = useState(false);
-  const [equipoDetalle, setEquipoDetalle] = useState(null);
+  const [paginaDia, setPaginaDia] = useState(0);
+  const ITEMS_PIA = 5; // eventos por página en el sidebar del día
 
-  const [eventosCustom, setEventosCustom] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('eventosCustom')) || []; }
-    catch { return []; }
-  });
+  // Reset página al cambiar día seleccionado
+  useEffect(() => { setPaginaDia(0); }, [diaSeleccionado]);
 
   const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
   const esUsuario = usuarioActual.rol === 'usuario';
+  const storageKey = `eventosCustom_${usuarioActual.id || 'guest'}`;
+
+  const [eventosCustom, setEventosCustom] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(storageKey)) || []; }
+    catch { return []; }
+  });
 
   useEffect(() => {
     getDispositivos().then(res => {
@@ -146,11 +152,21 @@ function Calendario() {
       const ahora = new Date();
       const id = eventoSalida._dispOrig?.id || eventoSalida.id || eventoSalida.id_dispositivo;
       const accion = obtenerTextoAccion(eventoSalida.estado);
-      await updateDispositivo(id, {
+
+      // Solo guardar fecha_salida cuando el nuevo estado es "Listo para entrega" o "Entregado"
+      const esSalida = accion.nuevoEstado === 'Listo para entrega' || accion.nuevoEstado === 'Entregado';
+      const payload = {
         estado: accion.nuevoEstado,
-        fecha_salida: ahora.toISOString().split('T')[0],
-        hora_salida: ahora.toTimeString().slice(0, 5),
-      });
+        ...(esSalida ? {
+          fecha_salida: ahora.toISOString().split('T')[0],
+          hora_salida:  ahora.toTimeString().slice(0, 5),
+        } : {
+          fecha_salida: null,
+          hora_salida:  null,
+        }),
+      };
+
+      await updateDispositivo(id, payload);
       setMensajeSalida('Acción registrada correctamente.');
       const res = await getDispositivos();
       setDispositivos(res.data);
@@ -162,7 +178,7 @@ function Calendario() {
             : e
         );
         setEventosCustom(eventosActualizados);
-        localStorage.setItem('eventosCustom', JSON.stringify(eventosActualizados));
+        localStorage.setItem(storageKey, JSON.stringify(eventosActualizados));
       }
 
       setModalSalida(false);
@@ -294,35 +310,61 @@ function Calendario() {
                 <div style={s.sideDot}></div>
                 {diaSeleccionado} de {nombresMes[month]}
               </div>
-              {eventosDia(diaSeleccionado).length === 0 ? (
-                <p style={{ fontSize: '.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>Sin eventos este día</p>
-              ) : (
-                eventosDia(diaSeleccionado).map((ev, i) => {
-                  const col = colorEvento(ev.estado);
-                  const lista = eventosDia(diaSeleccionado);
-                  return (
-                    <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', paddingBottom: '.65rem', marginBottom: '.65rem', borderBottom: i < lista.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: col.color, flexShrink: 0, marginTop: '5px' }}></div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '.78rem', fontWeight: 600, color: 'var(--primary)', cursor: 'pointer', textDecoration: 'underline dotted' }}
-                          onClick={() => abrirDetalle(ev)}>
-                          {ev.nombre}
+              {(() => {
+                const lista = eventosDia(diaSeleccionado);
+                const totalPaginas = Math.ceil(lista.length / ITEMS_PIA);
+                const paginados = lista.slice(paginaDia * ITEMS_PIA, (paginaDia + 1) * ITEMS_PIA);
+                if (lista.length === 0) return (
+                  <p style={{ fontSize: '.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>Sin eventos este día</p>
+                );
+                return (
+                  <>
+                    {paginados.map((ev, i) => {
+                      const col = colorEvento(ev.estado);
+                      return (
+                        <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', paddingBottom: '.65rem', marginBottom: '.65rem', borderBottom: i < paginados.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: col.color, flexShrink: 0, marginTop: '5px' }}></div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: '.78rem', fontWeight: 600, color: 'var(--primary)', cursor: 'pointer', textDecoration: 'underline dotted' }}
+                              onClick={() => abrirDetalle(ev)}>
+                              {ev.nombre}
+                            </div>
+                            <div style={{ fontSize: '.69rem', color: 'var(--text-muted)', marginTop: '1px' }}>{ev.tipo} · {ev.ubicacion || 'Sin ubicación'}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '5px' }}>
+                              <span style={{ fontSize: '.62rem', fontWeight: 700, padding: '1px 7px', borderRadius: '20px', background: col.bg, color: col.color }}>{ev.estado}</span>
+                              {!esUsuario && ev.estado !== 'Entregado' && (
+                                <button style={s.btnSalida} onClick={() => abrirModalSalida(ev)}>{obtenerTextoAccion(ev.estado).boton}</button>
+                              )}
+                              {!esUsuario && ev.estado === 'Entregado' && (
+                                <span style={{ fontSize: '.62rem', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: '#dcfce7', color: '#15803d' }}>Entregado</span>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                        <div style={{ fontSize: '.69rem', color: 'var(--text-muted)', marginTop: '1px' }}>{ev.tipo} · {ev.ubicacion || 'Sin ubicación'}</div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '5px' }}>
-                          <span style={{ fontSize: '.62rem', fontWeight: 700, padding: '1px 7px', borderRadius: '20px', background: col.bg, color: col.color }}>{ev.estado}</span>
-                          {!esUsuario && ev.estado !== 'Entregado' && (
-                            <button style={s.btnSalida} onClick={() => abrirModalSalida(ev)}>{obtenerTextoAccion(ev.estado).boton}</button>
-                          )}
-                          {!esUsuario && ev.estado === 'Entregado' && (
-                            <span style={{ fontSize: '.62rem', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: '#dcfce7', color: '#15803d' }}>Entregado</span>
-                          )}
-                        </div>
+                      );
+                    })}
+                    {totalPaginas > 1 && (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '.5rem', paddingTop: '.5rem', borderTop: '1px solid var(--border)' }}>
+                        <button
+                          onClick={() => setPaginaDia(p => Math.max(0, p - 1))}
+                          disabled={paginaDia === 0}
+                          style={{ padding: '3px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-muted)', fontSize: '.72rem', cursor: paginaDia === 0 ? 'not-allowed' : 'pointer', opacity: paginaDia === 0 ? 0.4 : 1 }}>
+                          ‹ Ant
+                        </button>
+                        <span style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>
+                          {paginaDia + 1} / {totalPaginas} · {lista.length} eventos
+                        </span>
+                        <button
+                          onClick={() => setPaginaDia(p => Math.min(totalPaginas - 1, p + 1))}
+                          disabled={paginaDia >= totalPaginas - 1}
+                          style={{ padding: '3px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-muted)', fontSize: '.72rem', cursor: paginaDia >= totalPaginas - 1 ? 'not-allowed' : 'pointer', opacity: paginaDia >= totalPaginas - 1 ? 0.4 : 1 }}>
+                          Sig ›
+                        </button>
                       </div>
-                    </div>
-                  );
-                })
-              )}
+                    )}
+                  </>
+                );
+              })()}
             </div>
           )}
 
@@ -403,7 +445,7 @@ function Calendario() {
                   if (!nuevoEvento.id_dispositivo || !nuevoEvento.fecha_estimada) return;
                   const updated = [...eventosCustom, { ...nuevoEvento, id_evento: Date.now().toString() }];
                   setEventosCustom(updated);
-                  localStorage.setItem('eventosCustom', JSON.stringify(updated));
+                  localStorage.setItem(storageKey, JSON.stringify(updated));
                   setModalAbierto(false);
                   setNuevoEvento({ id_dispositivo: '', fecha_estimada: '', nota: '' });
                 }}

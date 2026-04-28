@@ -259,7 +259,13 @@ function Equipo() {
                          "Usuario"}
                       </span>
                     </td>
-                    <td>{u.fecha_creacion ? new Date(u.fecha_creacion).toLocaleDateString("es-CO") : "—"}</td>
+                    <td>{u.fecha_creacion ? (
+                      <>
+                        <span>{new Date(u.fecha_creacion).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" })}</span>
+                        <br />
+                        <span className="equipo-hora">{new Date(u.fecha_creacion).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}</span>
+                      </>
+                    ) : "—"}</td>
                     <td>
                       <div className="equipo-acciones">
                         <button className="equipo-btn-editar" onClick={() => abrirEditar(u)} title="Editar">

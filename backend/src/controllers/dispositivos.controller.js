@@ -32,13 +32,20 @@ exports.create = async (req, res) => {
 
         const insertId = await DispositivoModel.create(data);
 
-        const destino = process.env.EMAIL_USER;
-        if (destino) {
-            enviarCorreo({
-                destinatario: destino,
-                evento: EVENTOS.REGISTRO,
-                datos: { nombre: data.nombre, serial: data.serial, marca: data.marca, tipo: data.tipo, ubicacion: data.ubicacion },
-            }).catch(e => console.error("Error correo registro:", e.message));
+        // Obtener correo del usuario para notificación
+        if (usuario_id) {
+            try {
+                const [[usuario]] = await pool.query("SELECT correo FROM usuarios WHERE id = ? LIMIT 1", [usuario_id]);
+                const destino = usuario?.correo || process.env.EMAIL_USER;
+                enviarCorreo({
+                    destinatario: destino,
+                    usuario_id,
+                    evento: EVENTOS.REGISTRO,
+                    datos: { nombre: data.nombre, serial: data.serial, marca: data.marca, tipo: data.tipo, ubicacion: data.ubicacion },
+                }).catch(e => console.error("Error correo registro:", e.message));
+            } catch (e) {
+                console.error("Error obteniendo correo usuario:", e.message);
+            }
         }
 
         res.status(201).json({ id: insertId, ...data });
@@ -86,6 +93,11 @@ exports.update = async (req, res) => {
                      VALUES (?, 'Inicio de mantenimiento', 'En Proceso', ?, NOW())`,
                     [req.params.id, tecnico_id]
                 );
+                // Limpiar fecha_salida al entrar a mantenimiento
+                await pool.query(
+                    `UPDATE dispositivos SET fecha_salida = NULL, hora_salida = NULL WHERE id = ?`,
+                    [req.params.id]
+                );
             }
 
             if (nuevoEstado === "Listo para Entrega" || nuevoEstado === "Listo para entrega") {
@@ -108,30 +120,38 @@ exports.update = async (req, res) => {
         const affectedRows = await DispositivoModel.update(req.params.id, req.body);
         if (affectedRows > 0) {
             const nuevoEstado = req.body.estado;
-            const destino = process.env.EMAIL_USER;
 
-            if (destino && nuevoEstado) {
+            if (nuevoEstado || req.body.fecha_salida) {
                 const disp = await DispositivoModel.findById(req.params.id);
                 let eventoCorreo = null;
 
-                if (nuevoEstado === "En Mantenimiento") {
-                    eventoCorreo = EVENTOS.INICIO_MANTENIMIENTO;
-                } else if (nuevoEstado === "Listo para Entrega" || nuevoEstado === "Listo para entrega") {
-                    eventoCorreo = EVENTOS.FIN_MANTENIMIENTO;
-                } else if (nuevoEstado === "Entregado" || req.body.fecha_salida) {
-                    eventoCorreo = EVENTOS.SALIDA;
-                }
+                if (nuevoEstado === "En Mantenimiento")                                    eventoCorreo = EVENTOS.INICIO_MANTENIMIENTO;
+                else if (nuevoEstado === "Listo para Entrega" || nuevoEstado === "Listo para entrega") eventoCorreo = EVENTOS.FIN_MANTENIMIENTO;
+                else if (nuevoEstado === "Entregado" || (req.body.fecha_salida && req.body.fecha_salida !== 'null')) eventoCorreo = EVENTOS.SALIDA;
 
-                if (eventoCorreo) {
+                if (eventoCorreo && disp) {
+                    // Obtener correo del usuario dueño del dispositivo
+                    let destino = process.env.EMAIL_USER;
+                    let uid = disp.usuario_id || null;
+                    if (uid) {
+                        try {
+                            const [[usuario]] = await pool.query("SELECT correo FROM usuarios WHERE id = ? LIMIT 1", [uid]);
+                            if (usuario?.correo) destino = usuario.correo;
+                        } catch (e) {
+                            console.error("Error obteniendo correo usuario:", e.message);
+                        }
+                    }
+
                     enviarCorreo({
                         destinatario: destino,
+                        usuario_id: uid,
                         evento: eventoCorreo,
                         datos: {
                             id: req.params.id,
-                            nombre: disp?.nombre,
-                            serial: disp?.serial,
+                            nombre: disp.nombre,
+                            serial: disp.serial,
                             fecha_salida: req.body.fecha_salida,
-                            hora_salida: req.body.hora_salida,
+                            hora_salida:  req.body.hora_salida,
                         },
                     }).catch(e => console.error("Error correo estado:", e.message));
                 }

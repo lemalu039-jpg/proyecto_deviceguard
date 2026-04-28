@@ -269,40 +269,40 @@ function Dashboard() {
           flexWrap: 'nowrap',
          overflowX: 'auto'   
           }}>
-          {cards.map((card, i) => renderCard(card, i))}
+          {cards
+            .filter(card => !(card.label === 'Total reportes' && JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'usuario'))
+            .map((card, i) => renderCard(card, i))}
          </div>
 
         </div>
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem', flexWrap: 'wrap' }}>
         <div style={{ width: '4px', height: '18px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px', flexShrink: 0 }}></div>
-        <span style={{ fontSize: '.92rem', fontWeight: 700, color: 'var(--text-main)' }}>Lista de dispositivos</span>
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: '.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <input
-            type="text"
-            placeholder="Buscar nombre, serial, ubicación..."
-            value={filtroBusqueda}
-            onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
-            style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none', minWidth: '200px' }}
-          />
-          <select
-            value={filtroEstado}
-            onChange={e => { setFiltroEstado(e.target.value); setCurrentPage(1); }}
-            style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none' }}
-          >
-            <option value="">Todos los estados</option>
-            <option value="En Revision">En Revision</option>
-            <option value="En Mantenimiento">En Mantenimiento</option>
-            <option value="Listo para Entrega">Listo para Entrega</option>
-            <option value="Entregado">Entregado</option>
-          </select>
-          {(filtroEstado || filtroBusqueda) && (
-            <button onClick={() => { setFiltroEstado(''); setFiltroBusqueda(''); setCurrentPage(1); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
-              Limpiar
-            </button>
-          )}
-        </div>
+        <span style={{ fontSize: '.92rem', fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap' }}>Lista de dispositivos</span>
+        <input
+          type="text"
+          placeholder="Buscar nombre, serial, ubicación..."
+          value={filtroBusqueda}
+          onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
+          style={{ flex: 1, minWidth: '180px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
+        />
+        <select
+          value={filtroEstado}
+          onChange={e => { setFiltroEstado(e.target.value); setCurrentPage(1); }}
+          style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none', flexShrink: 0 }}
+        >
+          <option value="">Todos los estados</option>
+          <option value="En Revision">En Revision</option>
+          <option value="En Mantenimiento">En Mantenimiento</option>
+          <option value="Listo para Entrega">Listo para Entrega</option>
+          <option value="Entregado">Entregado</option>
+        </select>
+        {(filtroEstado || filtroBusqueda) && (
+          <button onClick={() => { setFiltroEstado(''); setFiltroBusqueda(''); setCurrentPage(1); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
+            Limpiar
+          </button>
+        )}
       </div>
 
       <div style={{ background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>

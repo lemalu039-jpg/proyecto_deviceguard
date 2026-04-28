@@ -1,29 +1,37 @@
 const nodemailer = require("nodemailer");
 const db = require("../database/connection");
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
-
 exports.enviarCorreo = async (req, res) => {
   try {
     const { destino, asunto, mensaje } = req.body;
 
+    // Crear transporter aquí para que .env ya esté cargado
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: `"DeviceGuard" <${process.env.EMAIL_USER}>`,
       to: destino,
       subject: asunto,
       text: mensaje
     });
 
+    // Buscar usuario_id por correo destinatario
+    let usuario_id = null;
+    try {
+      const [rows] = await db.query("SELECT id FROM usuarios WHERE correo = ? LIMIT 1", [destino]);
+      if (rows.length > 0) usuario_id = rows[0].id;
+    } catch (_) {}
+
     const ahora = new Date();
     await db.query(
-      "INSERT INTO correos (destinatario, asunto, mensaje, fecha_envio, hora_envio) VALUES (?, ?, ?, ?, ?)",
-      [destino, asunto, mensaje, ahora.toISOString().split("T")[0], ahora.toTimeString().slice(0, 5)]
+      "INSERT INTO correos (destinatario, asunto, mensaje, fecha_envio, hora_envio, usuario_id) VALUES (?, ?, ?, ?, ?, ?)",
+      [destino, asunto, mensaje, ahora.toISOString().split("T")[0], ahora.toTimeString().slice(0, 5), usuario_id]
     );
 
     res.json({ message: "Correo enviado y guardado" });
@@ -35,7 +43,16 @@ exports.enviarCorreo = async (req, res) => {
 
 exports.obtenerCorreos = async (req, res) => {
   try {
-    const [rows] = await db.query("SELECT * FROM correos ORDER BY id DESC");
+    const usuario_id = req.query.usuario_id;
+    let rows;
+    if (usuario_id) {
+      [rows] = await db.query(
+        "SELECT * FROM correos WHERE usuario_id = ? ORDER BY id DESC",
+        [usuario_id]
+      );
+    } else {
+      [rows] = await db.query("SELECT * FROM correos ORDER BY id DESC");
+    }
     res.json(rows);
   } catch (error) {
     console.error(error);
