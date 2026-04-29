@@ -8,7 +8,7 @@ const {
   generarPdfDispositivos,
   previewUsuarios,
   previewDispositivos,
-  obtenerContador,
+  obtenerTotalReportes,
 } = require("../controllers/reportes.controller");
 
 // EXCEL
@@ -23,11 +23,10 @@ router.get("/dispositivos-pdf", generarPdfDispositivos);
 router.get("/preview/usuarios", previewUsuarios);
 router.get("/preview/dispositivos", previewDispositivos);
 
-// CONTADOR de reportes generados
-router.get("/contador", obtenerContador);
-
 router.get("/", (req, res) => {
   res.send("REPORTES BASE FUNCIONA");
 });
+
+router.get('/total', obtenerTotalReportes);
 
 module.exports = router;

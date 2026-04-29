@@ -149,6 +149,18 @@
   text-overflow: ellipsis;
 }
 
+[data-theme='dark'] .cmail-contacto-item.active {
+  background: #e5e7eb;
+}
+
+[data-theme='dark'] .cmail-contacto-item.active .cmail-contacto-nombre {
+  color: #111827;
+}
+
+[data-theme='dark'] .cmail-contacto-item.active .cmail-contacto-correo {
+  color: #4b5563;
+}
+
 /* Avatar */
 .cmail-avatar {
   width: 36px;

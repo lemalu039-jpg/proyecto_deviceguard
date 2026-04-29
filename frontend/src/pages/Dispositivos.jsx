@@ -210,12 +210,12 @@ function Dispositivos() {
                   <div className="col-md-6">
                     <label className="disp-modal-label">Nombre</label>
                     <input type="text" name="nombre" value={form.nombre} onChange={handleChange}
-                      placeholder="Ej: Port�til HP ProBook" required className="disp-modal-input" />
+                      placeholder="Ej: Portatil HP ProBook" required className="disp-modal-input" />
                   </div>
                   <div className="col-md-6">
                     <label className="disp-modal-label">Tipo</label>
                     <input type="text" name="tipo" value={form.tipo} onChange={handleChange}
-                      placeholder="Ej: Port�til, Proyector..." required className="disp-modal-input" />
+                      placeholder="Ej: Portatil, Proyector..." required className="disp-modal-input" />
                   </div>
                   <div className="col-md-6">
                     <label className="disp-modal-label">Serial</label>
@@ -235,10 +235,10 @@ function Dispositivos() {
                   </div>
                   <div className="col-md-6">
                     <label className="disp-modal-label">Estado</label>
-                    <input type="text" value="En Revisi�n" disabled className="disp-modal-input" />
+                    <input type="text" value="En Revision" disabled className="disp-modal-input" />
                   </div>
                   <div className="col-12">
-                    <label className="disp-modal-label">Descripci�n del equipo</label>
+                    <label className="disp-modal-label">Descripcion del equipo</label>
                     <textarea
                       name="descripcion"
                       value={form.descripcion}

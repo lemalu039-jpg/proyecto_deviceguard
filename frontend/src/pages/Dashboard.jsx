@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getDispositivos, getUsuarios } from '../services/api';
 import { estadosDispositivo } from "../ejemplo/generador2";
 import Pagination from '../components/Pagination';
+import axios from 'axios';
 
 function Dashboard() {
   useEffect(() => {
@@ -37,10 +38,12 @@ function Dashboard() {
       try {
         const [devicesRes, usuariosRes] = await Promise.all([
           getDispositivos(),
-          getUsuarios()
+          getUsuarios(),
+          axios.get('http://localhost:5000/api/reportes/total')
         ]);
         const allDevices = devicesRes.data;
-        
+        const reportesRes = await axios.get('http://localhost:5000/api/reportes/total');
+
         const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
         const dispositivos = usuarioActual.rol === 'usuario'
           ? allDevices.filter(d => d.usuario_id === usuarioActual.id)
@@ -53,7 +56,7 @@ function Dashboard() {
           enMantenimiento: dispositivos.filter(d => d.estado === 'En Mantenimiento').length,
           entregado:      dispositivos.filter(d => d.estado === 'Entregado').length,
           usuarios:        usuariosRes.data.length,
-          totalMantenimientos: parseInt(localStorage.getItem('totalReportes') || '0')
+          totalMantenimientos: reportesRes.data.total
         });
         setDispositivos(dispositivos);
       } catch (error) {
