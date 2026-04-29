@@ -32,7 +32,18 @@ function Sidebar({ usuario: usuarioProp, onLogout, onImpersonate }) {
   const esUsuario = rol === "usuario";
   const esTecnico = rol === "tecnico";
   const esSuperAdmin = rol === "super_admin";
+  const [busquedaUsuario, setBusquedaUsuario] = useState('');
+ const tecnicosFiltrados = usuarios
+  .filter(u => u.rol === "tecnico")
+  .filter(u =>
+    u.nombre.toLowerCase().includes(busquedaUsuario.toLowerCase())
+  );
 
+const usuariosFiltrados = usuarios
+  .filter(u => u.rol === "usuario")
+  .filter(u =>
+    u.nombre.toLowerCase().includes(busquedaUsuario.toLowerCase())
+  );
   // Cargar usuarios para el selector de impersonación (solo super_admin)
   useEffect(() => {
     if (!esSuperAdmin) return;
@@ -205,16 +216,33 @@ function Sidebar({ usuario: usuarioProp, onLogout, onImpersonate }) {
                 >
                   <option value="" disabled>Seleccionar usuario...</option>
                   <optgroup label="Técnicos">
-                    {usuarios.filter(u => u.rol === "tecnico").map(u => (
+                    {tecnicosFiltrados.map(u => (
                       <option key={u.id} value={u.id}>{u.nombre}</option>
                     ))}
                   </optgroup>
                   <optgroup label="Usuarios">
-                    {usuarios.filter(u => u.rol === "usuario").map(u => (
+                    {usuariosFiltrados.map(u => (
                       <option key={u.id} value={u.id}>{u.nombre}</option>
                     ))}
                   </optgroup>
                 </select>
+                <input
+  type="text"
+  placeholder="Buscar usuario..."
+  value={busquedaUsuario}
+  onChange={(e) => setBusquedaUsuario(e.target.value)}
+  style={{
+    width: "100%",
+    padding: "0.4rem 0.5rem",
+    borderRadius: "6px",
+    border: "1px solid var(--border)",
+    background: "var(--bg-card)",
+    color: "var(--text-main)",
+    fontSize: "0.75rem",
+    marginBottom: "5px",
+    outline: "none"
+  }}
+/>
               </div>
             )}
           </div>
