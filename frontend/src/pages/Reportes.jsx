@@ -19,6 +19,7 @@ function Reportes() {
   const [previewTotal, setPreviewTotal] = useState(0);
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [paginaActual, setPaginaActual] = useState(1);
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
 
   // ── Modal export ──
   const [modalExport, setModalExport] = useState(false);
@@ -28,7 +29,7 @@ function Reportes() {
 
   // Cargar contador al montar
   useEffect(() => {
-    axios.get(`${API}/contador`)
+    axios.get(`${API}/total`)
       .then(res => setTotalReportes(res.data.total))
       .catch(() => {});
   }, []);
@@ -39,7 +40,7 @@ function Reportes() {
 };
   // Recargar contador tras generar
   const recargarContador = () => {
-    axios.get(`${API}/contador`)
+    axios.get(`${API}/total`)
       .then(res => setTotalReportes(res.data.total))
       .catch(() => {});
   };
@@ -106,6 +107,9 @@ function Reportes() {
       const res = await axios.get(`${API}/usuarios-excel`, {
         responseType: "blob",
         params: { desde: fechaUsuarios.desde, hasta: fechaUsuarios.hasta, rol: fechaUsuarios.rol, _t: Date.now() },
+  headers: {
+    'x-usuario-id': usuario?.id
+  }
       });
       descargar(res.data, res.headers, "reporte_usuarios", "xlsx");
       recargarContador();
@@ -123,6 +127,9 @@ function Reportes() {
       const res = await axios.get(`${API}/usuarios-pdf`, {
         responseType: "blob",
         params: { desde: fechaUsuarios.desde, hasta: fechaUsuarios.hasta, rol: fechaUsuarios.rol, _t: Date.now() },
+        headers: {
+  'x-usuario-id': usuario?.id
+}
       });
       descargar(res.data, res.headers, "reporte_usuarios", "pdf");
       recargarContador();
@@ -140,6 +147,9 @@ function Reportes() {
       const res = await axios.get(`${API}/dispositivos-excel`, {
         responseType: "blob",
         params: { desde: fechaDispositivos.desde, hasta: fechaDispositivos.hasta, estado: fechaDispositivos.estado, _t: Date.now() },
+        headers: {
+  'x-usuario-id': usuario?.id
+}
       });
       descargar(res.data, res.headers, "reporte_dispositivos", "xlsx");
       recargarContador();
@@ -157,6 +167,9 @@ function Reportes() {
       const res = await axios.get(`${API}/dispositivos-pdf`, {
         responseType: "blob",
         params: { desde: fechaDispositivos.desde, hasta: fechaDispositivos.hasta, estado: fechaDispositivos.estado, _t: Date.now() },
+        headers: {
+  'x-usuario-id': usuario?.id
+}
       });
       descargar(res.data, res.headers, "reporte_dispositivos", "pdf");
       recargarContador();

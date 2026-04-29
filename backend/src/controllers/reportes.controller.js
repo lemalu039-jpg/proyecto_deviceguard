@@ -1,15 +1,7 @@
 const ExcelJS = require("exceljs");
 const PDFDocument = require("pdfkit");
 const db = require("../database/connection");
-
-// ── Contador en memoria (persiste mientras el servidor esté activo) ──
-let contadorReportes = 0;
-
-const incrementarContador = () => { contadorReportes++; };
-
-const obtenerContador = (req, res) => {
-  res.json({ total: contadorReportes });
-};
+const ReportesModel = require('../models/reportes.model');
 
 // ── Vista previa de usuarios ──
 const previewUsuarios = async (req, res) => {
@@ -119,8 +111,11 @@ const generarExcelDispositivos = async (req, res) => {
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     res.setHeader("Content-Disposition", `attachment; filename=${nombreArchivo}`);
 
+    const usuario_id = req.headers['x-usuario-id'] || null;
+
+    await ReportesModel.crearReporte('excel', 'dispositivos', usuario_id);
+
     await workbook.xlsx.write(res);
-    incrementarContador();
     res.end();
 
   } catch (error) {
@@ -177,8 +172,11 @@ const generarExcelUsuarios = async (req, res) => {
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     res.setHeader("Content-Disposition", `attachment; filename=${nombreArchivo}`);
 
+    const usuario_id = req.headers['x-usuario-id'] || null;
+
+    await ReportesModel.crearReporte('excel', 'usuarios', usuario_id);
+
     await workbook.xlsx.write(res);
-    incrementarContador();
     res.end();
 
   } catch (error) {
@@ -253,8 +251,10 @@ const generarPdfDispositivos = async (req, res) => {
       doc.moveDown();
     });
 
+    const usuario_id = req.headers['x-usuario-id'] || null;
+
+await ReportesModel.crearReporte('pdf', 'dispositivos', usuario_id);
     doc.end();
-    incrementarContador();
   } catch (error) {
     console.error(error);
     res.status(500).send("Error al generar PDF");
@@ -315,11 +315,22 @@ const generarPdfUsuarios = async (req, res) => {
       doc.moveDown();
     });
 
+     const usuario_id = req.headers['x-usuario-id'] || null;
+
+    await ReportesModel.crearReporte('pdf', 'usuarios', usuario_id);
     doc.end();
-    incrementarContador();
   } catch (error) {
     console.error("ERROR:", error);
     res.status(500).send("Error al generar PDF");
+  }
+};
+// ── Obtener total de reportes ──
+const obtenerTotalReportes = async (req, res) => {
+  try {
+  const total = await ReportesModel.obtenerTotalReportes();
+res.json(total);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -330,5 +341,5 @@ module.exports = {
   generarPdfDispositivos,
   previewUsuarios,
   previewDispositivos,
-  obtenerContador,
+  obtenerTotalReportes,
 };
