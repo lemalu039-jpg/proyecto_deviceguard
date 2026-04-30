@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getDispositivos, updateDispositivo, deleteDispositivo } from '../services/api';
 import './CSS/Calendario_responsive.css';
 import { useLanguage } from '../context/LanguageContext.jsx';
@@ -157,10 +157,10 @@ function Calendario() {
 
       // Solo guardar fecha_salida cuando el nuevo estado es "Listo para entrega" o "Entregado"
       const esSalida = accion.nuevoEstado === 'Listo para entrega' || accion.nuevoEstado === 'Entregado';
-      const payload = {
+      await updateDispositivo(id, {
         estado: accion.nuevoEstado,
-        fecha_salida: ahora.toISOString().split('T')[0],
-        hora_salida: ahora.toTimeString().slice(0, 5),
+        fecha_salida: esSalida ? ahora.toISOString().split('T')[0] : null,
+        hora_salida: esSalida ? ahora.toTimeString().slice(0, 5) : null,
       });
       setMensajeSalida(t('cal_accion_registrada'));
       const res = await getDispositivos();
@@ -307,27 +307,33 @@ function Calendario() {
               </div>
               {eventosDia(diaSeleccionado).length === 0 ? (
                 <p style={{ fontSize: '.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>{t('cal_sin_eventos_dia')}</p>
-              ) : (
-                eventosDia(diaSeleccionado).map((ev, i) => {
-                  const col = colorEvento(ev.estado);
-                  const lista = eventosDia(diaSeleccionado);
-                  return (
-                    <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', paddingBottom: '.65rem', marginBottom: '.65rem', borderBottom: i < lista.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: col.color, flexShrink: 0, marginTop: '5px' }}></div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '.78rem', fontWeight: 600, color: 'var(--primary)', cursor: 'pointer', textDecoration: 'underline dotted' }}
-                          onClick={() => abrirDetalle(ev)}>
-                          {ev.nombre}
-                        </div>
-                        <div style={{ fontSize: '.69rem', color: 'var(--text-muted)', marginTop: '1px' }}>{ev.tipo} · {ev.ubicacion || 'Sin ubicación'}</div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '5px' }}>
-                          <span style={{ fontSize: '.62rem', fontWeight: 700, padding: '1px 7px', borderRadius: '20px', background: col.bg, color: col.color }}>{ev.estado}</span>
-                          {!esUsuario && ev.estado !== 'Entregado' && (
-                            <button style={s.btnSalida} onClick={() => abrirModalSalida(ev)}>{obtenerTextoAccion(ev.estado).boton}</button>
-                          )}
-                          {!esUsuario && ev.estado === 'Entregado' && (
-                            <span style={{ fontSize: '.62rem', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: '#dcfce7', color: '#15803d' }}>{t('dash_entregado')}</span>
-                          )}
+              ) : (() => {
+                const lista = eventosDia(diaSeleccionado);
+                const totalPaginas = Math.ceil(lista.length / ITEMS_PIA);
+                const eventosPagina = lista.slice(paginaDia * ITEMS_PIA, (paginaDia + 1) * ITEMS_PIA);
+                return (
+                  <>
+                    {eventosPagina.map((ev, i) => {
+                      const col = colorEvento(ev.estado);
+                      return (
+                        <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', paddingBottom: '.65rem', marginBottom: '.65rem', borderBottom: i < eventosPagina.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: col.color, flexShrink: 0, marginTop: '5px' }}></div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: '.78rem', fontWeight: 600, color: 'var(--primary)', cursor: 'pointer', textDecoration: 'underline dotted' }}
+                              onClick={() => abrirDetalle(ev)}>
+                              {ev.nombre}
+                            </div>
+                            <div style={{ fontSize: '.69rem', color: 'var(--text-muted)', marginTop: '1px' }}>{ev.tipo} · {ev.ubicacion || 'Sin ubicación'}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '5px' }}>
+                              <span style={{ fontSize: '.62rem', fontWeight: 700, padding: '1px 7px', borderRadius: '20px', background: col.bg, color: col.color }}>{ev.estado}</span>
+                              {!esUsuario && ev.estado !== 'Entregado' && (
+                                <button style={s.btnSalida} onClick={() => abrirModalSalida(ev)}>{obtenerTextoAccion(ev.estado).boton}</button>
+                              )}
+                              {!esUsuario && ev.estado === 'Entregado' && (
+                                <span style={{ fontSize: '.62rem', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: '#dcfce7', color: '#15803d' }}>{t('dash_entregado')}</span>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       );
                     })}

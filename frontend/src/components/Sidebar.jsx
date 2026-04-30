@@ -32,6 +32,7 @@ function Sidebar({ usuario: usuarioProp, onLogout, onImpersonate }) {
   const esUsuario = rol === "usuario";
   const esTecnico = rol === "tecnico";
   const esSuperAdmin = rol === "super_admin";
+  const [usuarios, setUsuarios] = useState([]);
   const [busquedaUsuario, setBusquedaUsuario] = useState('');
  const tecnicosFiltrados = usuarios
   .filter(u => u.rol === "tecnico")
@@ -89,7 +90,7 @@ const usuariosFiltrados = usuarios
   const pageItems = esUsuario ? [
     { path: "/ajustes-cuenta", label: t('ajustes_cuenta_nav'), icon: settings },
   ] : esTecnico ? [
-    { path: "/gestion", label: t('gestion_mantenimiento'), icon: ajustes },
+    { path: "/gestion", label: t('gestion_mantenimiento'), icon: gestion_mantenimiento },
     { path: "/registrarsalida", label: t('registrar_salida'), icon: registrarsalida_ },
     { path: "/reportes", label: t('generar_reportes'), icon: generar_reportes_ },
     { path: "/estadisticas", label: t('estadisticas'), icon: estadisticas_ },
@@ -99,7 +100,7 @@ const usuariosFiltrados = usuarios
     { path: "/registrarsalida", label: t('registrar_salida'), icon: registrarsalida_ },
     { path: "/estadisticas", label: t('estadisticas'), icon: estadisticas_ },
     { path: "/equipo", label: t('equipo'), icon: equipo_ },
-    { path: "/gestion", label: t('gestion_mantenimiento'), icon: ajustes },
+    { path: "/gestion", label: t('gestion_mantenimiento'), icon: gestion_mantenimiento },
     { path: "/ajustes-cuenta", label: t('ajustes_cuenta_nav'), icon: settings },
   ];
 
