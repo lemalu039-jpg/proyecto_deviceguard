@@ -34,6 +34,7 @@ function Sidebar({ usuario: usuarioProp, onLogout, onImpersonate }) {
   const esSuperAdmin = rol === "super_admin";
   const [usuarios, setUsuarios] = useState([]);
   const [busquedaUsuario, setBusquedaUsuario] = useState('');
+  const [selectorAbierto, setSelectorAbierto] = useState(false);
  const tecnicosFiltrados = usuarios
   .filter(u => u.rol === "tecnico")
   .filter(u =>
@@ -210,40 +211,56 @@ const usuariosFiltrados = usuarios
                 <p style={{ margin: "0 0 5px", fontSize: "0.68rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                   Simular usuario
                 </p>
-                <select
-                  defaultValue=""
-                  onChange={e => iniciarImpersonacion(e.target.value)}
-                  style={{ width: "100%", padding: "0.4rem 0.5rem", borderRadius: "6px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-main)", fontSize: "0.75rem", cursor: "pointer", outline: "none" }}
-                >
-                  <option value="" disabled>Seleccionar usuario...</option>
-                  <optgroup label="Técnicos">
-                    {tecnicosFiltrados.map(u => (
-                      <option key={u.id} value={u.id}>{u.nombre}</option>
-                    ))}
-                  </optgroup>
-                  <optgroup label="Usuarios">
-                    {usuariosFiltrados.map(u => (
-                      <option key={u.id} value={u.id}>{u.nombre}</option>
-                    ))}
-                  </optgroup>
-                </select>
-                <input
-  type="text"
-  placeholder="Buscar usuario..."
-  value={busquedaUsuario}
-  onChange={(e) => setBusquedaUsuario(e.target.value)}
-  style={{
-    width: "100%",
-    padding: "0.4rem 0.5rem",
-    borderRadius: "6px",
-    border: "1px solid var(--border)",
-    background: "var(--bg-card)",
-    color: "var(--text-main)",
-    fontSize: "0.75rem",
-    marginBottom: "5px",
-    outline: "none"
-  }}
-/>
+                <div style={{ position: 'relative' }}>
+                  <div
+                    onClick={() => setSelectorAbierto(!selectorAbierto)}
+                    style={{ width: "100%", padding: "0.4rem 0.5rem", borderRadius: "6px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-main)", fontSize: "0.75rem", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                  >
+                    <span>Seleccionar usuario...</span>
+                    <span>▾</span>
+                  </div>
+                  
+                  {selectorAbierto && (
+                    <div style={{ position: 'absolute', bottom: '100%', left: 0, width: '100%', marginBottom: '4px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '6px', zIndex: 100, boxShadow: '0 -10px 25px rgba(0,0,0,0.3)', maxHeight: '200px', display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ padding: '6px' }}>
+                        <input
+                          autoFocus
+                          type="text"
+                          placeholder="Buscar usuario o técnico..."
+                          value={busquedaUsuario}
+                          onChange={(e) => setBusquedaUsuario(e.target.value)}
+                          style={{ width: "100%", padding: "0.3rem 0.5rem", borderRadius: "4px", border: "1px solid var(--border)", background: "var(--input-bg)", color: "var(--text-main)", fontSize: "0.7rem", outline: "none" }}
+                        />
+                      </div>
+                      <div style={{ overflowY: 'auto', flex: 1 }}>
+                        {tecnicosFiltrados.length > 0 && (
+                          <div style={{ padding: '4px 8px', fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', background: 'var(--table-head)' }}>Técnicos</div>
+                        )}
+                        {tecnicosFiltrados.map(u => (
+                          <div key={u.id} 
+                            onClick={() => { setSelectorAbierto(false); setBusquedaUsuario(''); iniciarImpersonacion(u.id); }} 
+                            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--table-head)'}
+                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                            style={{ padding: '6px 12px', fontSize: '0.75rem', color: 'var(--text-main)', cursor: 'pointer', transition: 'background 0.2s' }}>
+                            {u.nombre}
+                          </div>
+                        ))}
+                        {usuariosFiltrados.length > 0 && (
+                          <div style={{ padding: '4px 8px', fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', background: 'var(--table-head)' }}>Usuarios</div>
+                        )}
+                        {usuariosFiltrados.map(u => (
+                          <div key={u.id} 
+                            onClick={() => { setSelectorAbierto(false); setBusquedaUsuario(''); iniciarImpersonacion(u.id); }} 
+                            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--table-head)'}
+                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                            style={{ padding: '6px 12px', fontSize: '0.75rem', color: 'var(--text-main)', cursor: 'pointer', transition: 'background 0.2s' }}>
+                            {u.nombre}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
