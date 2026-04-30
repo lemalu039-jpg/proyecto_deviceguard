@@ -53,6 +53,11 @@ function App() {
     setIsAuthenticated(false);
     setUsuario(null);
     localStorage.removeItem('usuario');
+    localStorage.removeItem('adminOriginal');
+  };
+
+  const handleImpersonate = (nuevoUsuario) => {
+    setUsuario(nuevoUsuario);
   };
 
   const ProtectedRoute = ({ children }) => {
@@ -61,10 +66,10 @@ function App() {
     }
     return (
       <div className="app-container">
-        <Sidebar onLogout={handleLogout} usuario={usuario} />
+        <Sidebar onLogout={handleLogout} usuario={usuario} onImpersonate={handleImpersonate} />
         <div className="main-content">
           <Breadcrumbs />
-          <div className="page-container">
+          <div className="page-container" key={usuario?.id}>
             {children}
           </div>
         </div>

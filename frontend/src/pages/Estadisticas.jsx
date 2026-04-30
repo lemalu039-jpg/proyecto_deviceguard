@@ -39,6 +39,8 @@ function Estadisticas() {
   const [filtroEstado, setFiltroEstado] = useState('todos');
   const [filtroTipo,   setFiltroTipo]   = useState('todos');
   const [filtroLinea,  setFiltroLinea]  = useState('todos');
+  const [filtroBusqueda, setFiltroBusqueda] = useState('');
+  const [filtroTablaEstado, setFiltroTablaEstado] = useState('todos');
   const [currentPage,  setCurrentPage]  = useState(1);
   const itemsPerPage = 10;
 
@@ -106,7 +108,7 @@ function Estadisticas() {
     if (filtroTipo !== 'todos' && !tiposDisponibles.includes(filtroTipo)) setFiltroTipo('todos');
   }, [tiposDisponibles]);
 
-  useEffect(() => { setCurrentPage(1); }, [filtroAnio, filtroMes, filtroEstado, filtroTipo]);
+  useEffect(() => { setCurrentPage(1); }, [filtroAnio, filtroMes, filtroEstado, filtroTipo, filtroBusqueda, filtroTablaEstado]);
 
   // ── 3. Filtrar por estado y tipo ────────────────────────────────────
   const dispositivosFiltrados = useMemo(() => {
@@ -118,6 +120,16 @@ function Estadisticas() {
   }, [dispositivosPorMes, filtroEstado, filtroTipo]);
 
   const total = dispositivosFiltrados.length;
+
+  // ── Filtro adicional de la barra de búsqueda de la tabla ────────────
+  const dispositivosTabla = useMemo(() => {
+    return dispositivosFiltrados.filter(d => {
+      const texto = `${d.nombre} ${d.serial} ${d.marca}`.toLowerCase();
+      const okBusqueda = !filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase());
+      const okEstado   = filtroTablaEstado === 'todos' || d.estado === filtroTablaEstado;
+      return okBusqueda && okEstado;
+    });
+  }, [dispositivosFiltrados, filtroBusqueda, filtroTablaEstado]);
   const pct   = (n) => total > 0 ? Math.round((n / total) * 100) : 0;
 
   // ── Conteo por estado — siempre los 4 ──────────────────────────────
@@ -467,7 +479,7 @@ function Estadisticas() {
                   </tr>
                 </thead>
                 <tbody>
-                  {dispositivosFiltrados
+                  {dispositivosTabla
                     .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                     .map((d, i) => (
                     <tr key={d.id} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
@@ -476,14 +488,20 @@ function Estadisticas() {
                       <td style={tdStyle}>{d.marca || 'N/A'}</td>
                       <td style={tdStyle}>{d.ubicacion || 'N/A'}</td>
                       <td style={tdStyle}>
-                        {d.fecha_registro
-                          ? new Date(d.fecha_registro).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
-                          : 'N/A'}
+                        {d.fecha_registro ? (
+                          <>
+                            <span>{new Date(d.fecha_registro).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                            <br />
+                            <span className="est-hora">
+                              {d.hora_registro || new Date(d.fecha_registro).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </>
+                        ) : 'N/A'}
                       </td>
                       <td style={tdStyle}><span style={getBadgeStyle(d.estado)}>{d.estado}</span></td>
                     </tr>
                   ))}
-                  {dispositivosFiltrados.length === 0 && (
+                  {dispositivosTabla.length === 0 && (
                     <tr>
                       <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
                         {t('estadisticas_no_disp_filtros')}
@@ -494,7 +512,7 @@ function Estadisticas() {
               </table>
             </div>
             <Pagination
-              totalItems={dispositivosFiltrados.length}
+              totalItems={dispositivosTabla.length}
               itemsPerPage={itemsPerPage}
               currentPage={currentPage}
               onPageChange={setCurrentPage}

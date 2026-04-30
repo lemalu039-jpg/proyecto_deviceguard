@@ -128,8 +128,24 @@ function Prestamos() {
                 <tr key={p.id}>
                   <td><strong>{p.dispositivo_nombre}</strong><br/><span style={{fontSize: '0.8rem', color: 'var(--text-muted)'}}>{p.dispositivo_serial}</span></td>
                   <td>{p.usuario_nombre}</td>
-                  <td>{formatDate(p.fecha_prestamo)}</td>
-                  <td>{formatDate(p.fecha_devolucion)}</td>
+                  <td>
+                    {p.fecha_prestamo ? (
+                      <>
+                        <span>{new Date(p.fecha_prestamo).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                        <br />
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 400 }}>{new Date(p.fecha_prestamo).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</span>
+                      </>
+                    ) : 'N/A'}
+                  </td>
+                  <td>
+                    {p.fecha_devolucion ? (
+                      <>
+                        <span>{new Date(p.fecha_devolucion).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                        <br />
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 400 }}>{new Date(p.fecha_devolucion).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</span>
+                      </>
+                    ) : 'N/A'}
+                  </td>
                   <td>
                     <span className={`badge ${p.estado_prestamo === 'Activo' ? 'badge-warning' : p.estado_prestamo === 'Devuelto' ? 'badge-success' : 'badge-danger'}`}>
                       {p.estado_prestamo}

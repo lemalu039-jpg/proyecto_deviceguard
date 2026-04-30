@@ -9,6 +9,8 @@ function GestionMantenimiento() {
   const [dispositivos, setDispositivos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [busqueda, setBusqueda] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState("");
   const itemsPerPage = 7;
 
   useEffect(() => {
@@ -74,7 +76,13 @@ function GestionMantenimiento() {
         </thead>
 
         <tbody>
-          {dispositivos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(d => (
+          {dispositivos
+            .filter(d => {
+              const okBusqueda = !busqueda || `${d.nombre} ${d.serial}`.toLowerCase().includes(busqueda.toLowerCase());
+              const okEstado   = !filtroEstado || d.estado === filtroEstado;
+              return okBusqueda && okEstado;
+            })
+            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(d => (
             <tr key={d.id}>
               <td>{d.nombre}</td>
               <td>{d.serial}</td>
@@ -113,7 +121,11 @@ function GestionMantenimiento() {
     </div>
 
     <Pagination
-      totalItems={dispositivos.length}
+      totalItems={dispositivos.filter(d => {
+        const okBusqueda = !busqueda || `${d.nombre} ${d.serial}`.toLowerCase().includes(busqueda.toLowerCase());
+        const okEstado   = !filtroEstado || d.estado === filtroEstado;
+        return okBusqueda && okEstado;
+      }).length}
       itemsPerPage={itemsPerPage}
       currentPage={currentPage}
       onPageChange={setCurrentPage}

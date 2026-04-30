@@ -20,7 +20,7 @@ function SalidaDispositivos() {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
-  const esSuperAdmin = JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'super_admin';
+  const esSuperAdmin = (JSON.parse(localStorage.getItem('usuario')||'{}')).rol === 'super_admin';
   const [filtroBusqueda, setFiltroBusqueda] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
 
@@ -235,7 +235,7 @@ const handleSubmit = async (e) => {
             placeholder={t('salida_buscar_ph')}
             value={filtroBusqueda}
             onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
-            style={{ flex: 1, minWidth: '160px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
+            style={{ flex: 1, minWidth: '160px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none', fontWeight: 400 }}
           />
           {(filtroBusqueda || filtroEstado) && (
             <button onClick={() => { setFiltroBusqueda(''); setFiltroEstado(''); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
@@ -263,12 +263,18 @@ const handleSubmit = async (e) => {
                   <tr key={s.id}>
                     <td style={{ fontWeight: 700, color: 'var(--text-main)' }}>{s.serial}</td>
                     <td>
-                      {s.fecha_registro?.split("T")[0]}<br />
-                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{s.hora_registro || '-'}</span>
+                      {s.fecha_registro
+                        ? new Date(s.fecha_registro).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
+                        : '-'}
+                      <br />
+                      <span className="salida-hora">{s.hora_registro || new Date(s.fecha_registro).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</span>
                     </td>
                     <td>
-                      {s.fecha_salida ? s.fecha_salida.split("T")[0] : '-'}<br />
-                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)' }}>{s.hora_salida || '-'}</span>
+                      {s.fecha_salida
+                        ? new Date(s.fecha_salida).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
+                        : '-'}
+                      <br />
+                      <span className="salida-hora">{s.hora_salida || '-'}</span>
                     </td>
                     <td><span className={getBadgeClass(s.estado)}>{s.estado}</span></td>
                     {esSuperAdmin && (

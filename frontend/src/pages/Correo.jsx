@@ -23,6 +23,7 @@ function Correo() {
   const { t } = useLanguage();
   const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
   const userId = usuarioGuardado?.id;
+  const userRol = usuarioGuardado?.rol;
   const location = useLocation();
 
   const [vista, setVista] = useState(VISTAS.ENVIADOS);
@@ -39,7 +40,7 @@ function Correo() {
     cargarCorreos();
     if (userId) cargarContactos();
     return () => clearInterval(pollingRef.current);
-  }, []);
+  }, [userId]);
 
   // Si viene desde Equipo con un contacto preseleccionado
   useEffect(() => {
@@ -65,26 +66,11 @@ function Correo() {
 
   const cargarCorreos = async () => {
     try {
-      const res = await getCorreos();
       const usuarioActual = JSON.parse(localStorage.getItem("usuario") || "{}");
-
-      if (usuarioActual.rol === 'usuario') {
-        // Obtener dispositivos del usuario para filtrar correos relacionados
-        const { getDispositivos } = await import("../services/api");
-        const dispRes = await getDispositivos();
-        const misDispositivos = dispRes.data.filter(d => d.usuario_id === usuarioActual.id);
-        const misSeriales = misDispositivos.map(d => d.serial?.toLowerCase()).filter(Boolean);
-        const misNombres = misDispositivos.map(d => d.nombre?.toLowerCase()).filter(Boolean);
-
-        const correosFiltrados = res.data.filter(c => {
-          const texto = `${c.asunto} ${c.mensaje}`.toLowerCase();
-          return misSeriales.some(s => texto.includes(s)) ||
-                 misNombres.some(n => texto.includes(n));
-        });
-        setCorreos(correosFiltrados);
-      } else {
-        setCorreos(res.data);
-      }
+      const res = usuarioActual.rol === 'usuario'
+        ? await getCorreos(usuarioActual.id)
+        : await getCorreos();
+      setCorreos(res.data);
     } catch (e) { console.error(e); }
   };
 

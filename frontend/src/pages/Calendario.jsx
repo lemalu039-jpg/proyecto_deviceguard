@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { getDispositivos, updateDispositivo, deleteDispositivo } from '../services/api';
 import './CSS/Calendario_responsive.css';
 import { useLanguage } from '../context/LanguageContext.jsx';
@@ -12,21 +12,27 @@ function Calendario() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [nuevoEvento, setNuevoEvento] = useState({ id_dispositivo: '', fecha_estimada: '', nota: '' });
 
+  const [modalDetalle, setModalDetalle] = useState(false);
+  const [equipoDetalle, setEquipoDetalle] = useState(null);
   const [modalSalida, setModalSalida] = useState(false);
   const [eventoSalida, setEventoSalida] = useState(null);
   const [cargandoSalida, setCargandoSalida] = useState(false);
   const [mensajeSalida, setMensajeSalida] = useState('');
 
-  const [modalDetalle, setModalDetalle] = useState(false);
-  const [equipoDetalle, setEquipoDetalle] = useState(null);
+  const [paginaDia, setPaginaDia] = useState(0);
+  const ITEMS_PIA = 5; // eventos por página en el sidebar del día
 
-  const [eventosCustom, setEventosCustom] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('eventosCustom')) || []; }
-    catch { return []; }
-  });
+  // Reset página al cambiar día seleccionado
+  useEffect(() => { setPaginaDia(0); }, [diaSeleccionado]);
 
   const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
   const esUsuario = usuarioActual.rol === 'usuario';
+  const storageKey = `eventosCustom_${usuarioActual.id || 'guest'}`;
+
+  const [eventosCustom, setEventosCustom] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(storageKey)) || []; }
+    catch { return []; }
+  });
 
   useEffect(() => {
     getDispositivos().then(res => {
@@ -148,7 +154,10 @@ function Calendario() {
       const ahora = new Date();
       const id = eventoSalida._dispOrig?.id || eventoSalida.id || eventoSalida.id_dispositivo;
       const accion = obtenerTextoAccion(eventoSalida.estado);
-      await updateDispositivo(id, {
+
+      // Solo guardar fecha_salida cuando el nuevo estado es "Listo para entrega" o "Entregado"
+      const esSalida = accion.nuevoEstado === 'Listo para entrega' || accion.nuevoEstado === 'Entregado';
+      const payload = {
         estado: accion.nuevoEstado,
         fecha_salida: ahora.toISOString().split('T')[0],
         hora_salida: ahora.toTimeString().slice(0, 5),
@@ -164,7 +173,7 @@ function Calendario() {
             : e
         );
         setEventosCustom(eventosActualizados);
-        localStorage.setItem('eventosCustom', JSON.stringify(eventosActualizados));
+        localStorage.setItem(storageKey, JSON.stringify(eventosActualizados));
       }
 
       setModalSalida(false);
@@ -320,11 +329,30 @@ function Calendario() {
                             <span style={{ fontSize: '.62rem', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: '#dcfce7', color: '#15803d' }}>{t('dash_entregado')}</span>
                           )}
                         </div>
+                      );
+                    })}
+                    {totalPaginas > 1 && (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '.5rem', paddingTop: '.5rem', borderTop: '1px solid var(--border)' }}>
+                        <button
+                          onClick={() => setPaginaDia(p => Math.max(0, p - 1))}
+                          disabled={paginaDia === 0}
+                          style={{ padding: '3px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-muted)', fontSize: '.72rem', cursor: paginaDia === 0 ? 'not-allowed' : 'pointer', opacity: paginaDia === 0 ? 0.4 : 1 }}>
+                          ‹ Ant
+                        </button>
+                        <span style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>
+                          {paginaDia + 1} / {totalPaginas} · {lista.length} eventos
+                        </span>
+                        <button
+                          onClick={() => setPaginaDia(p => Math.min(totalPaginas - 1, p + 1))}
+                          disabled={paginaDia >= totalPaginas - 1}
+                          style={{ padding: '3px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-muted)', fontSize: '.72rem', cursor: paginaDia >= totalPaginas - 1 ? 'not-allowed' : 'pointer', opacity: paginaDia >= totalPaginas - 1 ? 0.4 : 1 }}>
+                          Sig ›
+                        </button>
                       </div>
-                    </div>
-                  );
-                })
-              )}
+                    )}
+                  </>
+                );
+              })()}
             </div>
           )}
 
@@ -405,7 +433,7 @@ function Calendario() {
                   if (!nuevoEvento.id_dispositivo || !nuevoEvento.fecha_estimada) return;
                   const updated = [...eventosCustom, { ...nuevoEvento, id_evento: Date.now().toString() }];
                   setEventosCustom(updated);
-                  localStorage.setItem('eventosCustom', JSON.stringify(updated));
+                  localStorage.setItem(storageKey, JSON.stringify(updated));
                   setModalAbierto(false);
                   setNuevoEvento({ id_dispositivo: '', fecha_estimada: '', nota: '' });
                 }}

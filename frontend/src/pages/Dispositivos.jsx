@@ -38,7 +38,7 @@ function Dispositivos() {
   const loadData = async () => {
     try {
       const res = await getDispositivos();
-      const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const usuarioActual = (JSON.parse(localStorage.getItem('usuario')||'{}'));
       const dispositivos = usuarioActual.rol === 'usuario'
         ? res.data.filter(d => d.usuario_id === usuarioActual.id)
         : res.data;
@@ -48,7 +48,7 @@ function Dispositivos() {
     }
   };
 
-  const esSuperAdmin = JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'super_admin';
+  const esSuperAdmin = (JSON.parse(localStorage.getItem('usuario')||'{}')).rol === 'super_admin';
   const [filtroBusqueda, setFiltroBusqueda] = React.useState('');
   const [filtroEstadoDisp, setFiltroEstadoDisp] = React.useState('');
 
@@ -357,7 +357,7 @@ function Dispositivos() {
           <select
             value={filtroEstadoDisp}
             onChange={e => { setFiltroEstadoDisp(e.target.value); setCurrentPage(1); }}
-            style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none' }}
+            style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none', flexShrink: 0 }}
           >
             <option value="">{t('disp_todos_estados')}</option>
             <option value="En Revision">{t('disp_en_revision')}</option>
@@ -410,7 +410,8 @@ function Dispositivos() {
                   <td>
                     <span className={`disp-badge ${getBadgeClass(d.estado)}`}>{d.estado}</span>
                   </td>
-                  <td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                     <button className="disp-btn-edit" onClick={() => handleEdit(d)}>
                       <Icon d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
                       {t('editar')}
@@ -419,6 +420,7 @@ function Dispositivos() {
                       <Icon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
                       {t('eliminar')}
                     </button>
+                    </div>
                   </td>
                 </tr>
                 ));

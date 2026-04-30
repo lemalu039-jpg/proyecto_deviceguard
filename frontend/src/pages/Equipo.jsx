@@ -22,6 +22,8 @@ function Equipo() {
   const { t } = useLanguage();
   const [usuarios, setUsuarios] = useState([]);
   const [busqueda, setBusqueda] = useState("");
+  const [currentPageCards, setCurrentPageCards] = useState(1);
+  const cardsPerPage = 12;
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
   const usuarioActual = JSON.parse(localStorage.getItem("usuario") || "{}");
@@ -155,7 +157,9 @@ function Equipo() {
 
       {/* Tarjetas */}
       <div className="equipo-cards-grid">
-        {usuarios.map(u => (
+        {usuarios
+          .slice((currentPageCards - 1) * cardsPerPage, currentPageCards * cardsPerPage)
+          .map(u => (
           <div key={u.id} className="equipo-card">
             <div className="equipo-card-avatar" style={{ background: colorPorId(u.id) }}>
               {iniciales(u.nombre)}
@@ -180,6 +184,31 @@ function Equipo() {
           </div>
         ))}
       </div>
+
+      {/* Paginación discreta de cards */}
+      {usuarios.length > cardsPerPage && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', margin: '0.5rem 0 1.5rem' }}>
+          <button
+            onClick={() => setCurrentPageCards(p => Math.max(1, p - 1))}
+            disabled={currentPageCards === 1}
+            style={{ padding: '4px 12px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-muted)', fontSize: '.75rem', cursor: currentPageCards === 1 ? 'not-allowed' : 'pointer', opacity: currentPageCards === 1 ? 0.4 : 1 }}>
+            ‹
+          </button>
+          {Array.from({ length: Math.ceil(usuarios.length / cardsPerPage) }, (_, i) => (
+            <button key={i}
+              onClick={() => setCurrentPageCards(i + 1)}
+              style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: currentPageCards === i + 1 ? 'linear-gradient(135deg,#0492C2,#82EEFD)' : 'var(--bg-card)', color: currentPageCards === i + 1 ? '#fff' : 'var(--text-muted)', fontSize: '.75rem', fontWeight: currentPageCards === i + 1 ? 700 : 400, cursor: 'pointer' }}>
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => setCurrentPageCards(p => Math.min(Math.ceil(usuarios.length / cardsPerPage), p + 1))}
+            disabled={currentPageCards === Math.ceil(usuarios.length / cardsPerPage)}
+            style={{ padding: '4px 12px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-muted)', fontSize: '.75rem', cursor: currentPageCards === Math.ceil(usuarios.length / cardsPerPage) ? 'not-allowed' : 'pointer', opacity: currentPageCards === Math.ceil(usuarios.length / cardsPerPage) ? 0.4 : 1 }}>
+            ›
+          </button>
+        </div>
+      )}
 
       {/* Tabla */}
       <div className="equipo-tabla-section">
@@ -261,7 +290,13 @@ function Equipo() {
                          t('usuario_normal')}
                       </span>
                     </td>
-                    <td>{u.fecha_creacion ? new Date(u.fecha_creacion).toLocaleDateString("es-CO") : "—"}</td>
+                    <td>{u.fecha_creacion ? (
+                      <>
+                        <span>{new Date(u.fecha_creacion).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" })}</span>
+                        <br />
+                        <span className="equipo-hora">{new Date(u.fecha_creacion).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}</span>
+                      </>
+                    ) : "—"}</td>
                     <td>
                       <div className="equipo-acciones">
                         <button className="equipo-btn-editar" onClick={() => abrirEditar(u)} title={t('editar')}>

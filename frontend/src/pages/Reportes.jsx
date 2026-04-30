@@ -21,20 +21,17 @@ function Reportes() {
   const [previewTotal, setPreviewTotal] = useState(0);
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [paginaActual, setPaginaActual] = useState(1);
-
-  // ── Modal stats ──
-  const [modalAbierto, setModalAbierto] = useState(false);
-  const [modalTipo, setModalTipo] = useState("usuarios");
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
 
   // ── Modal export ──
-  const [modalExport, setModalExport] = useState(null); // null | "usuarios" | "dispositivos"
+  const [modalExport, setModalExport] = useState(false);
 
   // ── Contador de reportes generados ──
   const [totalReportes, setTotalReportes] = useState(0);
 
   // Cargar contador al montar
   useEffect(() => {
-    axios.get(`${API}/contador`)
+    axios.get(`${API}/total`)
       .then(res => setTotalReportes(res.data.total))
       .catch(() => {});
   }, []);
@@ -45,7 +42,7 @@ function Reportes() {
 };
   // Recargar contador tras generar
   const recargarContador = () => {
-    axios.get(`${API}/contador`)
+    axios.get(`${API}/total`)
       .then(res => setTotalReportes(res.data.total))
       .catch(() => {});
   };
@@ -112,6 +109,9 @@ function Reportes() {
       const res = await axios.get(`${API}/usuarios-excel`, {
         responseType: "blob",
         params: { desde: fechaUsuarios.desde, hasta: fechaUsuarios.hasta, rol: fechaUsuarios.rol, _t: Date.now() },
+  headers: {
+    'x-usuario-id': usuario?.id
+  }
       });
       descargar(res.data, res.headers, "reporte_usuarios", "xlsx");
       recargarContador();
@@ -129,6 +129,9 @@ function Reportes() {
       const res = await axios.get(`${API}/usuarios-pdf`, {
         responseType: "blob",
         params: { desde: fechaUsuarios.desde, hasta: fechaUsuarios.hasta, rol: fechaUsuarios.rol, _t: Date.now() },
+        headers: {
+  'x-usuario-id': usuario?.id
+}
       });
       descargar(res.data, res.headers, "reporte_usuarios", "pdf");
       recargarContador();
@@ -146,6 +149,9 @@ function Reportes() {
       const res = await axios.get(`${API}/dispositivos-excel`, {
         responseType: "blob",
         params: { desde: fechaDispositivos.desde, hasta: fechaDispositivos.hasta, estado: fechaDispositivos.estado, _t: Date.now() },
+        headers: {
+  'x-usuario-id': usuario?.id
+}
       });
       descargar(res.data, res.headers, "reporte_dispositivos", "xlsx");
       recargarContador();
@@ -163,6 +169,9 @@ function Reportes() {
       const res = await axios.get(`${API}/dispositivos-pdf`, {
         responseType: "blob",
         params: { desde: fechaDispositivos.desde, hasta: fechaDispositivos.hasta, estado: fechaDispositivos.estado, _t: Date.now() },
+        headers: {
+  'x-usuario-id': usuario?.id
+}
       });
       descargar(res.data, res.headers, "reporte_dispositivos", "pdf");
       recargarContador();
@@ -175,6 +184,27 @@ function Reportes() {
   const columnasUsuarios = [t('id'), t('dash_col_nombre'), t('correo_col_correo'), t('rol'), t('reportes_fecha_creacion')];
   const columnasDispositivos = [t('id'), t('dash_col_nombre'), t('dash_col_serial'), t('dash_col_estado'), t('equipo_col_usuario'), t('dash_col_fecha_reg')];
 
+  const rolBadge = (rol) => {
+    const map = {
+      super_admin: { label: "Super Admin", cls: "rpt-badge-superadmin" },
+      tecnico:     { label: "Técnico",     cls: "rpt-badge-tecnico"    },
+      usuario:     { label: "Usuario",     cls: "rpt-badge-usuario"    },
+    };
+    const { label, cls } = map[rol] || { label: rol, cls: "" };
+    return <span className={`rpt-badge ${cls}`}>{label}</span>;
+  };
+
+  const estadoBadge = (estado) => {
+    const map = {
+      "En Revision":        { label: "En Revisión",       cls: "rpt-badge-revision"     },
+      "En Mantenimiento":   { label: "En Mantenimiento",  cls: "rpt-badge-mantenimiento" },
+      "Listo para Entrega": { label: "Listo para Entrega",cls: "rpt-badge-listo"         },
+      "Entregado":          { label: "Entregado",         cls: "rpt-badge-entregado"     },
+    };
+    const { label, cls } = map[estado] || { label: estado || "—", cls: "" };
+    return <span className={`rpt-badge ${cls}`}>{label}</span>;
+  };
+
   const renderFila = (row, i) => {
     if (tipoPreview === "usuarios") {
       return (
@@ -182,8 +212,16 @@ function Reportes() {
           <td>{row.id}</td>
           <td>{row.nombre}</td>
           <td>{row.correo}</td>
-          <td>{row.rol}</td>
-          <td>{row.fecha_creacion ? new Date(row.fecha_creacion).toLocaleDateString() : "—"}</td>
+          <td>{rolBadge(row.rol)}</td>
+          <td>
+            {row.fecha_creacion ? (
+              <>
+                <span>{new Date(row.fecha_creacion).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" })}</span>
+                <br />
+                <span className="rpt-hora">{new Date(row.fecha_creacion).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}</span>
+              </>
+            ) : "—"}
+          </td>
         </tr>
       );
     }
@@ -192,9 +230,17 @@ function Reportes() {
         <td>{row.id}</td>
         <td>{row.nombre}</td>
         <td>{row.serial}</td>
-        <td>{row.estado}</td>
+        <td>{estadoBadge(row.estado)}</td>
         <td>{row.usuario || "—"}</td>
-        <td>{row.fecha_registro ? new Date(row.fecha_registro).toLocaleDateString() : "—"}</td>
+        <td>
+          {row.fecha_registro ? (
+            <>
+              <span>{new Date(row.fecha_registro).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" })}</span>
+              <br />
+              <span className="rpt-hora">{row.hora_registro || new Date(row.fecha_registro).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}</span>
+            </>
+          ) : "—"}
+        </td>
       </tr>
     );
   };
@@ -277,7 +323,7 @@ function Reportes() {
 
 
       {/* ── MODAL EXPORT ── */}
-      {modalExport && (
+      {modalExport === true && (
         <div className="modal-overlay" onClick={() => { setModalExport(null); resetFiltros(); }}>
           <div className="modal-content modal-export" onClick={e => e.stopPropagation()}>
             <div className="modal-header">

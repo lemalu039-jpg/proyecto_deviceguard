@@ -12,7 +12,7 @@ const plantillaHTML = ({ titulo, color, icono, filas, nota }) => `
       <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
         <tr>
           <td style="background:linear-gradient(135deg,#151E3D,#0492C2);padding:28px 32px;text-align:center;">
-            <div style="font-size:32px;margin-bottom:8px;"></div>
+            <div style="font-size:32px;margin-bottom:8px;">${icono}</div>
             <h1 style="margin:0;color:#ffffff;font-size:20px;font-weight:700;">${titulo}</h1>
             <p style="margin:6px 0 0;color:rgba(255,255,255,0.7);font-size:13px;">Sistema DeviceGuard</p>
           </td>
@@ -128,7 +128,7 @@ const construirCorreo = (evento, datos = {}) => {
   }
 };
 
-const enviarCorreo = async ({ destinatario, asunto, mensaje, evento, datos }) => {
+const enviarCorreo = async ({ destinatario, asunto, mensaje, evento, datos, usuario_id }) => {
   console.log("=== enviarCorreo llamado ===");
   console.log("destinatario:", destinatario);
   console.log("evento:", evento);
@@ -153,11 +153,20 @@ const enviarCorreo = async ({ destinatario, asunto, mensaje, evento, datos }) =>
 
   console.log("subject:", subject);
 
+  // Resolver usuario_id si no viene explícito — buscar por correo destinatario
+  let resolvedUsuarioId = usuario_id || null;
+  if (!resolvedUsuarioId && destinatario) {
+    try {
+      const [rows] = await db.query("SELECT id FROM usuarios WHERE correo = ? LIMIT 1", [destinatario]);
+      if (rows.length > 0) resolvedUsuarioId = rows[0].id;
+    } catch (_) {}
+  }
+
   // 1. Guardar en BD siempre
   try {
     const result = await db.query(
-      "INSERT INTO correos (destinatario, asunto, mensaje, fecha_envio, hora_envio) VALUES (?, ?, ?, ?, ?)",
-      [destinatario, subject, resumenDB, fechaDB, horaDB]
+      "INSERT INTO correos (destinatario, asunto, mensaje, fecha_envio, hora_envio, usuario_id) VALUES (?, ?, ?, ?, ?, ?)",
+      [destinatario, subject, resumenDB, fechaDB, horaDB, resolvedUsuarioId]
     );
     console.log(" Correo guardado en BD. InsertId:", result[0]?.insertId);
   } catch (dbError) {
@@ -175,15 +184,29 @@ const enviarCorreo = async ({ destinatario, asunto, mensaje, evento, datos }) =>
         pass: process.env.EMAIL_PASS,
       },
     });
+
+    console.log("📤 Intentando enviar email...");
+    console.log("   FROM:", process.env.EMAIL_USER);
+    console.log("   TO:  ", destinatario);
+    console.log("   SUBJECT:", subject);
+
+    // Verificar credenciales antes de enviar
+    await transporter.verify();
+    console.log("✅ Conexión SMTP verificada correctamente");
+
     const info = await transporter.sendMail({
       from: `"DeviceGuard" <${process.env.EMAIL_USER}>`,
       to: destinatario,
       subject,
       html: htmlContent,
     });
-    console.log(" Correo enviado por email:", info.messageId);
+    console.log("✅ Correo enviado. MessageId:", info.messageId);
+    console.log("   Accepted:", info.accepted);
+    console.log("   Rejected:", info.rejected);
   } catch (mailError) {
-    console.error(" Error enviando email:", mailError.message);
+    console.error("❌ Error enviando email:", mailError.message);
+    console.error("   Código:", mailError.code);
+    console.error("   Respuesta SMTP:", mailError.response || "—");
   }
 };
 

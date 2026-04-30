@@ -39,10 +39,12 @@ function Dashboard() {
       try {
         const [devicesRes, usuariosRes] = await Promise.all([
           getDispositivos(),
-          getUsuarios()
+          getUsuarios(),
+          axios.get('http://localhost:5000/api/reportes/total')
         ]);
         const allDevices = devicesRes.data;
-        
+        const reportesRes = await axios.get('http://localhost:5000/api/reportes/total');
+
         const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
         const dispositivos = usuarioActual.rol === 'usuario'
           ? allDevices.filter(d => d.usuario_id === usuarioActual.id)
@@ -55,7 +57,7 @@ function Dashboard() {
           enMantenimiento: dispositivos.filter(d => d.estado === 'En Mantenimiento').length,
           entregado:      dispositivos.filter(d => d.estado === 'Entregado').length,
           usuarios:        usuariosRes.data.length,
-          totalMantenimientos: parseInt(localStorage.getItem('totalReportes') || '0')
+          totalMantenimientos: reportesRes.data.total
         });
         setDispositivos(dispositivos);
       } catch (error) {
@@ -271,13 +273,15 @@ function Dashboard() {
           flexWrap: 'nowrap',
          overflowX: 'auto'   
           }}>
-          {cards.map((card, i) => renderCard(card, i))}
+          {cards
+            .filter(card => !(card.label === 'Total reportes' && JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'usuario'))
+            .map((card, i) => renderCard(card, i))}
          </div>
 
         </div>
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem', flexWrap: 'wrap' }}>
         <div style={{ width: '4px', height: '18px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px', flexShrink: 0 }}></div>
         <span style={{ fontSize: '.92rem', fontWeight: 700, color: 'var(--text-main)' }}>{t('dash_lista_dispositivos')}</span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: '.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
