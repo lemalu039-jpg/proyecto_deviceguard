@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
+import { useLanguage } from '../context/LanguageContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import './CSS/Home.css';
 import candado from '../assets/icons/logo-deviceguard.svg';
 
 function Home() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const pageRef = useRef(null);
 
@@ -54,40 +56,40 @@ function Home() {
           <span className="nav-brand">Device<span>Guard</span></span>
         </div>
         <div className="nav-links">
-          <button className="nav-link" onClick={() => scrollTo('hero')}>Inicio</button>
-          <button className="nav-link" onClick={() => scrollTo('features')}>Módulos</button>
-          <button className="nav-link" onClick={() => scrollTo('about')}>Nosotros</button>
-          <button className="nav-link" onClick={() => scrollTo('contact')}>Contacto</button>
+          <button className="nav-link" onClick={() => scrollTo('hero')}>{t('home_inicio')}</button>
+          <button className="nav-link" onClick={() => scrollTo('features')}>{t('home_modulos')}</button>
+          <button className="nav-link" onClick={() => scrollTo('about')}>{t('home_nosotros')}</button>
+          <button className="nav-link" onClick={() => scrollTo('contact')}>{t('home_contacto')}</button>
         </div>
-        <button className="nav-btn" onClick={() => navigate('/login')}>Ingresar</button>
+        <button className="nav-btn" onClick={() => navigate('/login')}>{t('home_ingresar')}</button>
       </nav>
 
       <div className="hero" id="hero">
         <div className="hero-glow"></div>
         <div className="hero-tag anim-up">
           <div className="pulse-dot"></div>
-          Control inteligente de equipos
+          {t('home_hero_tag')}
         </div>
         <h1 className="hero-title anim-up d1">
-          Gestión de<br />
-          <span className="grad">dispositivos electrónicos</span><br />
-          sin complicaciones
+          {t('home_hero_title1')}<br />
+          <span className="grad">{t('home_hero_title2')}</span><br />
+          {t('home_hero_title3')}
         </h1>
         <p className="hero-sub anim-up d2">
-          Registra dispositivos, gestiona su estado durante el mantenimiento y mantén trazabilidad completa desde la recepción hasta la entrega final.
+          {t('home_hero_sub')}
         </p>
         <div className="hero-btns anim-up d3">
-          <button className="btn-p" onClick={() => navigate('/login')}>Comenzar ahora ↗</button>
-          <button className="btn-s" onClick={() => scrollTo('features')}>Conocer más</button>
+          <button className="btn-p" onClick={() => navigate('/login')}>{t('home_hero_btn1')}</button>
+          <button className="btn-s" onClick={() => scrollTo('features')}>{t('home_hero_btn2')}</button>
         </div>
       </div>
 
       <div className="divider"></div>
 
       <div className="section" id="features">
-        <div className="sec-tag anim-left">¿Qué hace DeviceGuard?</div>
-        <div className="sec-title anim-left d1">Todo lo que necesitas<br />en un solo lugar</div>
-        <div className="sec-sub anim-left d2">Cada módulo está diseñado para facilitar la gestión diaria de equipos en tu empresa.</div>
+        <div className="sec-tag anim-left">{t('home_sec_tag1')}</div>
+        <div className="sec-title anim-left d1">{t('home_sec_title1')}<br />{t('home_sec_title1b')}</div>
+        <div className="sec-sub anim-left d2">{t('home_sec_sub1')}</div>
         <div className="feat-grid">
           <div className="feat anim-up">
             <div className="feat-icon feat-icon-blue">
@@ -95,8 +97,8 @@ function Home() {
                 <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
               </svg>
             </div>
-            <div className="feat-title">Registro y control</div>
-            <div className="feat-desc">Registra dispositivos de clientes con su información, estado y fecha de ingreso al sistema.</div>
+            <div className="feat-title">{t('home_feat1_title')}</div>
+            <div className="feat-desc">{t('home_feat1_desc')}</div>
           </div>
           <div className="feat anim-up d1">
             <div className="feat-icon feat-icon-pink">
@@ -104,8 +106,8 @@ function Home() {
                 <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
               </svg>
             </div>
-            <div className="feat-title">Mantenimiento</div>
-            <div className="feat-desc">Administra el proceso técnico y actualiza el estado de cada equipo durante su reparación.</div>
+            <div className="feat-title">{t('home_feat2_title')}</div>
+            <div className="feat-desc">{t('home_feat2_desc')}</div>
           </div>
           <div className="feat anim-up d2">
             <div className="feat-icon feat-icon-cyan">
@@ -114,8 +116,8 @@ function Home() {
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
             </div>
-            <div className="feat-title">Salida de dispositivos</div>
-            <div className="feat-desc">Controla la entrega de equipos y registra la fecha y hora de salida.</div>
+            <div className="feat-title">{t('home_feat3_title')}</div>
+            <div className="feat-desc">{t('home_feat3_desc')}</div>
           </div>
           <div className="feat anim-up d3">
             <div className="feat-icon feat-icon-green">
@@ -123,8 +125,8 @@ function Home() {
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
             </div>
-            <div className="feat-title">Roles y accesos</div>
-            <div className="feat-desc">Gestiona accesos según el rol: administrador, técnico o usuario.</div>
+            <div className="feat-title">{t('home_feat4_title')}</div>
+            <div className="feat-desc">{t('home_feat4_desc')}</div>
           </div>
         </div>
       </div>
@@ -132,16 +134,12 @@ function Home() {
       <div className="divider"></div>
 
       <div className="section" id="about">
-        <div className="sec-tag anim-left">Nosotros</div>
-        <div className="sec-title anim-left d1">¿Quiénes somos?</div>
+        <div className="sec-tag anim-left">{t('home_sec_tag2')}</div>
+        <div className="sec-title anim-left d1">{t('home_sec_title2')}</div>
         <div className="about-grid">
           <p className="sec-sub anim-left d2">
-            DeviceGuard es un sistema diseñado para gestionar dispositivos
-            electrónicos de clientes externos dentro de una empresa de
-            mantenimiento.<br /><br />
-            Permite llevar control del proceso completo: desde el registro del equipo,
-            su mantenimiento y hasta su entrega final, mejorando la organización y
-            trazabilidad del servicio técnico.
+            {t('home_about_p1')}<br /><br />
+            {t('home_about_p2')}
           </p>
           <div className="about-list anim-right">
             <div className="about-item">
@@ -151,8 +149,8 @@ function Home() {
                 </svg>
               </div>
               <div>
-                <div className="about-item-title">Monitoreo en tiempo real</div>
-                <div className="about-item-desc">Consulta el estado de cada equipo al instante desde cualquier dispositivo.</div>
+                <div className="about-item-title">{t('home_about_item1_title')}</div>
+                <div className="about-item-desc">{t('home_about_item1_desc')}</div>
               </div>
             </div>
             <div className="about-item">
@@ -162,8 +160,8 @@ function Home() {
                 </svg>
               </div>
               <div>
-                <div className="about-item-title">Fácil de usar</div>
-                <div className="about-item-desc">Interfaz intuitiva sin curva de aprendizaje para cualquier usuario.</div>
+                <div className="about-item-title">{t('home_about_item2_title')}</div>
+                <div className="about-item-desc">{t('home_about_item2_desc')}</div>
               </div>
             </div>
             <div className="about-item">
@@ -173,8 +171,8 @@ function Home() {
                 </svg>
               </div>
               <div>
-                <div className="about-item-title">Seguro y confiable</div>
-                <div className="about-item-desc">Acceso por roles con autenticación segura para proteger la información.</div>
+                <div className="about-item-title">{t('home_about_item3_title')}</div>
+                <div className="about-item-desc">{t('home_about_item3_desc')}</div>
               </div>
             </div>
           </div>
@@ -191,21 +189,21 @@ function Home() {
                 <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
               </svg>
             </div>
-            <div className="mission-card-title">Nuestro objetivo</div>
-            <div className="mission-card-sub">Brindar una herramienta que facilite la gestión de dispositivos de clientes durante su proceso de mantenimiento, de forma organizada, segura y eficiente.</div>
+            <div className="mission-card-title">{t('home_mission_title')}</div>
+            <div className="mission-card-sub">{t('home_mission_sub')}</div>
           </div>
           <div className="anim-right">
-            <div className="sec-tag">Misión</div>
-            <div className="sec-title d1">Tecnología al servicio<br />del mantenimiento</div>
-            <div className="sec-sub d2">Optimizar el control y seguimiento de dispositivos electrónicos en mantenimiento, garantizando trazabilidad desde su ingreso hasta su entrega final.</div>
+            <div className="sec-tag">{t('home_sec_tag3')}</div>
+            <div className="sec-title d1">{t('home_sec_title3')}<br />{t('home_sec_title3b')}</div>
+            <div className="sec-sub d2">{t('home_sec_sub3')}</div>
           </div>
         </div>
       </div>
 
       <div className="contact-section" id="contact">
-        <div className="sec-tag">Contacto</div>
-        <div className="sec-title" style={{ marginTop: '.3rem' }}>¿Tienes alguna pregunta?</div>
-        <div className="sec-sub contact-sub">Estamos disponibles para apoyarte en el uso del sistema</div>
+        <div className="sec-tag">{t('home_contact_tag')}</div>
+        <div className="sec-title" style={{ marginTop: '.3rem' }}>{t('home_contact_title')}</div>
+        <div className="sec-sub contact-sub">{t('home_contact_sub')}</div>
         <div className="contact-items">
           <div className="contact-item">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#82EEFD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -227,7 +225,7 @@ function Home() {
           </div>
         </div>
         <button className="btn-p contact-cta" onClick={() => navigate('/login')}>
-          Ingresar al sistema ↗
+          {t('home_contact_btn')}
         </button>
       </div>
 

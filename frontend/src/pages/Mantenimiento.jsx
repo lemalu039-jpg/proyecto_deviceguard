@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getMantenimientos, createMantenimiento, updateMantenimiento, deleteMantenimiento, getDispositivos } from '../services/api';
+import { useLanguage } from '../context/LanguageContext.jsx';
 
 function Mantenimiento() {
+  const { t } = useLanguage();
   const [mantenimientos, setMantenimientos] = useState([]);
   const [dispositivos, setDispositivos] = useState([]);
   
@@ -52,7 +54,7 @@ function Mantenimiento() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('¿Seguro que deseas eliminar este registro de mantenimiento?')) {
+    if (window.confirm(t('mant_eliminar_confirm'))) {
       await deleteMantenimiento(id);
       loadData();
     }
@@ -65,15 +67,15 @@ function Mantenimiento() {
 
   return (
     <div>
-      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>Mantenimiento de Dispositivos</h1>
+      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>{t('mant_title_disp')}</h1>
 
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ marginBottom: '1rem' }}>{editingId ? 'Actualizar Mantenimiento' : 'Registrar Nuevo Mantenimiento'}</h3>
+        <h3 style={{ marginBottom: '1rem' }}>{editingId ? t('mant_actualizar') : t('mant_registrar_nuevo')}</h3>
         <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
           <div style={{ gridColumn: 'span 2' }}>
-            <label>Dispositivo:</label>
+            <label>{t('mant_form_dispositivo')}</label>
             <select name="dispositivo_id" value={form.dispositivo_id} onChange={handleChange} className="form-control" required disabled={editingId != null}>
-              <option value="">Selecciona un dispositivo</option>
+              <option value="">{t('mant_selecciona_disp')}</option>
               {dispositivos.map(d => (
                 <option key={d.id} value={d.id}>{d.nombre} ({d.serial}) - {d.estado}</option>
               ))}
@@ -81,22 +83,22 @@ function Mantenimiento() {
           </div>
           
           <div style={{ gridColumn: 'span 2' }}>
-            <label>Descripción / Fallo reportado:</label>
+            <label>{t('mant_form_desc')}</label>
             <textarea name="descripcion" value={form.descripcion} onChange={handleChange} className="form-control" rows="3" required />
           </div>
 
           {editingId && (
             <>
               <div>
-                <label>Costo Estimado/Final ($):</label>
+                <label>{t('mant_form_costo')}</label>
                 <input type="number" step="0.01" name="costo" value={form.costo} onChange={handleChange} className="form-control" />
               </div>
               <div>
-                <label>Estado del Mantenimiento:</label>
+                <label>{t('mant_form_estado')}</label>
                 <select name="estado_mantenimiento" value={form.estado_mantenimiento} onChange={handleChange} className="form-control" required>
-                  <option value="En Proceso">En Proceso</option>
-                  <option value="Completado">Completado</option>
-                  <option value="Cancelado">Cancelado</option>
+                  <option value="En Proceso">{t('mant_en_proceso')}</option>
+                  <option value="Completado">{t('mant_completado')}</option>
+                  <option value="Cancelado">{t('mant_cancelado')}</option>
                 </select>
               </div>
             </>
@@ -104,11 +106,11 @@ function Mantenimiento() {
 
           <div style={{ gridColumn: 'span 2' }}>
             <button type="submit" className="btn btn-primary">
-              {editingId ? 'Guardar Cambios' : 'Registrar Ingreso Mantenimiento'}
+              {editingId ? t('guardar_cambios') : t('mant_registrar_ingreso')}
             </button>
             {editingId && (
               <button type="button" className="btn" onClick={() => { setEditingId(null); setForm({ dispositivo_id: '', descripcion: '', costo: 0, estado_mantenimiento: 'En Proceso' }); }} style={{ marginLeft: '1rem' }}>
-                Cancelar
+                {t('cancelar')}
               </button>
             )}
           </div>
@@ -116,17 +118,17 @@ function Mantenimiento() {
       </div>
 
       <div className="card">
-        <h3 style={{ marginBottom: '1rem' }}>Historial de Mantenimientos</h3>
+        <h3 style={{ marginBottom: '1rem' }}>{t('historial_mantenimientos')}</h3>
         <div className="table-container">
           <table>
             <thead>
               <tr>
-                <th>Dispositivo</th>
-                <th>Descripción</th>
-                <th>Costos</th>
-                <th>Fechas</th>
-                <th>Estado</th>
-                <th>Acciones</th>
+                <th>{t('mant_col_disp')}</th>
+                <th>{t('descripcion')}</th>
+                <th>{t('mant_col_costos')}</th>
+                <th>{t('mant_col_fechas')}</th>
+                <th>{t('dash_col_estado')}</th>
+                <th>{t('equipo_col_acciones')}</th>
               </tr>
             </thead>
             <tbody>
@@ -137,8 +139,8 @@ function Mantenimiento() {
                   <td>${m.costo}</td>
                   <td>
                     <div style={{fontSize: '0.875rem'}}>
-                      <strong>Inicio: </strong>{formatDate(m.fecha_inicio)}<br/>
-                      <strong>Fin: </strong>{formatDate(m.fecha_fin)}
+                      <strong>{t('mant_inicio')}</strong>{formatDate(m.fecha_inicio)}<br/>
+                      <strong>{t('mant_fin')}</strong>{formatDate(m.fecha_fin)}
                     </div>
                   </td>
                   <td>
@@ -147,13 +149,13 @@ function Mantenimiento() {
                     </span>
                   </td>
                   <td>
-                    <button className="btn" style={{ padding: '0.25rem 0.5rem', background: 'var(--border)', marginRight: '0.5rem', marginBottom: '0.5rem' }} onClick={() => handleEdit(m)}>Ver/Editar</button>
-                    <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem' }} onClick={() => handleDelete(m.id)}>Eliminar</button>
+                    <button className="btn" style={{ padding: '0.25rem 0.5rem', background: 'var(--border)', marginRight: '0.5rem', marginBottom: '0.5rem' }} onClick={() => handleEdit(m)}>{t('mant_ver_editar')}</button>
+                    <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem' }} onClick={() => handleDelete(m.id)}>{t('eliminar')}</button>
                   </td>
                 </tr>
               ))}
               {mantenimientos.length === 0 && (
-                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No hay registros de mantenimiento</td></tr>
+                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>{t('mant_sin_registros')}</td></tr>
               )}
             </tbody>
           </table>

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 function CambiarCorreo() {
+  const { t } = useLanguage();
 
   const navigate = useNavigate();
   const usuario = JSON.parse(localStorage.getItem("usuario"));
@@ -16,13 +18,13 @@ function CambiarCorreo() {
         correo: correo
       });
 
-      alert("Correo actualizado correctamente");
+      alert(t('perfil_correo_actualizado'));
       navigate("/dashboard");
 
     } catch (error) {
 
       console.error("ERROR:", error.response?.data || error.message);
-      alert("Error al actualizar correo");
+      alert(t('perfil_err_correo'));
 
     }
   };
@@ -49,11 +51,11 @@ function CambiarCorreo() {
             marginBottom: "5px",
             textAlign: "center",
             color: "var(--text-main)"
-          }}>Cambiar Correo</h2>
+          }}>{t('perfil_cambiar_correo')}</h2>
 
         <input
           type="email"
-          placeholder="Nuevo correo"
+          placeholder={t('perfil_nuevo_correo')}
           value={correo}
           onChange={(e) => setCorreo(e.target.value)}
           style={{
@@ -83,7 +85,7 @@ function CambiarCorreo() {
             fontSize: "15px"
           }}
         >
-          Actualizar correo
+          {t('perfil_btn_correo')}
         </button>
 
       </div>

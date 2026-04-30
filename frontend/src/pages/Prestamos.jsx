@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getPrestamos, createPrestamo, updatePrestamo, deletePrestamo, getUsuarios, getDispositivos } from '../services/api';
+import { useLanguage } from '../context/LanguageContext.jsx';
 
 function Prestamos() {
+  const { t } = useLanguage();
   const [prestamos, setPrestamos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [dispositivos, setDispositivos] = useState([]);
@@ -47,7 +49,7 @@ function Prestamos() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('¿Seguro que deseas eliminar el registro de este préstamo?')) {
+    if (window.confirm(t('prestamo_eliminar_confirm'))) {
       await deletePrestamo(id);
       loadData();
     }
@@ -60,22 +62,22 @@ function Prestamos() {
 
   return (
     <div>
-      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>Gestión de Préstamos</h1>
+      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>{t('prestamo_title')}</h1>
 
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ marginBottom: '1rem' }}>{editingId ? 'Actualizar Estado Préstamo' : 'Registrar Nuevo Préstamo'}</h3>
+        <h3 style={{ marginBottom: '1rem' }}>{editingId ? t('prestamo_actualizar_estado') : t('prestamo_registrar_nuevo')}</h3>
         <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
           <div>
-            <label>Usuario (Prestatario):</label>
+            <label>{t('prestamo_usuario')}</label>
             <select name="usuario_id" value={form.usuario_id} onChange={handleChange} className="form-control" required disabled={editingId != null}>
-              <option value="">Selecciona un usuario</option>
+              <option value="">{t('prestamo_selecciona_usuario')}</option>
               {usuarios.map(u => <option key={u.id} value={u.id}>{u.nombre} - {u.correo}</option>)}
             </select>
           </div>
           <div>
-            <label>Dispositivo:</label>
+            <label>{t('mant_form_dispositivo')}</label>
             <select name="dispositivo_id" value={form.dispositivo_id} onChange={handleChange} className="form-control" required disabled={editingId != null}>
-              <option value="">Selecciona un dispositivo</option>
+              <option value="">{t('mant_selecciona_disp')}</option>
               {/* Para nuevos prestamos solo mostramos los disponibles. Si editamos mostramos el actual. */}
               {dispositivos.filter(d => editingId || d.estado === 'Disponible').map(d => (
                 <option key={d.id} value={d.id}>{d.nombre} ({d.serial})</option>
@@ -85,22 +87,22 @@ function Prestamos() {
           
           {editingId && (
             <div>
-              <label>Estado del Préstamo:</label>
+              <label>{t('prestamo_estado_prestamo')}</label>
               <select name="estado_prestamo" value={form.estado_prestamo} onChange={handleChange} className="form-control" required>
-                <option value="Activo">Activo</option>
-                <option value="Devuelto">Devuelto</option>
-                <option value="Atrasado">Atrasado</option>
+                <option value="Activo">{t('prestamo_activo')}</option>
+                <option value="Devuelto">{t('prestamo_devuelto')}</option>
+                <option value="Atrasado">{t('prestamo_atrasado')}</option>
               </select>
             </div>
           )}
 
           <div style={{ gridColumn: 'span 2' }}>
             <button type="submit" className="btn btn-primary">
-              {editingId ? 'Actualizar Estado' : 'Registrar Préstamo'}
+              {editingId ? t('prestamo_btn_actualizar') : t('prestamo_btn_registrar')}
             </button>
             {editingId && (
               <button type="button" className="btn" onClick={() => { setEditingId(null); setForm({ usuario_id: '', dispositivo_id: '', estado_prestamo: 'Activo' }); }} style={{ marginLeft: '1rem' }}>
-                Cancelar
+                {t('cancelar')}
               </button>
             )}
           </div>
@@ -108,17 +110,17 @@ function Prestamos() {
       </div>
 
       <div className="card">
-        <h3 style={{ marginBottom: '1rem' }}>Historial de Préstamos</h3>
+        <h3 style={{ marginBottom: '1rem' }}>{t('prestamo_historial')}</h3>
         <div className="table-container">
           <table>
             <thead>
               <tr>
-                <th>Dispositivo</th>
-                <th>Usuario</th>
-                <th>Fecha Préstamo</th>
-                <th>Fecha Devolución</th>
-                <th>Estado</th>
-                <th>Acciones</th>
+                <th>{t('mant_col_disp')}</th>
+                <th>{t('equipo_col_usuario')}</th>
+                <th>{t('prestamo_col_fecha_prestamo')}</th>
+                <th>{t('prestamo_col_fecha_devolucion')}</th>
+                <th>{t('dash_col_estado')}</th>
+                <th>{t('equipo_col_acciones')}</th>
               </tr>
             </thead>
             <tbody>
@@ -151,14 +153,14 @@ function Prestamos() {
                   </td>
                   <td>
                     {p.estado_prestamo !== 'Devuelto' && (
-                      <button className="btn" style={{ padding: '0.25rem 0.5rem', background: 'var(--border)', marginRight: '0.5rem' }} onClick={() => handleEdit(p)}>Resolver</button>
+                      <button className="btn" style={{ padding: '0.25rem 0.5rem', background: 'var(--border)', marginRight: '0.5rem' }} onClick={() => handleEdit(p)}>{t('prestamo_resolver')}</button>
                     )}
-                    <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem' }} onClick={() => handleDelete(p.id)}>Eliminar</button>
+                    <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem' }} onClick={() => handleDelete(p.id)}>{t('eliminar')}</button>
                   </td>
                 </tr>
               ))}
               {prestamos.length === 0 && (
-                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No hay préstamos registrados</td></tr>
+                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>{t('prestamo_no_registrados')}</td></tr>
               )}
             </tbody>
           </table>

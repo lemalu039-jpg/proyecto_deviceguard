@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useLanguage } from "../context/LanguageContext.jsx";
 import "./Sidebar.css";
 import dashboard_ from "../assets/icons/dashboard_.svg";
 import dispositivos_ from "../assets/icons/dispositivos_.svg";
@@ -15,8 +16,7 @@ import settings from "../assets/icons/settings.svg";
 
 function Sidebar({ usuario: usuarioProp, onLogout, onImpersonate }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [usuarios, setUsuarios] = useState([]);
-  const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const handleResize = () => {
@@ -79,28 +79,28 @@ const usuariosFiltrados = usuarios
   };
 
   const menuItems = [
-    { path: "/dashboard", label: "Inicio", icon: dashboard_ },
-    ...(!esTecnico ? [{ path: "/dispositivos", label: "Dispositivos", icon: dispositivos_ }] : []),
-    { path: "/correo", label: "Correo", icon: correo_ },
-    { path: "/calendario", label: "Calendario", icon: calendario_ },
-    ...(!esUsuario ? [{ path: "/consultarfiltros", label: "Consulta con Filtros", icon: consultafiltros_ }] : []),
+    { path: "/dashboard", label: t('inicio'), icon: dashboard_ },
+    ...(!esTecnico ? [{ path: "/dispositivos", label: t('dispositivos'), icon: dispositivos_ }] : []),
+    { path: "/correo", label: t('correo'), icon: correo_ },
+    { path: "/calendario", label: t('calendario'), icon: calendario_ },
+    ...(!esUsuario ? [{ path: "/consultarfiltros", label: t('consulta_filtros'), icon: consultafiltros_ }] : []),
   ];
 
   const pageItems = esUsuario ? [
-    { path: "/ajustes-cuenta", label: "Ajustes de Cuenta", icon: settings },
+    { path: "/ajustes-cuenta", label: t('ajustes_cuenta_nav'), icon: settings },
   ] : esTecnico ? [
-    { path: "/gestion", label: "Gestion de mantenimiento", icon: gestion_mantenimiento },
-    { path: "/registrarsalida", label: "Registrar Salida", icon: registrarsalida_ },
-    { path: "/reportes", label: "Generar Reportes", icon: generar_reportes_ },
-    { path: "/estadisticas", label: "Estadisticas", icon: estadisticas_ },
-    { path: "/ajustes-cuenta", label: "Ajustes de Cuenta", icon: settings },
+    { path: "/gestion", label: t('gestion_mantenimiento'), icon: ajustes },
+    { path: "/registrarsalida", label: t('registrar_salida'), icon: registrarsalida_ },
+    { path: "/reportes", label: t('generar_reportes'), icon: generar_reportes_ },
+    { path: "/estadisticas", label: t('estadisticas'), icon: estadisticas_ },
+    { path: "/ajustes-cuenta", label: t('ajustes_cuenta_nav'), icon: settings },
   ] : [
-    { path: "/reportes", label: "Generar Reportes", icon: generar_reportes_ },
-    { path: "/registrarsalida", label: "Registrar Salida", icon: registrarsalida_ },
-    { path: "/estadisticas", label: "Estadisticas", icon: estadisticas_ },
-    { path: "/equipo", label: "Equipo", icon: equipo_ },
-    { path: "/gestion", label: "Gestion de mantenimiento", icon: gestion_mantenimiento },
-    { path: "/ajustes-cuenta", label: "Ajustes de Cuenta", icon: settings },
+    { path: "/reportes", label: t('generar_reportes'), icon: generar_reportes_ },
+    { path: "/registrarsalida", label: t('registrar_salida'), icon: registrarsalida_ },
+    { path: "/estadisticas", label: t('estadisticas'), icon: estadisticas_ },
+    { path: "/equipo", label: t('equipo'), icon: equipo_ },
+    { path: "/gestion", label: t('gestion_mantenimiento'), icon: ajustes },
+    { path: "/ajustes-cuenta", label: t('ajustes_cuenta_nav'), icon: settings },
   ];
 
   const navStyle = ({ isActive }) => ({
@@ -171,7 +171,7 @@ const usuariosFiltrados = usuarios
           {pageItems.length > 0 && (
             <>
               <div style={{ padding: "1.5rem 1.5rem 0.75rem 1.5rem" }}>
-                <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text-muted)", letterSpacing: "1px" }}>PAGINAS</span>
+                <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text-muted)", letterSpacing: "1px" }}>{t('paginas')}</span>
               </div>
               <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem", padding: "0 1rem" }}>
                 {pageItems.map(item => (
@@ -258,7 +258,7 @@ const usuariosFiltrados = usuarios
               {usuario?.nombre || "Usuario"}
             </p>
             <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-muted)" }}>
-              {usuario?.rol === "super_admin" ? "Super Admin" : usuario?.rol === "tecnico" ? "Técnico" : "Usuario"}
+              {usuario?.rol === "super_admin" ? "Super Admin" : usuario?.rol === "tecnico" ? t('tecnico') : t('usuario_normal')}
             </p>
           </div>
         </div>

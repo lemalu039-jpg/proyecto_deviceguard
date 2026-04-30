@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { getDispositivos, getUsuarios } from '../services/api';
 import { estadosDispositivo } from "../ejemplo/generador2";
 import Pagination from '../components/Pagination';
-import axios from 'axios';
+import { useLanguage } from '../context/LanguageContext.jsx';
 
 function Dashboard() {
+  const { t } = useLanguage();
   useEffect(() => {
   const generador = estadosDispositivo();
   console.log(generador.next().value);
@@ -142,55 +143,55 @@ function Dashboard() {
 
   const cards = [
     {
-      label: 'Total equipos',
+      label: t('dash_total_equipos'),
       value: stats.totalDispositivos,
       accentColor: 'linear-gradient(135deg, #0492C2, #82EEFD)',
       textColor: '#0492C2',
       iconBg: 'rgba(4, 146, 194, .1)',
       icono: <IconoTotal />,
       badge: null,
-      sub: `${stats.usuarios} usuarios registrados`,
+      sub: `${stats.usuarios} ${t('dash_usuarios_registrados')}`,
       subColor: '#10b981'
     },
     {
-      label: 'Listo para Entrega',
+      label: t('dash_listo_entrega'),
       value: stats.listoparaEntrega,
       accentColor: '#dacd1c',
       textColor: '#dacd1c',
       iconBg: 'rgba(218, 205, 24, 0.13)',
       icono: <IconoListoparaentrega />,
-      badge: { label: 'Listo para Entrega', bg: '#fcfbdc', color: '#dacd1c' }
+      badge: { label: t('dash_listo_entrega'), bg: '#fcfbdc', color: '#dacd1c' }
     },
     {
-      label: 'En revisión',
+      label: t('dash_en_revision'),
       value: stats.enRevision,
       accentColor: '#7e22ce',
       textColor: '#7e22ce',
       iconBg: 'rgba(126, 34, 206, .1)',
       icono: <IconoRevision />,
-      badge: { label: 'En Revision', bg: '#f3e8ff', color: '#7e22ce' }
+      badge: { label: t('dash_en_revision'), bg: '#f3e8ff', color: '#7e22ce' }
     },
     
     {
-      label: 'En mantenimiento',
+      label: t('dash_en_mantenimiento'),
       value: stats.enMantenimiento,
       accentColor: '#c2410c',
       textColor: '#c2410c',
       iconBg: 'rgba(194, 65, 12, .1)',
       icono: <IconoMantenimiento />,
-      badge: { label: 'En Mantenimiento', bg: '#ffedd5', color: '#c2410c' }
+      badge: { label: t('dash_en_mantenimiento'), bg: '#ffedd5', color: '#c2410c' }
     },
     {
-      label: 'Entregado',
+      label: t('dash_entregado'),
       value: stats.entregado,
       accentColor: '#15803d',
       textColor: '#15803d',
       iconBg: 'rgba(19, 112, 15, 0.1)',
       icono: <IconoEntregado />,
-      badge: { label: 'Entregado', bg: '#f3fef2', color: '#15803d' }
+      badge: { label: t('dash_entregado'), bg: '#f3fef2', color: '#15803d' }
     },
     {
-      label: 'Total reportes',
+      label: t('dash_total_reportes'),
       value: stats.totalMantenimientos,
       accentColor: '#0369a1',
       textColor: '#0369a1',
@@ -200,7 +201,7 @@ function Dashboard() {
           <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
         </svg>
       ),
-      badge: { label: 'Reportes enviados', bg: '#e0f2fe', color: '#0369a1' }
+      badge: { label: t('dash_reportes_enviados'), bg: '#e0f2fe', color: '#0369a1' }
     },
   ];
 
@@ -259,7 +260,7 @@ function Dashboard() {
 
   return (
     <div>
-      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>Inicio</h1>
+      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>{t('dash_inicio')}</h1>
 
       {loading ? (
         <p>Cargando información...</p>
@@ -282,30 +283,32 @@ function Dashboard() {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem', flexWrap: 'wrap' }}>
         <div style={{ width: '4px', height: '18px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px', flexShrink: 0 }}></div>
-        <span style={{ fontSize: '.92rem', fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap' }}>Lista de dispositivos</span>
-        <input
-          type="text"
-          placeholder="Buscar nombre, serial, ubicación..."
-          value={filtroBusqueda}
-          onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
-          style={{ flex: 1, minWidth: '180px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
-        />
-        <select
-          value={filtroEstado}
-          onChange={e => { setFiltroEstado(e.target.value); setCurrentPage(1); }}
-          style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none', flexShrink: 0 }}
-        >
-          <option value="">Todos los estados</option>
-          <option value="En Revision">En Revision</option>
-          <option value="En Mantenimiento">En Mantenimiento</option>
-          <option value="Listo para Entrega">Listo para Entrega</option>
-          <option value="Entregado">Entregado</option>
-        </select>
-        {(filtroEstado || filtroBusqueda) && (
-          <button onClick={() => { setFiltroEstado(''); setFiltroBusqueda(''); setCurrentPage(1); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
-            Limpiar
-          </button>
-        )}
+        <span style={{ fontSize: '.92rem', fontWeight: 700, color: 'var(--text-main)' }}>{t('dash_lista_dispositivos')}</span>
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: '.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <input
+            type="text"
+            placeholder={t('dash_buscar_ph')}
+            value={filtroBusqueda}
+            onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
+            style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none', minWidth: '200px' }}
+          />
+          <select
+            value={filtroEstado}
+            onChange={e => { setFiltroEstado(e.target.value); setCurrentPage(1); }}
+            style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none' }}
+          >
+            <option value="">{t('dash_todos_estados')}</option>
+            <option value="En Revision">En Revision</option>
+            <option value="En Mantenimiento">En Mantenimiento</option>
+            <option value="Listo para Entrega">Listo para Entrega</option>
+            <option value="Entregado">Entregado</option>
+          </select>
+          {(filtroEstado || filtroBusqueda) && (
+            <button onClick={() => { setFiltroEstado(''); setFiltroBusqueda(''); setCurrentPage(1); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
+              {t('dash_limpiar')}
+            </button>
+          )}
+        </div>
       </div>
 
       <div style={{ background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>
@@ -313,13 +316,13 @@ function Dashboard() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.81rem' }}>
             <thead>
               <tr style={{ background: 'var(--table-head)', borderBottom: '2px solid var(--border)' }}>
-                <th style={thStyle}>Imagen</th>
-                <th style={thStyle}>Nombre</th>
-                <th style={thStyle}>Ubicación</th>
-                <th style={thStyle}>Serial</th>
-                <th style={thStyle}>Fecha registro</th>
-                <th style={thStyle}>Estado</th>
-                {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='super_admin' && <th style={thStyle}>Registrado por</th>}
+                <th style={thStyle}>{t('dash_col_imagen')}</th>
+                <th style={thStyle}>{t('dash_col_nombre')}</th>
+                <th style={thStyle}>{t('dash_col_ubicacion')}</th>
+                <th style={thStyle}>{t('dash_col_serial')}</th>
+                <th style={thStyle}>{t('dash_col_fecha_reg')}</th>
+                <th style={thStyle}>{t('dash_col_estado')}</th>
+                {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='super_admin' && <th style={thStyle}>{t('dash_col_reg_por')}</th>}
               </tr>
             </thead>
             <tbody>
@@ -377,7 +380,7 @@ function Dashboard() {
                 return (!filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase())) && (!filtroEstado || d.estado === filtroEstado);
               }).length === 0 && (                <tr>
                   <td colSpan="6" style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
-                    No hay dispositivos registrados
+                    {t('dash_no_dispositivos')}
                   </td>
                 </tr>
               )}
