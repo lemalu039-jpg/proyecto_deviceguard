@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getUsuarios, createUsuario, updateUsuario, deleteUsuario, toggleUsuarioStatus } from "../services/api";
 import "./CSS/Equipo.css";
 import Pagination from "../components/Pagination";
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 const Icon = ({ d, size = 16 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -18,6 +19,7 @@ const COLORES = ["#2d3a8c","#7c3aed","#0891b2","#059669","#d97706","#dc2626","#d
 const colorPorId = (id) => COLORES[id % COLORES.length];
 
 function Equipo() {
+  const { t } = useLanguage();
   const [usuarios, setUsuarios] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -66,12 +68,12 @@ function Equipo() {
         contrasena: form.contrasena,
         rol: form.rol,
       });
-      mostrarToast("Usuario agregado correctamente");
+      mostrarToast(t('equipo_agregado'));
       setModalAbierto(false);
       resetForm();
       cargarUsuarios();
     } catch (err) {
-      mostrarToast("Error al agregar usuario", true);
+      mostrarToast(t('equipo_err_agregar'), true);
     }
   };
 
@@ -105,11 +107,11 @@ function Equipo() {
         correo: formEditar.correo,
         rol: formEditar.rol,
       });
-      mostrarToast("Usuario actualizado correctamente");
+      mostrarToast(t('equipo_actualizado'));
       setModalEditar(false);
       cargarUsuarios();
     } catch {
-      mostrarToast("Error al actualizar usuario", true);
+      mostrarToast(t('equipo_err_actualizar'), true);
     }
   };
 
@@ -121,11 +123,11 @@ function Equipo() {
   const handleEliminar = async () => {
     try {
       await deleteUsuario(usuarioSeleccionado.id);
-      mostrarToast("Usuario eliminado correctamente");
+      mostrarToast(t('equipo_eliminado'));
       setModalEliminar(false);
       cargarUsuarios();
     } catch {
-      mostrarToast("Error al eliminar usuario", true);
+      mostrarToast(t('equipo_err_eliminar'), true);
     }
   };
 
@@ -133,10 +135,10 @@ function Equipo() {
     try {
       const nuevoEstado = u.activo === 1 ? 0 : 1;
       await toggleUsuarioStatus(u.id, nuevoEstado);
-      mostrarToast(`Usuario ${nuevoEstado ? 'activado' : 'desactivado'} correctamente`);
+      mostrarToast(nuevoEstado ? t('equipo_activado') : t('equipo_desactivado'));
       cargarUsuarios();
     } catch {
-      mostrarToast("Error al cambiar estado del usuario", true);
+      mostrarToast(t('equipo_err_estado'), true);
     }
   };
 
@@ -144,10 +146,10 @@ function Equipo() {
     <div className="equipo-root">
       {/* Header */}
       <div className="equipo-header">
-        <h1 className="equipo-titulo">Equipo</h1>
+        <h1 className="equipo-titulo">{t('equipo')}</h1>
         <button className="equipo-btn-add" onClick={() => setModalAbierto(true)} style={{ background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '10px', padding: '0.6rem 1.4rem', fontSize: '0.875rem' }}>
           <Icon d="M12 5v14M5 12h14" size={16} />
-          Añadir Usuario
+          {t('equipo_add_usuario')}
         </button>
       </div>
 
@@ -166,13 +168,13 @@ function Equipo() {
               "usuario"
             }`}>
               {u.rol === "super_admin" ? "Super Admin" : 
-               u.rol === "tecnico" ? "Técnico" : 
-               "Usuario"}
+               u.rol === "tecnico" ? t('tecnico') : 
+               t('usuario_normal')}
             </span>
             {u.id !== usuarioActual.id && (
               <button className="equipo-card-msg-btn" onClick={() => navigate("/correo", { state: { contacto: u } })}>
                 <Icon d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" size={14} />
-                Message
+                {t('equipo_mensaje')}
               </button>
             )}
           </div>
@@ -183,8 +185,8 @@ function Equipo() {
       <div className="equipo-tabla-section">
         <div className="equipo-tabla-header">
           <Icon d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" size={18} />
-          <span>Lista de usuarios</span>
-          <span className="equipo-tabla-pill">{usuarios.length} registros</span>
+          <span>{t('equipo_lista_usuarios')}</span>
+          <span className="equipo-tabla-pill">{usuarios.length} {t('correo_registros')}</span>
         </div>
 
         {/* Buscador */}
@@ -192,7 +194,7 @@ function Equipo() {
           <Icon d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z" size={16} />
           <input
             type="text"
-            placeholder="Buscar por nombre o correo..."
+            placeholder={t('equipo_buscar_ph')}
             value={busqueda}
             onChange={e => {
               setBusqueda(e.target.value);
@@ -213,11 +215,11 @@ function Equipo() {
           <table className="equipo-tabla">
             <thead>
               <tr>
-                <th>Usuario</th>
-                <th>Correo</th>
-                <th>Rol</th>
-                <th>Fecha registro</th>
-                <th>Acciones</th>
+                <th>{t('equipo_col_usuario')}</th>
+                <th>{t('correo_col_correo') || 'Correo'}</th>
+                <th>{t('rol')}</th>
+                <th>{t('dash_col_fecha_reg')}</th>
+                <th>{t('equipo_col_acciones')}</th>
               </tr>
             </thead>
             <tbody>
@@ -227,7 +229,7 @@ function Equipo() {
                   u.correo?.toLowerCase().includes(busqueda.toLowerCase())
                 );
                 if (filtrados.length === 0) return (
-                  <tr><td colSpan="5" className="equipo-tabla-empty">No se encontraron usuarios</td></tr>
+                  <tr><td colSpan="5" className="equipo-tabla-empty">{t('sin_resultados')}</td></tr>
                 );
                 
                 // Paginación
@@ -253,27 +255,27 @@ function Equipo() {
                         u.rol === "tecnico" ? "tecnico" : 
                         "usuario"
                       }`}>
-                        {u.activo === 0 ? "Suspendido" : 
+                        {u.activo === 0 ? t('equipo_suspendido') : 
                          u.rol === "super_admin" ? "Super Admin" : 
-                         u.rol === "tecnico" ? "Técnico" : 
-                         "Usuario"}
+                         u.rol === "tecnico" ? t('tecnico') : 
+                         t('usuario_normal')}
                       </span>
                     </td>
                     <td>{u.fecha_creacion ? new Date(u.fecha_creacion).toLocaleDateString("es-CO") : "—"}</td>
                     <td>
                       <div className="equipo-acciones">
-                        <button className="equipo-btn-editar" onClick={() => abrirEditar(u)} title="Editar">
+                        <button className="equipo-btn-editar" onClick={() => abrirEditar(u)} title={t('editar')}>
                           <Icon d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" size={14} />
-                          Editar
+                          {t('editar')}
                         </button>
                         <button 
                           className="equipo-btn-suspender" 
                           onClick={() => handleToggleStatus(u)} 
-                          title={u.activo === 0 ? "Activar" : "Suspender"}
+                          title={u.activo === 0 ? t('equipo_activar') : t('equipo_suspender')}
                           style={{ background: u.activo === 0 ? "#16a34a" : "#dc2626" }}
                         >
                           <Icon d={u.activo === 0 ? "M5 13l4 4L19 7" : "M18.36 6.64a9 9 0 11-12.73 0M12 2v10"} size={14} />
-                          {u.activo === 0 ? "Activar" : "Suspender"}
+                          {u.activo === 0 ? t('equipo_activar') : t('equipo_suspender')}
                         </button>
                       </div>
                     </td>
@@ -301,7 +303,7 @@ function Equipo() {
         <div className="equipo-modal-overlay" onClick={() => setModalAbierto(false)}>
           <div className="equipo-modal" onClick={e => e.stopPropagation()}>
             <div className="equipo-modal-titulo">
-              <span>Añadir Miembro del Equipo</span>
+              <span>{t('equipo_add_miembro')}</span>
               <button className="equipo-modal-close" onClick={() => { setModalAbierto(false); resetForm(); }}>
                 <Icon d="M18 6L6 18M6 6l12 12" size={18} />
               </button>
@@ -317,7 +319,7 @@ function Equipo() {
                   }
                 </div>
                 <button type="button" className="equipo-foto-btn" onClick={() => fileRef.current.click()}>
-                  Subir Foto
+                  {t('equipo_subir_foto')}
                 </button>
                 <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleFoto} />
               </div>
@@ -325,47 +327,47 @@ function Equipo() {
               {/* Campos */}
               <div className="equipo-form-grid">
                 <div className="equipo-form-group">
-                  <label>Primer Nombre</label>
-                  <input name="primerNombre" placeholder="Ingresa Primer Nombre" value={form.primerNombre} onChange={handleChange} required />
+                  <label>{t('equipo_form_pnombre')}</label>
+                  <input name="primerNombre" placeholder={t('equipo_form_pnombre')} value={form.primerNombre} onChange={handleChange} required />
                 </div>
                 <div className="equipo-form-group">
-                  <label>Apellido</label>
-                  <input name="apellido" placeholder="Ingresa Apellido" value={form.apellido} onChange={handleChange} required />
+                  <label>{t('equipo_form_apellido')}</label>
+                  <input name="apellido" placeholder={t('equipo_form_apellido')} value={form.apellido} onChange={handleChange} required />
                 </div>
                 <div className="equipo-form-group">
-                  <label>Correo</label>
-                  <input name="correo" type="email" placeholder="Ingresa tu Correo" value={form.correo} onChange={handleChange} required />
+                  <label>{t('correo_col_correo') || 'Correo'}</label>
+                  <input name="correo" type="email" placeholder={t('correo_col_correo') || 'Correo'} value={form.correo} onChange={handleChange} required />
                 </div>
                 <div className="equipo-form-group">
-                  <label>Número Telefónico</label>
-                  <input name="telefono" placeholder="Ingresa el Número Telefónico" value={form.telefono} onChange={handleChange} />
+                  <label>{t('equipo_form_telefono')}</label>
+                  <input name="telefono" placeholder={t('equipo_form_telefono')} value={form.telefono} onChange={handleChange} />
                 </div>
                 <div className="equipo-form-group">
-                  <label>Puesto de Trabajo</label>
+                  <label>{t('equipo_form_puesto')}</label>
                   <input name="puesto" placeholder="CEO" value={form.puesto} onChange={handleChange} />
                 </div>
                 <div className="equipo-form-group">
-                  <label>Género</label>
+                  <label>{t('equipo_form_genero')}</label>
                   <select name="genero" value={form.genero} onChange={handleChange}>
-                    <option>Masculino</option>
-                    <option>Femenino</option>
-                    <option>Otro</option>
+                    <option>{t('equipo_masculino')}</option>
+                    <option>{t('equipo_femenino')}</option>
+                    <option>{t('equipo_otro')}</option>
                   </select>
                 </div>
                 <div className="equipo-form-group">
-                  <label>Rol</label>
+                  <label>{t('rol')}</label>
                   <select name="rol" value={form.rol} onChange={handleChange}>
-                    <option value="usuario">Usuario</option>
-                    <option value="tecnico">Técnico</option>
+                    <option value="usuario">{t('usuario_normal')}</option>
+                    <option value="tecnico">{t('tecnico')}</option>
                   </select>
                 </div>
                 <div className="equipo-form-group">
-                  <label>Contraseña inicial</label>
-                  <input name="contrasena" type="password" placeholder="Contraseña" value={form.contrasena} onChange={handleChange} required />
+                  <label>{t('equipo_form_pass')}</label>
+                  <input name="contrasena" type="password" placeholder={t('equipo_form_pass')} value={form.contrasena} onChange={handleChange} required />
                 </div>
               </div>
 
-              <button type="submit" className="equipo-btn-submit">Agregar</button>
+              <button type="submit" className="equipo-btn-submit">{t('agregar')}</button>
             </form>
           </div>
         </div>
@@ -376,7 +378,7 @@ function Equipo() {
         <div className="equipo-modal-overlay" onClick={() => setModalEditar(false)}>
           <div className="equipo-modal" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
             <div className="equipo-modal-titulo">
-              <span>Editar Usuario</span>
+              <span>{t('equipo_editar_usuario')}</span>
               <button className="equipo-modal-close" onClick={() => setModalEditar(false)}>
                 <Icon d="M18 6L6 18M6 6l12 12" size={18} />
               </button>
@@ -384,22 +386,22 @@ function Equipo() {
             <form onSubmit={handleEditar} className="equipo-modal-form">
               <div className="equipo-form-grid" style={{ gridTemplateColumns: "1fr" }}>
                 <div className="equipo-form-group">
-                  <label>Nombre completo</label>
+                  <label>{t('login_reg_name_ph')}</label>
                   <input value={formEditar.nombre} onChange={e => setFormEditar({ ...formEditar, nombre: e.target.value })} required />
                 </div>
                 <div className="equipo-form-group">
-                  <label>Correo</label>
+                  <label>{t('correo_col_correo') || 'Correo'}</label>
                   <input type="email" value={formEditar.correo} onChange={e => setFormEditar({ ...formEditar, correo: e.target.value })} required />
                 </div>
                 <div className="equipo-form-group">
-                  <label>Rol</label>
+                  <label>{t('rol')}</label>
                   <select value={formEditar.rol} onChange={e => setFormEditar({ ...formEditar, rol: e.target.value })}>
-                    <option value="usuario">Usuario</option>
-                    <option value="tecnico">Técnico</option>
+                    <option value="usuario">{t('usuario_normal')}</option>
+                    <option value="tecnico">{t('tecnico')}</option>
                   </select>
                 </div>
               </div>
-              <button type="submit" className="equipo-btn-submit">Guardar cambios</button>
+              <button type="submit" className="equipo-btn-submit">{t('guardar')}</button>
             </form>
           </div>
         </div>
@@ -413,11 +415,11 @@ function Equipo() {
               <Icon d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" size={32} />
             </div>
             <p className="equipo-confirm-msg">
-              ¿Eliminar a <strong>{usuarioSeleccionado?.nombre}</strong>? Esta acción no se puede deshacer.
+              {t('equipo_eliminar_pregunta')} <strong>{usuarioSeleccionado?.nombre}</strong>? {t('equipo_eliminar_advertencia')}
             </p>
             <div className="equipo-confirm-btns">
-              <button className="equipo-btn-cancel" onClick={() => setModalEliminar(false)}>Cancelar</button>
-              <button className="equipo-btn-delete" onClick={handleEliminar}>Eliminar</button>
+              <button className="equipo-btn-cancel" onClick={() => setModalEliminar(false)}>{t('cancelar')}</button>
+              <button className="equipo-btn-delete" onClick={handleEliminar}>{t('eliminar')}</button>
             </div>
           </div>
         </div>

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import api from "../services/api";
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 function CambiarContrasena() {
-
+  const { t } = useLanguage();
   const usuario = JSON.parse(localStorage.getItem("usuario"));
 
   const [contrasena, setContrasena] = useState("");
@@ -16,13 +17,13 @@ function CambiarContrasena() {
         contrasena: contrasena
       });
 
-      alert("Contraseña actualizada");
+      alert(t('perfil_pwd_actualizada'));
 
       setContrasena("");
 
     } catch (error) {
 
-      alert("Error al cambiar contraseña");
+      alert(t('perfil_err_pwd'));
 
     }
 
@@ -43,11 +44,11 @@ function CambiarContrasena() {
           marginBottom: "5px",
           textAlign: "center",
           color: "var(--text-main)"
-        }}>Cambiar contraseña</h2>
+        }}>{t('perfil_cambiar_pwd')}</h2>
 
       <input
         type="password"
-        placeholder="Nueva contraseña"
+        placeholder={t('perfil_nueva_pwd')}
         value={contrasena}
         onChange={(e) => setContrasena(e.target.value)}
         style={{
@@ -78,7 +79,7 @@ function CambiarContrasena() {
             marginTop: "15px",
         }}
       >
-        Actualizar contraseña
+        {t('perfil_btn_pwd')}
       </button>
 
     </div>

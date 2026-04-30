@@ -1,24 +1,26 @@
 import { Link, useLocation } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext.jsx";
 import "./Breadcrumbs.css";
 
 const PATH_NAMES = {
-  "/dashboard": "Inicio",
-  "/dispositivos": "Dispositivos",
-  "/registrarsalida": "Registrar Salida",
-  "/prestamos": "Préstamos",
-  "/gestion": "Gestión de Mantenimiento",
-  "/usuarios": "Usuarios",
-  "/equipo": "Equipo",
-  "/ajustes-cuenta": "Ajustes de Cuenta",
-  "/reportes": "Generar Reportes",
-  "/estadisticas": "Estadísticas",
-  "/consultarfiltros": "Consulta con Filtros",
-  "/correo": "Correo",
-  "/calendario": "Calendario"
+  "/dashboard": "inicio",
+  "/dispositivos": "dispositivos",
+  "/registrarsalida": "registrar_salida",
+  "/prestamos": "prestamos",
+  "/gestion": "gestion_mantenimiento",
+  "/usuarios": "usuarios",
+  "/equipo": "equipo",
+  "/ajustes-cuenta": "ajustes_cuenta_nav",
+  "/reportes": "generar_reportes",
+  "/estadisticas": "estadisticas",
+  "/consultarfiltros": "consulta_filtros",
+  "/correo": "correo",
+  "/calendario": "calendario"
 };
 
 function Breadcrumbs() {
   const location = useLocation();
+  const { t } = useLanguage();
   const pathnames = location.pathname.split("/").filter((x) => x);
 
   // If we are at root or login, do not show breadcrumbs
@@ -33,7 +35,7 @@ function Breadcrumbs() {
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
         </svg>
-        Inicio
+        {t('inicio')}
       </Link>
 
       {pathnames.map((name, index) => {
@@ -41,9 +43,9 @@ function Breadcrumbs() {
         const isLast = index === pathnames.length - 1;
 
         // If it's a dynamic parameter (like an ID in /historial/1), just show the ID or generic text
-        let displayName = PATH_NAMES[routeTo] || name;
+        let displayName = PATH_NAMES[routeTo] ? t(PATH_NAMES[routeTo]) : name;
         if (pathnames[0] === "historial" && index === 1) {
-          displayName = "Detalle";
+          displayName = t('detalle');
         }
 
         return (

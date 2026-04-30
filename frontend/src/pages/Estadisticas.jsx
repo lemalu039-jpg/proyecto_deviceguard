@@ -6,6 +6,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer
 } from 'recharts';
+import { useLanguage } from '../context/LanguageContext.jsx';
 
 const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
@@ -29,6 +30,7 @@ const filtrosLinea = [
 ];
 
 function Estadisticas() {
+  const { t } = useLanguage();
   const [dispositivos, setDispositivos] = useState([]);
   const [loading, setLoading]           = useState(true);
 
@@ -223,25 +225,25 @@ function Estadisticas() {
   return (
     <div style={{ padding: '1.5rem', fontFamily: 'system-ui, sans-serif' }}>
 
-      <h1 className="page-title">Estadísticas</h1>
+      <h1 className="page-title">{t('estadisticas_title')}</h1>
 
       {loading ? (
-        <p style={{ color: 'var(--text-muted)' }}>Cargando estadísticas...</p>
+        <p style={{ color: 'var(--text-muted)' }}>{t('estadisticas_cargando')}</p>
       ) : (
         <>
           {/* ── PANEL DE FILTROS ────────────────────────────────── */}
           <div style={{ ...card, display: 'flex', alignItems: 'flex-end', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.25rem' }} className="estadisticas-filtros">
             <div style={{ width: '4px', height: '16px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px', alignSelf: 'center', flexShrink: 0 }}></div>
-            <span style={{ fontSize: '.88rem', fontWeight: 700, color: 'var(--text-main)', alignSelf: 'center', marginRight: '.5rem' }}>Filtros</span>
+            <span style={{ fontSize: '.88rem', fontWeight: 700, color: 'var(--text-main)', alignSelf: 'center', marginRight: '.5rem' }}>{t('estadisticas_filtros')}</span>
 
             {/* Año */}
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <label style={labelStyle}>Año</label>
+              <label style={labelStyle}>{t('estadisticas_anio')}</label>
               <select
                 style={{ ...selectStyle, borderColor: filtroAnio !== 'todos' ? '#0492C2' : 'var(--input-border)' }}
                 value={filtroAnio}
                 onChange={e => { setFiltroAnio(e.target.value); setFiltroMes('todos'); setFiltroEstado('todos'); setFiltroTipo('todos'); }}>
-                <option value="todos">Todos los años</option>
+                <option value="todos">{t('estadisticas_todos_anios')}</option>
                 {aniosDisponibles.map(a => <option key={a} value={a}>{a}</option>)}
               </select>
             </div>
@@ -249,40 +251,40 @@ function Estadisticas() {
             {/* Mes */}
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <label style={labelStyle}>
-                Mes
-                <span style={{ marginLeft: '4px', fontSize: '.65rem', color: '#0492C2', fontWeight: 700 }}>• principal</span>
+                {t('estadisticas_mes')}
+                <span style={{ marginLeft: '4px', fontSize: '.65rem', color: '#0492C2', fontWeight: 700 }}>• {t('estadisticas_principal')}</span>
               </label>
               <select
                 style={{ ...selectStyle, borderColor: filtroMes !== 'todos' ? '#0492C2' : 'var(--input-border)' }}
                 value={filtroMes}
                 onChange={e => { setFiltroMes(e.target.value); setFiltroEstado('todos'); setFiltroTipo('todos'); }}>
-                <option value="todos">Todos los meses</option>
+                <option value="todos">{t('estadisticas_todos_meses')}</option>
                 {MESES.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
               </select>
             </div>
 
             {/* Estado */}
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <label style={labelStyle}>Estado</label>
+              <label style={labelStyle}>{t('estadisticas_estado')}</label>
               <select
                 style={{ ...selectStyle, borderColor: filtroEstado !== 'todos' ? '#0492C2' : 'var(--input-border)', opacity: estadosDisponibles.length === 0 ? 0.45 : 1 }}
                 value={filtroEstado}
                 onChange={e => setFiltroEstado(e.target.value)}
                 disabled={estadosDisponibles.length === 0}>
-                <option value="todos">Todos los estados</option>
+                <option value="todos">{t('dash_todos_estados')}</option>
                 {ESTADOS_FIJOS.map(e => <option key={e.key} value={e.key}>{e.key}</option>)}
               </select>
             </div>
 
             {/* Tipo */}
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <label style={labelStyle}>Tipo de dispositivo</label>
+              <label style={labelStyle}>{t('estadisticas_tipo_disp')}</label>
               <select
                 style={{ ...selectStyle, borderColor: filtroTipo !== 'todos' ? '#0492C2' : 'var(--input-border)', opacity: tiposDisponibles.length === 0 ? 0.45 : 1 }}
                 value={filtroTipo}
                 onChange={e => setFiltroTipo(e.target.value)}
                 disabled={tiposDisponibles.length === 0}>
-                <option value="todos">Todos los tipos</option>
+                <option value="todos">{t('estadisticas_todos_tipos')}</option>
                 {tiposDisponibles.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
@@ -313,11 +315,11 @@ function Estadisticas() {
                 <button
                   onClick={() => { setFiltroAnio('todos'); setFiltroMes('todos'); setFiltroEstado('todos'); setFiltroTipo('todos'); }}
                   style={{ padding: '4px 12px', borderRadius: '8px', border: '1.5px solid var(--input-border)', background: 'transparent', color: 'var(--text-muted)', fontSize: '.72rem', fontWeight: 600, cursor: 'pointer' }}>
-                  Limpiar ✕
+                  {t('dash_limpiar')} ✕
                 </button>
               )}
               <span style={{ fontSize: '.72rem', color: 'var(--text-muted)', background: 'var(--input-bg)', padding: '3px 10px', borderRadius: '20px', fontWeight: 600 }}>
-                {total} resultado{total !== 1 ? 's' : ''}
+                {total} {total !== 1 ? t('estadisticas_resultados') : t('estadisticas_resultado')}
               </span>
             </div>
           </div>
@@ -327,9 +329,9 @@ function Estadisticas() {
 
             {/* Donut */}
             <div style={card}>
-              {cardHeader('Distribución por estado', (
+              {cardHeader(t('estadisticas_distribucion'), (
                 <span style={{ marginLeft: 'auto', fontSize: '.72rem', color: 'var(--text-muted)', background: 'var(--input-bg)', padding: '2px 9px', borderRadius: '20px' }}>
-                  {total} total
+                  {total} {t('estadisticas_total')}
                 </span>
               ))}
               <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }} className="estadisticas-donut-content">
@@ -349,7 +351,7 @@ function Estadisticas() {
                   </svg>
                   <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', textAlign: 'center' }}>
                     <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)' }}>{total}</div>
-                    <div style={{ fontSize: '.6rem', color: 'var(--text-muted)' }}>total</div>
+                    <div style={{ fontSize: '.6rem', color: 'var(--text-muted)' }}>{t('estadisticas_total')}</div>
                   </div>
                 </div>
                 <div style={{ flex: 1 }}>
@@ -366,7 +368,7 @@ function Estadisticas() {
 
             {/* Barras */}
             <div style={card}>
-              {cardHeader('Cantidad por estado')}
+              {cardHeader(t('estadisticas_cantidad'))}
               {ESTADOS_FIJOS.map(e => {
                 const count = conteoPorEstado[e.key];
                 return (
@@ -384,7 +386,7 @@ function Estadisticas() {
 
           {/* ── GRÁFICA DE LÍNEAS — independiente ───────────────── */}
           <div style={{ ...card, marginBottom: '1rem' }}>
-            {cardHeader('Registros por mes', (
+            {cardHeader(t('estadisticas_registros'), (
               <div style={{ marginLeft: 'auto', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                 {filtrosLinea.map(f => (
                   <button key={f.value} onClick={() => setFiltroLinea(f.value)}
@@ -424,9 +426,9 @@ function Estadisticas() {
 
           {/* ── TIPOS ───────────────────────────────────────────── */}
           <div style={{ ...card, marginBottom: '1rem' }}>
-            {cardHeader('Dispositivos por tipo')}
+            {cardHeader(t('estadisticas_disp_tipo'))}
             {conteoPorTipo.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '.82rem', textAlign: 'center', padding: '1rem' }}>Sin datos para este filtro</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '.82rem', textAlign: 'center', padding: '1rem' }}>{t('estadisticas_sin_datos')}</p>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '.75rem' }} className="estadisticas-tipos-grid">
                 {conteoPorTipo.map(([tipo, count]) => (
@@ -436,7 +438,7 @@ function Estadisticas() {
                     <div style={{ marginTop: '.4rem', height: '4px', background: 'var(--border)', borderRadius: '2px', overflow: 'hidden' }}>
                       <div style={{ height: '100%', borderRadius: '2px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', width: `${Math.round((count / maxTipo) * 100)}%` }}></div>
                     </div>
-                    <div style={{ fontSize: '.68rem', color: 'var(--text-muted)', marginTop: '.3rem' }}>{pct(count)}% del total</div>
+                    <div style={{ fontSize: '.68rem', color: 'var(--text-muted)', marginTop: '.3rem' }}>{pct(count)}{t('estadisticas_pct_total')}</div>
                   </div>
                 ))}
               </div>
@@ -447,21 +449,21 @@ function Estadisticas() {
           <div style={{ background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>
             <div style={{ padding: '1.25rem 1.25rem .75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{ width: '4px', height: '16px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px' }}></div>
-              <span style={{ fontSize: '.88rem', fontWeight: 700, color: 'var(--text-main)' }}>Dispositivos</span>
+              <span style={{ fontSize: '.88rem', fontWeight: 700, color: 'var(--text-main)' }}>{t('dash_lista_dispositivos')}</span>
               <span style={{ marginLeft: 'auto', fontSize: '.72rem', color: 'var(--text-muted)', background: 'var(--input-bg)', padding: '2px 9px', borderRadius: '20px' }}>
-                {dispositivosFiltrados.length} resultado{dispositivosFiltrados.length !== 1 ? 's' : ''}
+                {dispositivosFiltrados.length} {dispositivosFiltrados.length !== 1 ? t('estadisticas_resultados') : t('estadisticas_resultado')}
               </span>
             </div>
             <div style={{ overflowX: 'auto' }} className="estadisticas-table-wrapper">
               <table style={{ width: '100%', borderCollapse: 'collapse' }} className="estadisticas-table">
                 <thead>
                   <tr>
-                    <th style={thStyle}>Nombre</th>
-                    <th style={thStyle}>Tipo</th>
-                    <th style={thStyle}>Marca</th>
-                    <th style={thStyle}>Ubicación</th>
-                    <th style={thStyle}>Fecha</th>
-                    <th style={thStyle}>Estado</th>
+                    <th style={thStyle}>{t('dash_col_nombre')}</th>
+                    <th style={thStyle}>{t('estadisticas_col_tipo')}</th>
+                    <th style={thStyle}>{t('estadisticas_col_marca')}</th>
+                    <th style={thStyle}>{t('dash_col_ubicacion')}</th>
+                    <th style={thStyle}>{t('fecha')}</th>
+                    <th style={thStyle}>{t('dash_col_estado')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -484,7 +486,7 @@ function Estadisticas() {
                   {dispositivosFiltrados.length === 0 && (
                     <tr>
                       <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
-                        No hay dispositivos para los filtros seleccionados
+                        {t('estadisticas_no_disp_filtros')}
                       </td>
                     </tr>
                   )}

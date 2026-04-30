@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { getDispositivos, updateDispositivo } from "../services/api";
 import "./CSS/GestionMantenimiento.css";
 import Pagination from "../components/Pagination";
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 function GestionMantenimiento() {
+  const { t } = useLanguage();
   const [dispositivos, setDispositivos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,7 +34,7 @@ function GestionMantenimiento() {
       loadData();
     } catch (error) {
       console.error(error);
-      alert("Error al actualizar estado");
+      alert(t('mant_error_actualizar'));
     } finally {
       setLoading(false);
     }
@@ -50,24 +52,24 @@ function GestionMantenimiento() {
  return (
   <div className="mant-wrapper">
 <div className="mant-wrapper-tittle">
-      <h1 className="page-title">Gestión de mantenimiento</h1>
+      <h1 className="page-title">{t('mant_title')}</h1>
 </div>
 
   <div className="mant-card">
     <div className="mant-card-title">
       <div className="mant-dot"></div>
-      <span>Lista de dispositivos</span>
+      <span>{t('dash_lista_dispositivos')}</span>
     </div>
 
     <div className="mant-table-wrap">
       <table className="mant-table">
         <thead>
           <tr>
-            <th>Nombre</th>
-            <th>Serial</th>
-            <th>Registrado por</th>
-            <th>Estado actual</th>
-            <th>Cambiar estado</th>
+            <th>{t('dash_col_nombre')}</th>
+            <th>{t('dash_col_serial')}</th>
+            <th>{t('dash_col_reg_por')}</th>
+            <th>{t('mant_col_estado_actual')}</th>
+            <th>{t('mant_col_cambiar_estado')}</th>
           </tr>
         </thead>
 
@@ -94,12 +96,12 @@ function GestionMantenimiento() {
                     if (e.target.value) cambiarEstado(d.id, e.target.value);
                   }}
                 >
-                  <option value="">cambiar estado</option>
+                  <option value="">{t('mant_cambiar_estado')}</option>
                   {d.estado === "En Revision" && (
-                    <option value="En Mantenimiento">En Mantenimiento</option>
+                    <option value="En Mantenimiento">{t('dash_en_mantenimiento')}</option>
                   )}
                   {d.estado === "Listo para Entrega" && (
-                    <option value="Entregado">Entregado</option>
+                    <option value="Entregado">{t('dash_entregado')}</option>
                   )}
                 </select>
               </td>

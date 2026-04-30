@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { getDispositivos, updateDispositivo, deleteDispositivo } from '../services/api';
 import './CSS/Calendario_responsive.css';
+import { useLanguage } from '../context/LanguageContext.jsx';
 
 function Calendario() {
+  const { t } = useLanguage();
   const [dispositivos, setDispositivos] = useState([]);
   const [fecha, setFecha] = useState(new Date());
   const [diaSeleccionado, setDiaSeleccionado] = useState(null);
@@ -39,8 +41,8 @@ function Calendario() {
   const year = fecha.getFullYear();
   const month = fecha.getMonth();
 
-  const nombresMes = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  const diasSemana = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const nombresMes = [t('ene'), t('feb'), t('mar'), t('abr'), t('may'), t('jun'), t('jul'), t('ago'), t('sep'), t('oct'), t('nov'), t('dic')];
+  const diasSemana = [t('dom'), t('lun'), t('mar_dia'), t('mie'), t('jue'), t('vie'), t('sab')];
 
   const primerDia = new Date(year, month, 1).getDay();
   const diasEnMes = new Date(year, month + 1, 0).getDate();
@@ -67,10 +69,10 @@ function Calendario() {
       const disp = dispositivos.find(d => String(d.id) === String(e.id_dispositivo)) || {};
       return {
         ...e,
-        nombre: `Entrega: ${disp.nombre || 'Dispositivo'}`,
-        estado: e.estado || disp.estado || 'Listo para entrega',
+        nombre: `${t('cal_entrega')} ${disp.nombre || t('cal_dispositivo_label')}`,
+        estado: e.estado || disp.estado || t('dash_listo_entrega'),
         ubicacion: disp.ubicacion,
-        tipo: 'Compromiso',
+        tipo: t('cal_compromiso') || 'Compromiso',
         serial: disp.serial,
         marca: disp.marca,
         descripcion: disp.descripcion,
@@ -92,10 +94,10 @@ function Calendario() {
       return {
         ...e,
         _fecha: new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2])),
-        nombre: `Entrega: ${disp.nombre || 'Dispositivo'}`,
-        estado: e.estado || 'Listo para entrega',
+        nombre: `${t('cal_entrega')} ${disp.nombre || t('cal_dispositivo_label')}`,
+        estado: e.estado || t('dash_listo_entrega'),
         ubicacion: disp.ubicacion,
-        tipo: 'Compromiso',
+        tipo: t('cal_compromiso') || 'Compromiso',
         serial: disp.serial,
         marca: disp.marca,
         descripcion: disp.descripcion,
@@ -128,15 +130,15 @@ function Calendario() {
   const obtenerTextoAccion = (estado) => {
     const est = (estado || '').trim().toLowerCase();
     if (est === 'listo para entrega' || est === 'listo_para_entrega') {
-      return { boton: 'Registrar entrega', modal: 'Registrar Entrega', nuevoEstado: 'Entregado' };
+      return { boton: t('cal_registrar_entrega'), modal: t('cal_modal_registrar_entrega'), nuevoEstado: 'Entregado' };
     }
     if (est === 'en revision' || est === 'en_revision' || est === 'revision') {
-      return { boton: 'Registrar mantenimiento', modal: 'Registrar Mantenimiento', nuevoEstado: 'En Mantenimiento' };
+      return { boton: t('cal_registrar_mantenimiento'), modal: t('cal_modal_registrar_mantenimiento'), nuevoEstado: 'En Mantenimiento' };
     }
     if (est === 'en mantenimiento' || est === 'en_mantenimiento' || est === 'mantenimiento') {
-      return { boton: 'Registrar salida', modal: 'Registrar Salida', nuevoEstado: 'Listo para entrega' };
+      return { boton: t('cal_registrar_salida'), modal: t('cal_modal_registrar_salida'), nuevoEstado: 'Listo para entrega' };
     }
-    return { boton: 'Registrar salida', modal: 'Registrar Salida', nuevoEstado: 'Entregado' };
+    return { boton: t('cal_registrar_salida'), modal: t('cal_modal_registrar_salida'), nuevoEstado: 'Entregado' };
   };
 
   const confirmarSalida = async () => {
@@ -151,7 +153,7 @@ function Calendario() {
         fecha_salida: ahora.toISOString().split('T')[0],
         hora_salida: ahora.toTimeString().slice(0, 5),
       });
-      setMensajeSalida('Acción registrada correctamente.');
+      setMensajeSalida(t('cal_accion_registrada'));
       const res = await getDispositivos();
       setDispositivos(res.data);
 
@@ -170,7 +172,7 @@ function Calendario() {
       setMensajeSalida('');
     } catch (error) {
       console.error('Error al registrar acción:', error);
-      setMensajeSalida('Error al registrar la acción. Intenta de nuevo.');
+      setMensajeSalida(t('cal_err_registrar_accion'));
     } finally {
       setCargandoSalida(false);
     }
@@ -217,7 +219,7 @@ function Calendario() {
 
   return (
     <div style={s.wrap}>
-      <h1 className="page-title">Calendario</h1>
+      <h1 className="page-title">{t('cal_titulo')}</h1>
 
       <div style={s.topRow}>
         <div style={s.navWrap}>
@@ -228,12 +230,12 @@ function Calendario() {
         <div style={{ display: 'flex', gap: '.6rem' }}>
           <button onClick={() => setFecha(new Date())}
             style={{ background: 'var(--input-bg)', color: 'var(--text-main)', border: '1px solid var(--border)', padding: '.42rem .9rem', borderRadius: '8px', cursor: 'pointer', fontSize: '.78rem', fontWeight: 600 }}>
-            Hoy
+            {t('cal_hoy')}
           </button>
           {!esUsuario && (
             <button onClick={() => setModalAbierto(true)}
               style={{ background: 'linear-gradient(135deg,#0492C2,#82EEFD)', color: '#fff', border: 'none', padding: '.42rem 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '.78rem' }}>
-              + Agregar evento
+              {t('cal_agregar_evento')}
             </button>
           )}
         </div>
@@ -279,7 +281,7 @@ function Calendario() {
                       </div>
                     );
                   })}
-                  {eventos.length > 2 && <div style={{ fontSize: '.6rem', color: '#94a3b8', fontWeight: 600 }}>+{eventos.length - 2} más</div>}
+                  {eventos.length > 2 && <div style={{ fontSize: '.6rem', color: '#94a3b8', fontWeight: 600 }}>+{eventos.length - 2} {t('cal_mas')}</div>}
                 </div>
               );
             })}
@@ -295,7 +297,7 @@ function Calendario() {
                 {diaSeleccionado} de {nombresMes[month]}
               </div>
               {eventosDia(diaSeleccionado).length === 0 ? (
-                <p style={{ fontSize: '.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>Sin eventos este día</p>
+                <p style={{ fontSize: '.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>{t('cal_sin_eventos_dia')}</p>
               ) : (
                 eventosDia(diaSeleccionado).map((ev, i) => {
                   const col = colorEvento(ev.estado);
@@ -315,7 +317,7 @@ function Calendario() {
                             <button style={s.btnSalida} onClick={() => abrirModalSalida(ev)}>{obtenerTextoAccion(ev.estado).boton}</button>
                           )}
                           {!esUsuario && ev.estado === 'Entregado' && (
-                            <span style={{ fontSize: '.62rem', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: '#dcfce7', color: '#15803d' }}>Entregado</span>
+                            <span style={{ fontSize: '.62rem', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: '#dcfce7', color: '#15803d' }}>{t('dash_entregado')}</span>
                           )}
                         </div>
                       </div>
@@ -327,9 +329,9 @@ function Calendario() {
           )}
 
           <div style={s.sideCard}>
-            <div style={s.sideTitle}><div style={s.sideDot}></div>Eventos del mes</div>
+            <div style={s.sideTitle}><div style={s.sideDot}></div>{t('cal_eventos_mes')}</div>
             {proximosEventos.length === 0 ? (
-              <p style={{ fontSize: '.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>Sin eventos este mes</p>
+              <p style={{ fontSize: '.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>{t('cal_sin_eventos_mes')}</p>
             ) : (
               proximosEventos.map((ev, i) => {
                 const col = colorEvento(ev.estado);
@@ -343,7 +345,7 @@ function Calendario() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
                         <div>
                           <div style={{ fontSize: '.76rem', fontWeight: 600, color: 'var(--text-main)' }}>{ev.nombre}</div>
-                          <div style={{ fontSize: '.68rem', color: 'var(--text-muted)' }}>{ev.ubicacion || 'Sin ubicación'}</div>
+                          <div style={{ fontSize: '.68rem', color: 'var(--text-muted)' }}>{ev.ubicacion || t('cal_sin_ubicacion')}</div>
                         </div>
                         {!esUsuario && (
                           <button style={{ fontSize: '.5rem', padding: '2px 5px', background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }} onClick={() => eliminarEvento(ev)}>✕</button>
@@ -366,30 +368,30 @@ function Calendario() {
         <div style={s.overlay} onClick={() => setModalAbierto(false)}>
           <div style={s.modalBox} onClick={e => e.stopPropagation()}>
             <div style={s.modalHeader}>
-              <span style={{ color: '#fff', fontWeight: 700, fontSize: '.95rem' }}>Agregar fecha comprometida</span>
+              <span style={{ color: '#fff', fontWeight: 700, fontSize: '.95rem' }}>{t('cal_modal_agregar_title')}</span>
               <button onClick={() => setModalAbierto(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
             </div>
             <div style={s.modalBody}>
               <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>Dispositivo</label>
+                <label style={{ display: 'block', fontSize: '.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>{t('cal_dispositivo_label')}</label>
                 <select value={nuevoEvento.id_dispositivo}
                   onChange={e => setNuevoEvento({ ...nuevoEvento, id_dispositivo: e.target.value })}
                   style={{ width: '100%', padding: '.55rem .8rem', borderRadius: '8px', border: '1.5px solid var(--border)', background: 'var(--table-head)', color: 'var(--text-main)', fontSize: '.83rem', outline: 'none' }}>
-                  <option value="">Selecciona un equipo...</option>
+                  <option value="">{t('cal_selecciona_equipo')}</option>
                   {dispositivos.map(d => (
                     <option key={d.id} value={d.id}>{d.nombre} — {d.marca || 'Sin marca'} — {d.serial}</option>
                   ))}
                 </select>
               </div>
               <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>Fecha estimada de entrega</label>
+                <label style={{ display: 'block', fontSize: '.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>{t('cal_fecha_estimada')}</label>
                 <input type="date" value={nuevoEvento.fecha_estimada}
                   onChange={e => setNuevoEvento({ ...nuevoEvento, fecha_estimada: e.target.value })}
                   style={{ width: '100%', padding: '.55rem .8rem', borderRadius: '8px', border: '1.5px solid var(--border)', background: 'var(--table-head)', color: 'var(--text-main)', fontSize: '.83rem', outline: 'none' }} />
               </div>
               <div style={{ marginBottom: '1.25rem' }}>
-                <label style={{ display: 'block', fontSize: '.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>Nota (opcional)</label>
-                <textarea rows="3" placeholder="Ej: esperando repuesto, cliente llama el viernes..."
+                <label style={{ display: 'block', fontSize: '.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>{t('cal_nota_opcional')}</label>
+                <textarea rows="3" placeholder={t('cal_nota_ph')}
                   value={nuevoEvento.nota}
                   onChange={e => setNuevoEvento({ ...nuevoEvento, nota: e.target.value })}
                   style={{ width: '100%', padding: '.55rem .8rem', borderRadius: '8px', border: '1.5px solid var(--border)', background: 'var(--table-head)', color: 'var(--text-main)', fontSize: '.83rem', outline: 'none', resize: 'none' }} />
@@ -397,7 +399,7 @@ function Calendario() {
               <div style={{ display: 'flex', gap: '.75rem' }}>
                 <button onClick={() => setModalAbierto(false)}
                   style={{ flex: 1, padding: '.65rem', background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-main)', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
-                  Cancelar
+                  {t('cancelar')}
                 </button>
                 <button onClick={() => {
                   if (!nuevoEvento.id_dispositivo || !nuevoEvento.fecha_estimada) return;
@@ -408,7 +410,7 @@ function Calendario() {
                   setNuevoEvento({ id_dispositivo: '', fecha_estimada: '', nota: '' });
                 }}
                   style={{ flex: 1, padding: '.65rem', background: 'linear-gradient(135deg,#0492C2,#82EEFD)', border: 'none', color: '#fff', borderRadius: '8px', cursor: 'pointer', fontWeight: 700 }}>
-                  Guardar ↗
+                  {t('cal_guardar')}
                 </button>
               </div>
             </div>
@@ -426,16 +428,16 @@ function Calendario() {
             </div>
             <div style={s.modalBody}>
               <p style={{ fontSize: '.82rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                ¿Confirmas esta acción? El estado cambiará a <strong>{obtenerTextoAccion(eventoSalida.estado).nuevoEstado}</strong>.
+                {t('cal_confirmar_accion')} <strong>{t('dash_' + obtenerTextoAccion(eventoSalida.estado).nuevoEstado.toLowerCase().replace(/ /g, '_')) || obtenerTextoAccion(eventoSalida.estado).nuevoEstado}</strong>.
               </p>
               <div style={{ background: 'var(--table-head)', border: '1px solid var(--border)', borderRadius: '10px', padding: '1rem', marginBottom: '1rem' }}>
                 <div style={{ fontSize: '.88rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '.5rem' }}>{eventoSalida.nombre}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.3rem .75rem' }}>
                   {[
-                    { label: 'Marca',     value: eventoSalida.marca     || '—' },
-                    { label: 'Serial',    value: eventoSalida.serial    || '—' },
-                    { label: 'Ubicación', value: eventoSalida.ubicacion || '—' },
-                    { label: 'Estado',    value: eventoSalida.estado    || '—' },
+                    { label: t('dash_col_marca'),     value: eventoSalida.marca     || '—' },
+                    { label: t('dash_col_serial'),    value: eventoSalida.serial    || '—' },
+                    { label: t('dash_col_ubicacion'), value: eventoSalida.ubicacion || '—' },
+                    { label: t('dash_col_estado'),    value: eventoSalida.estado    || '—' },
                   ].map(({ label, value }) => (
                     <div key={label}>
                       <div style={{ fontSize: '.62rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>{label}</div>
@@ -452,11 +454,11 @@ function Calendario() {
               <div style={{ display: 'flex', gap: '.75rem' }}>
                 <button onClick={() => setModalSalida(false)} disabled={cargandoSalida}
                   style={{ flex: 1, padding: '.65rem', background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-main)', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
-                  Cancelar
+                  {t('cancelar')}
                 </button>
                 <button onClick={confirmarSalida} disabled={cargandoSalida}
                   style={{ flex: 1, padding: '.65rem', background: cargandoSalida ? '#94a3b8' : 'linear-gradient(135deg,#ef4444,#f87171)', border: 'none', color: '#fff', borderRadius: '8px', cursor: cargandoSalida ? 'not-allowed' : 'pointer', fontWeight: 700 }}>
-                  {cargandoSalida ? 'Guardando…' : '✓ Confirmar'}
+                  {cargandoSalida ? t('cal_guardando') : t('cal_confirmar_btn')}
                 </button>
               </div>
             </div>
@@ -469,7 +471,7 @@ function Calendario() {
         <div style={s.overlay} onClick={() => setModalDetalle(false)}>
           <div style={{ ...s.modalBox, width: '420px' }} onClick={e => e.stopPropagation()}>
             <div style={s.modalHeader}>
-              <span style={{ color: '#fff', fontWeight: 700, fontSize: '.95rem' }}>Detalle del equipo</span>
+              <span style={{ color: '#fff', fontWeight: 700, fontSize: '.95rem' }}>{t('cal_detalle_equipo')}</span>
               <button onClick={() => setModalDetalle(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
             </div>
             <div style={s.modalBody}>
@@ -479,10 +481,10 @@ function Calendario() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.75rem', marginBottom: '1rem' }}>
                 {[
-                  { label: 'Marca',     value: equipoDetalle.marca     || '—' },
-                  { label: 'Serial',    value: equipoDetalle.serial    || '—' },
-                  { label: 'Ubicación', value: equipoDetalle.ubicacion || '—' },
-                  { label: 'Estado',    value: equipoDetalle.estado    || '—' },
+                  { label: t('dash_col_marca'),     value: equipoDetalle.marca     || '—' },
+                  { label: t('dash_col_serial'),    value: equipoDetalle.serial    || '—' },
+                  { label: t('dash_col_ubicacion'), value: equipoDetalle.ubicacion || '—' },
+                  { label: t('dash_col_estado'),    value: equipoDetalle.estado    || '—' },
                 ].map(({ label, value }) => (
                   <div key={label} style={{ background: 'var(--table-head)', borderRadius: '8px', padding: '.6rem .8rem' }}>
                     <div style={{ fontSize: '.62rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '2px' }}>{label}</div>
@@ -492,7 +494,7 @@ function Calendario() {
               </div>
               {equipoDetalle.descripcion && (
                 <div style={{ background: 'var(--table-head)', border: '1px solid var(--border)', borderRadius: '8px', padding: '.65rem .8rem', marginBottom: '1rem' }}>
-                  <div style={{ fontSize: '.62rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px' }}>Descripción</div>
+                  <div style={{ fontSize: '.62rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px' }}>{t('descripcion')}</div>
                   <div style={{ fontSize: '.78rem', color: 'var(--text-main)', lineHeight: 1.6 }}>{equipoDetalle.descripcion}</div>
                 </div>
               )}
@@ -504,7 +506,7 @@ function Calendario() {
               )}
               <button onClick={() => setModalDetalle(false)}
                 style={{ width: '100%', padding: '.65rem', background: 'linear-gradient(135deg,#0492C2,#82EEFD)', border: 'none', color: '#fff', borderRadius: '8px', cursor: 'pointer', fontWeight: 700 }}>
-                Cerrar
+                {t('cerrar')}
               </button>
             </div>
           </div>

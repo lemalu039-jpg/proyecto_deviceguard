@@ -7,6 +7,7 @@ import {
   enviarMensaje,
 } from "../services/api";
 import "./CSS/Correo.css";
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 // Íconos inline simples
 const Icon = ({ d, size = 16 }) => (
@@ -19,6 +20,7 @@ const Icon = ({ d, size = 16 }) => (
 const VISTAS = { ENVIADOS: "enviados", CHAT: "chat" };
 
 function Correo() {
+  const { t } = useLanguage();
   const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
   const userId = usuarioGuardado?.id;
   const location = useLocation();
@@ -110,9 +112,9 @@ function Correo() {
       await enviarMensaje({ remitente_id: userId, destinatario_id: contactoActivo.id, mensaje: nuevoMensaje });
       setNuevoMensaje("");
       await cargarConversacion(contactoActivo.id);
-      mostrarToast("Mensaje enviado");
+      mostrarToast(t('correo_mensaje_enviado'));
     } catch (e) {
-      mostrarToast("Error al enviar mensaje", true);
+      mostrarToast(t('correo_error_enviar'), true);
     }
   };
 
@@ -142,28 +144,28 @@ function Correo() {
         <div className="cmail-sidebar-top">
           <div className="cmail-logo-area">
             <Icon d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" size={18} />
-            <span>Mi Correo</span>
+            <span>{t('correo_mi_correo')}</span>
           </div>
         </div>
 
         <nav className="cmail-nav">
-          <p className="cmail-nav-label">Notificaciones</p>
+          <p className="cmail-nav-label">{t('correo_notificaciones')}</p>
           <button
             className={`cmail-nav-item ${vista === VISTAS.ENVIADOS ? "active" : ""}`}
             onClick={() => setVista(VISTAS.ENVIADOS)}
           >
             <Icon d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-            <span>Enviados</span>
+            <span>{t('correo_enviados')}</span>
             <span className="cmail-badge">{correos.length}</span>
           </button>
 
-          <p className="cmail-nav-label" style={{ marginTop: "1.2rem" }}>Mensajería</p>
+          <p className="cmail-nav-label" style={{ marginTop: "1.2rem" }}>{t('correo_mensajeria')}</p>
           <button
             className={`cmail-nav-item ${vista === VISTAS.CHAT ? "active" : ""}`}
             onClick={() => { setVista(VISTAS.CHAT); cargarContactos(); }}
           >
             <Icon d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-            <span>Mensajes</span>
+            <span>{t('correo_mensajes')}</span>
             {contactos.some(c => c.no_leidos > 0) && (
               <span className="cmail-badge cmail-badge-red">
                 {contactos.reduce((a, c) => a + (c.no_leidos || 0), 0)}
@@ -174,7 +176,7 @@ function Correo() {
 
         {vista === VISTAS.CHAT && (
           <div className="cmail-contactos">
-            <p className="cmail-nav-label">Usuarios</p>
+            <p className="cmail-nav-label">{t('usuarios')}</p>
             {contactos.map(c => (
               <button
                 key={c.id}
@@ -201,18 +203,18 @@ function Correo() {
           <div className="cmail-enviados">
             <div className="cmail-panel-header">
               <Icon d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" size={18} />
-              <span>Historial de correos enviados</span>
-              <span className="cmail-count-pill">{correos.length} registros</span>
+              <span>{t('correo_historial')}</span>
+              <span className="cmail-count-pill">{correos.length} {t('correo_registros')}</span>
             </div>
             <div className="cmail-table-wrap">
               <table className="cmail-table">
                 <thead>
                   <tr>
-                    <th>Destinatario</th>
-                    <th>Asunto</th>
-                    <th>Mensaje</th>
-                    <th>Fecha</th>
-                    <th>Hora</th>
+                    <th>{t('correo_destinatario')}</th>
+                    <th>{t('asunto')}</th>
+                    <th>{t('mensaje')}</th>
+                    <th>{t('fecha')}</th>
+                    <th>{t('hora')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -220,7 +222,7 @@ function Correo() {
                     <tr>
                       <td colSpan="5" className="cmail-empty">
                         <Icon d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" size={32} />
-                        <p>No hay correos registrados</p>
+                        <p>{t('correo_no_hay')}</p>
                       </td>
                     </tr>
                   ) : (
@@ -250,7 +252,7 @@ function Correo() {
             {!contactoActivo ? (
               <div className="cmail-chat-placeholder">
                 <Icon d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" size={48} />
-                <p>Selecciona un usuario para iniciar una conversación</p>
+                <p>{t('correo_selecciona_usuario')}</p>
               </div>
             ) : (
               <>
@@ -265,7 +267,7 @@ function Correo() {
                 <div className="cmail-chat-messages">
                   {mensajes.length === 0 && (
                     <div className="cmail-chat-empty">
-                      <p>Aún no hay mensajes. ¡Empieza la conversación!</p>
+                      <p>{t('correo_no_mensajes')}</p>
                     </div>
                   )}
                   {mensajes.map(m => {
@@ -288,14 +290,14 @@ function Correo() {
                 <div className="cmail-chat-input">
                   <input
                     type="text"
-                    placeholder="Escribe un mensaje..."
+                    placeholder={t('correo_escribe_mensaje')}
                     value={nuevoMensaje}
                     onChange={e => setNuevoMensaje(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && handleEnviarMensaje()}
                   />
                   <button className="cmail-btn-enviar" onClick={handleEnviarMensaje}>
                     <Icon d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" size={16} />
-                    Enviar
+                    {t('enviar')}
                   </button>
                 </div>
               </>

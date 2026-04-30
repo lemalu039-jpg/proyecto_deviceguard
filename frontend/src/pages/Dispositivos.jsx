@@ -3,6 +3,7 @@ import { getDispositivos, createDispositivo, updateDispositivo, deleteDispositiv
 import { Modal } from 'bootstrap';
 import './CSS/Dispositivos.css';
 import Pagination from '../components/Pagination';
+import { useLanguage } from '../context/LanguageContext.jsx';
 
 const Icon = ({ d, size = 14 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -12,6 +13,7 @@ const Icon = ({ d, size = 14 }) => (
 );
 
 function Dispositivos() {
+  const { t } = useLanguage();
   const [dispositivos, setDispositivos] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
@@ -114,7 +116,7 @@ function Dispositivos() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Â¿Seguro que deseas eliminar este dispositivo?')) {
+    if (window.confirm(t('confirmar'))) {
       await deleteDispositivo(id);
       loadData();
     }
@@ -137,7 +139,7 @@ function Dispositivos() {
       const res = await getDispositivoBySerial(reingreso.serial.trim());
       setReingreso(r => ({ ...r, dispositivo: res.data, buscando: false, confirmando: true }));
     } catch {
-      setReingreso(r => ({ ...r, error: 'El dispositivo no estÃ¡ registrado', buscando: false }));
+      setReingreso(r => ({ ...r, error: t('disp_no_registrado'), buscando: false }));
     }
   };
 
@@ -155,7 +157,7 @@ function Dispositivos() {
       cerrarReingreso();
       loadData();
     } catch {
-      setReingreso(r => ({ ...r, error: 'Error al reingresar el dispositivo' }));
+      setReingreso(r => ({ ...r, error: t('disp_error_reingreso') }));
     } finally {
       setLoadingReingreso(false);
     }
@@ -182,13 +184,13 @@ function Dispositivos() {
       <div className="disp-banner">
         <div className="disp-banner-lines"></div>
         <div className="disp-banner-content">
-          <h1 className="disp-banner-title">Registra<br />Nuevos Dispositivos</h1>
-          <p className="disp-banner-sub">Registra y guarda nuevos dispositivos en el sistema</p>
+          <h1 className="disp-banner-title">{t('disp_banner_titulo')}</h1>
+          <p className="disp-banner-sub">{t('disp_banner_sub')}</p>
           <div className="disp-banner-btns">
-            <button className="disp-banner-btn" onClick={abrirModal}>Registrar Dispositivo</button>
+            <button className="disp-banner-btn" onClick={abrirModal}>{t('agregar_dispositivo')}</button>
             <button className="disp-banner-btn-secondary" onClick={abrirReingreso}>
               <Icon d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" size={15} />
-              Reingresar Dispositivo
+              {t('disp_reingresar')}
             </button>
           </div>
         </div>
@@ -200,7 +202,7 @@ function Dispositivos() {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">
-                {editingId ? 'Editar dispositivo' : 'Registrar nuevo dispositivo'}
+                {editingId ? t('disp_editar') : t('disp_registrar_nuevo')}
               </h5>
               <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -208,37 +210,37 @@ function Dispositivos() {
               <form onSubmit={handleSubmit} id="disp-form">
                 <div className="row g-3">
                   <div className="col-md-6">
-                    <label className="disp-modal-label">Nombre</label>
+                    <label className="disp-modal-label">{t('nombre_dispositivo')}</label>
                     <input type="text" name="nombre" value={form.nombre} onChange={handleChange}
-                      placeholder="Ej: PortÃ¡til HP ProBook" required className="disp-modal-input" />
+                      placeholder="Ej: Portátil HP ProBook" required className="disp-modal-input" />
                   </div>
                   <div className="col-md-6">
-                    <label className="disp-modal-label">Tipo</label>
+                    <label className="disp-modal-label">{t('tipo_dispositivo')}</label>
                     <input type="text" name="tipo" value={form.tipo} onChange={handleChange}
-                      placeholder="Ej: PortÃ¡til, Proyector..." required className="disp-modal-input" />
+                      placeholder="Ej: Portátil, Proyector..." required className="disp-modal-input" />
                   </div>
                   <div className="col-md-6">
-                    <label className="disp-modal-label">Serial</label>
+                    <label className="disp-modal-label">{t('disp_serial')}</label>
                     <input type="text" name="serial" value={form.serial} onChange={handleChange}
                       placeholder="Ej: ABC-123456" required className="disp-modal-input"
                       disabled={editingId != null} />
                   </div>
                   <div className="col-md-6">
-                    <label className="disp-modal-label">Marca</label>
+                    <label className="disp-modal-label">{t('disp_marca')}</label>
                     <input type="text" name="marca" value={form.marca} onChange={handleChange}
                       placeholder="Ej: HP, Dell, Epson..." required className="disp-modal-input" />
                   </div>
                   <div className="col-md-6">
-                    <label className="disp-modal-label">Ubicación</label>
+                    <label className="disp-modal-label">{t('disp_ubicacion')}</label>
                     <input type="text" name="ubicacion" value={form.ubicacion} onChange={handleChange}
                       placeholder="Ej: Aula 101" className="disp-modal-input" />
                   </div>
                   <div className="col-md-6">
-                    <label className="disp-modal-label">Estado</label>
-                    <input type="text" value="En RevisiÃ³n" disabled className="disp-modal-input" />
+                    <label className="disp-modal-label">{t('estado_dispositivo')}</label>
+                    <input type="text" value={t('disp_en_revision')} disabled className="disp-modal-input" />
                   </div>
                   <div className="col-12">
-                    <label className="disp-modal-label">DescripciÃ³n del equipo</label>
+                    <label className="disp-modal-label">{t('descripcion')}</label>
                     <textarea
                       name="descripcion"
                       value={form.descripcion}
@@ -250,16 +252,16 @@ function Dispositivos() {
                     />
                   </div>
                   <div className="col-12">
-                    <label className="disp-modal-label">Imagen del dispositivo</label>
+                    <label className="disp-modal-label">{t('disp_imagen')}</label>
                     <input type="file" id="archivo" accept="image/*" className="disp-modal-input" />
                   </div>
                 </div>
               </form>
             </div>
             <div className="modal-footer">
-              <button type="button" className="disp-btn-cancel" data-bs-dismiss="modal">Cerrar</button>
+              <button type="button" className="disp-btn-cancel" data-bs-dismiss="modal">{t('cerrar')}</button>
               <button type="submit" form="disp-form" className="disp-btn-primary" disabled={loading}>
-                {loading ? 'Guardando...' : editingId ? 'Actualizar dispositivo' : 'Registrar dispositivo'}
+                {loading ? t('disp_guardando') : editingId ? t('disp_actualizar') : t('agregar_dispositivo')}
               </button>
             </div>
           </div>
@@ -271,21 +273,21 @@ function Dispositivos() {
         <div className="modal-dialog modal-md modal-dialog-centered">
           <div className="modal-content reingreso-modal-content">
             <div className="reingreso-modal-header">
-              <span className="reingreso-modal-titulo">Reingresar Dispositivo</span>
+              <span className="reingreso-modal-titulo">{t('disp_reingresar')}</span>
               <button type="button" className="reingreso-close" data-bs-dismiss="modal">
                 <Icon d="M18 6L6 18M6 6l12 12" size={16} />
               </button>
             </div>
             <div className="reingreso-modal-body">
               <div className="reingreso-field">
-                <label className="reingreso-label">Serial del dispositivo</label>
+                <label className="reingreso-label">{t('disp_serial_label')}</label>
                 <div className="reingreso-serial-row">
                   <input type="text" className="reingreso-input" placeholder="Ej: ABC-123456"
                     value={reingreso.serial}
                     onChange={e => setReingreso(r => ({ ...r, serial: e.target.value, dispositivo: null, error: '', confirmando: false }))}
                     onKeyDown={e => e.key === 'Enter' && buscarPorSerial()} />
                   <button className="reingreso-btn-buscar" onClick={buscarPorSerial} disabled={reingreso.buscando}>
-                    {reingreso.buscando ? '...' : 'Buscar'}
+                    {reingreso.buscando ? '...' : t('buscar')}
                   </button>
                 </div>
               </div>
@@ -298,37 +300,37 @@ function Dispositivos() {
               {reingreso.dispositivo && (
                 <div className="reingreso-info-card">
                   {[
-                    { label: 'Nombre', value: reingreso.dispositivo.nombre },
-                    { label: 'Marca', value: reingreso.dispositivo.marca },
-                    { label: 'Serial', value: reingreso.dispositivo.serial },
-                    { label: 'Tipo', value: reingreso.dispositivo.tipo },
-                    { label: 'Estado actual', value: reingreso.dispositivo.estado },
+                    { label: t('nombre_dispositivo'), value: reingreso.dispositivo.nombre },
+                    { label: t('disp_marca'), value: reingreso.dispositivo.marca },
+                    { label: t('disp_serial'), value: reingreso.dispositivo.serial },
+                    { label: t('tipo_dispositivo'), value: reingreso.dispositivo.tipo },
+                    { label: t('estado_dispositivo'), value: reingreso.dispositivo.estado },
                   ].map(({ label, value }) => (
                     <div key={label} className="reingreso-info-row">
                       <span className="reingreso-info-label">{label}</span>
-                      <span className="reingreso-info-val">{value || 'â€”'}</span>
+                      <span className="reingreso-info-val">{value || '—'}</span>
                     </div>
                   ))}
                   {reingreso.dispositivo.descripcion && (
                     <div className="reingreso-info-row" style={{ flexDirection: 'column', gap: '3px' }}>
-                      <span className="reingreso-info-label">DescripciÃ³n</span>
+                      <span className="reingreso-info-label">{t('descripcion')}</span>
                       <span className="reingreso-info-val" style={{ fontSize: '.78rem' }}>
                         {reingreso.dispositivo.descripcion}
                       </span>
                     </div>
                   )}
                   <div className="reingreso-confirm-msg">
-                    Â¿Deseas reingresar este dispositivo?<br />
-                    <span>Su estado cambiarÃ¡ a <strong>En RevisiÃ³n</strong></span>
+                    {t('disp_confirmar_reingreso')}<br />
+                    <span>{t('disp_estado_cambiara')} <strong>{t('disp_en_revision')}</strong></span>
                   </div>
                 </div>
               )}
             </div>
             <div className="reingreso-modal-footer">
-              <button className="reingreso-btn-cancel" data-bs-dismiss="modal">Cerrar</button>
+              <button className="reingreso-btn-cancel" data-bs-dismiss="modal">{t('cerrar')}</button>
               {reingreso.confirmando && (
                 <button className="reingreso-btn-confirm" onClick={confirmarReingreso} disabled={loadingReingreso}>
-                  {loadingReingreso ? 'Procesando...' : 'Confirmar Reingreso'}
+                  {loadingReingreso ? t('disp_procesando') : t('disp_confirmar_reingreso_btn')}
                 </button>
               )}
             </div>
@@ -340,14 +342,14 @@ function Dispositivos() {
       <div className="disp-card">
         <div className="disp-card-title">
           <div className="disp-card-dot"></div>
-          <span>Lista de dispositivos</span>
-          <span className="disp-count">{dispositivos.length} registrados</span>
+          <span>{t('disp_lista')}</span>
+          <span className="disp-count">{dispositivos.length} {t('disp_registrados')}</span>
         </div>
         {/* Filtros */}
         <div style={{ display: 'flex', gap: '.5rem', padding: '.75rem 1.25rem', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', alignItems: 'center' }}>
           <input
             type="text"
-            placeholder="Buscar por nombre, serial o marca..."
+            placeholder={t('disp_buscar_placeholder')}
             value={filtroBusqueda}
             onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
             style={{ flex: 1, minWidth: '180px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
@@ -357,15 +359,15 @@ function Dispositivos() {
             onChange={e => { setFiltroEstadoDisp(e.target.value); setCurrentPage(1); }}
             style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none' }}
           >
-            <option value="">Todos los estados</option>
-            <option value="En Revision">En Revision</option>
-            <option value="En Mantenimiento">En Mantenimiento</option>
-            <option value="Listo para Entrega">Listo para Entrega</option>
-            <option value="Entregado">Entregado</option>
+            <option value="">{t('disp_todos_estados')}</option>
+            <option value="En Revision">{t('disp_en_revision')}</option>
+            <option value="En Mantenimiento">{t('disp_en_mantenimiento')}</option>
+            <option value="Listo para Entrega">{t('disp_listo_entrega')}</option>
+            <option value="Entregado">{t('disp_entregado')}</option>
           </select>
           {(filtroBusqueda || filtroEstadoDisp) && (
             <button onClick={() => { setFiltroBusqueda(''); setFiltroEstadoDisp(''); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
-              Limpiar
+              {t('limpiar_filtros')}
             </button>
           )}
         </div>
@@ -373,13 +375,13 @@ function Dispositivos() {
           <table className="disp-table">
             <thead>
               <tr>
-                <th>Dispositivo</th>
-                <th>Serial</th>
-                <th>Marca</th>
-                <th>Ubicación</th>
-                <th>Fecha / Hora</th>
-                <th>Estado</th>
-                <th>Acciones</th>
+                <th>{t('nombre_dispositivo')}</th>
+                <th>{t('disp_serial')}</th>
+                <th>{t('disp_marca')}</th>
+                <th>{t('disp_ubicacion')}</th>
+                <th>{t('disp_fecha_hora')}</th>
+                <th>{t('estado_dispositivo')}</th>
+                <th>{t('disp_acciones')}</th>
               </tr>
             </thead>
             <tbody>
@@ -402,7 +404,7 @@ function Dispositivos() {
                   <td>
                     {formatFecha(d.fecha_registro)}<br />
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      {d.hora_registro || 'â€”'}
+                      {d.hora_registro || '—'}
                     </span>
                   </td>
                   <td>
@@ -411,11 +413,11 @@ function Dispositivos() {
                   <td>
                     <button className="disp-btn-edit" onClick={() => handleEdit(d)}>
                       <Icon d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                      Editar
+                      {t('editar')}
                     </button>
                     <button className="disp-btn-del" onClick={() => handleDelete(d.id)}>
                       <Icon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
-                      Eliminar
+                      {t('eliminar')}
                     </button>
                   </td>
                 </tr>
@@ -425,7 +427,7 @@ function Dispositivos() {
                 const texto = `${d.nombre} ${d.serial} ${d.marca}`.toLowerCase();
                 return (!filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase())) && (!filtroEstadoDisp || d.estado === filtroEstadoDisp);
               }).length === 0 && (
-                <tr><td colSpan="7" className="disp-empty">No hay dispositivos que coincidan con los filtros</td></tr>
+                <tr><td colSpan="7" className="disp-empty">{t('disp_sin_resultados')}</td></tr>
               )}
             </tbody>
           </table>

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Modal } from 'bootstrap';
 import {
   getDispositivos,
@@ -7,8 +7,10 @@ import {
 } from "../services/api";
 import "./CSS/Registrarsalida.css";
 import Pagination from "../components/Pagination";
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 function SalidaDispositivos() {
+  const { t } = useLanguage();
   const [salidas, setSalidas] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
   const [form, setForm] = useState({
@@ -79,12 +81,12 @@ const handleSubmit = async (e) => {
     const dispositivo = res.data;
 
     if (!dispositivo) {
-      alert("El dispositivo no existe");
+      alert(t('salida_disp_no_existe'));
       return;
     }
 
     if (dispositivo.estado !== "En Mantenimiento") {
-      alert("Solo puedes registrar salida si el dispositivo estÃ¡ en mantenimiento.");
+      alert(t('salida_solo_mantenimiento'));
       return;
     }
 
@@ -103,14 +105,14 @@ const handleSubmit = async (e) => {
 
   } catch (err) {
     console.error(err);
-    alert("Error al registrar salida");
+    alert(t('salida_err_registrar'));
   } finally {
     setLoading(false);
   }
 };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Â¿Finalizar proceso del dispositivo?")) {
+    if (window.confirm(t('salida_confirm_finalizar'))) {
       const dispositivo = salidas.find(d => d.id === id);
       if (!dispositivo) return;
       await updateDispositivo(id, {
@@ -158,10 +160,10 @@ const handleSubmit = async (e) => {
       <div className="salida-banner">
         <div className="salida-banner-lines"></div>
         <div className="salida-banner-content">
-          <h2>Registrar Salida de Dispositivos</h2>
-          <p>Gestiona la salida de equipos cuando finalizan su proceso</p>
+          <h2>{t('salida_title')}</h2>
+          <p>{t('salida_subtitle')}</p>
           <button className="salida-banner-btn" onClick={abrirModal}>
-            Registrar Salida
+            {t('salida_btn_registrar')}
           </button>
         </div>
       </div>
@@ -172,9 +174,9 @@ const handleSubmit = async (e) => {
 
             <div className="modal-header">
               <h5 className="modal-title" id="salidaModalLabel">
-                {editandoId ? 'Editar salida' : 'Registrar salida de dispositivo'}
+                {editandoId ? t('salida_editar') : t('salida_modal_title')}
               </h5>
-              <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label={t('cerrar')}></button>
             </div>
 
             <div className="modal-body">
@@ -182,14 +184,14 @@ const handleSubmit = async (e) => {
                 <div className="row g-3">
 
                   <div className="col-12">
-                    <label className="salida-modal-label">Serial del dispositivo</label>
+                    <label className="salida-modal-label">{t('salida_modal_serial')}</label>
                     <input
                       type="text"
                       name="serial"
                       value={form.serial}
                       onChange={handleChange}
                       onBlur={handleBuscar}
-                      placeholder="Ej: ABC-123456"
+                      placeholder={t('salida_modal_serial_ph')}
                       required
                       className="salida-modal-input"
                       disabled={editandoId != null}
@@ -197,9 +199,9 @@ const handleSubmit = async (e) => {
 
                   </div>
                   <div className="col-12">
-  <label className="salida-modal-label">InformaciÃ³n</label>
+  <label className="salida-modal-label">{t('salida_modal_info')}</label>
   <p className="salida-info-text">
-    La salida se registra automÃ¡ticamente (fecha, hora y estado).
+    {t('salida_modal_info_desc')}
   </p>
 </div>
 
@@ -209,10 +211,10 @@ const handleSubmit = async (e) => {
 
             <div className="modal-footer">
               <button type="button" className="salida-btn-cancel" data-bs-dismiss="modal">
-                Cerrar
+                {t('cerrar')}
               </button>
               <button type="submit" form="salida-form" className="salida-btn-primary" disabled={loading}>
-                {loading ? 'Guardando...' : editandoId ? 'Actualizar salida' : 'Registrar salida'}
+                {loading ? t('historial_guardando') : editandoId ? t('salida_btn_actualizar') : t('salida_btn_registrar')}
               </button>
             </div>
 
@@ -223,21 +225,21 @@ const handleSubmit = async (e) => {
       <div className="salida-card">
         <div className="salida-card-title">
           <div className="salida-card-dot"></div>
-          <span>Lista de dispositivos</span>
-          <span className="salida-count">{salidas.length} registrados</span>
+          <span>{t('dash_lista_dispositivos')}</span>
+          <span className="salida-count">{salidas.length} {t('correo_registros')}</span>
         </div>
         {/* Filtros */}
         <div style={{ display: 'flex', gap: '.5rem', padding: '.75rem 1.25rem', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', alignItems: 'center' }}>
           <input
             type="text"
-            placeholder="Buscar por serial, nombre..."
+            placeholder={t('salida_buscar_ph')}
             value={filtroBusqueda}
             onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
             style={{ flex: 1, minWidth: '160px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
           />
           {(filtroBusqueda || filtroEstado) && (
             <button onClick={() => { setFiltroBusqueda(''); setFiltroEstado(''); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
-              Limpiar
+              {t('dash_limpiar')}
             </button>
           )}
         </div>
@@ -246,16 +248,16 @@ const handleSubmit = async (e) => {
           <table className="salida-table">
             <thead>
               <tr>
-                <th>Serial</th>
-                <th>Fecha entrada</th>
-                <th>Fecha salida</th>
-                <th>Estado</th>
-                {esSuperAdmin && <th>Registrado por</th>}
+                <th>{t('dash_col_serial')}</th>
+                <th>{t('salida_col_fecha_ent')}</th>
+                <th>{t('salida_col_fecha_sal')}</th>
+                <th>{t('dash_col_estado')}</th>
+                {esSuperAdmin && <th>{t('dash_col_reg_por')}</th>}
               </tr>
             </thead>
             <tbody>
               {filteredSalidas.length === 0 ? (
-                <tr><td colSpan={esSuperAdmin ? 5 : 4} className="salida-empty">No hay registros</td></tr>
+                <tr><td colSpan={esSuperAdmin ? 5 : 4} className="salida-empty">{t('salida_no_registros')}</td></tr>
               ) : (
                 filteredSalidas.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(s => (
                   <tr key={s.id}>

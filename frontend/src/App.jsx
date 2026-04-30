@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Sidebar from './components/Sidebar';
 import Breadcrumbs from './components/Breadcrumbs';
 import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider } from './context/LanguageContext.jsx';
 
 // Pages
 import Home from './pages/Home';
@@ -72,9 +73,10 @@ function App() {
   };
 
   return (
-    <ThemeProvider>
-      <Router>
-        <Routes>
+    <LanguageProvider>
+      <ThemeProvider>
+        <Router>
+          <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={
             isAuthenticated
@@ -101,8 +103,9 @@ function App() {
           <Route path="/historial/:id" element={<ProtectedRoute><HistorialDispositivo /></ProtectedRoute>} />
           <Route path="/ajustes-cuenta" element={<ProtectedRoute><AjustesCuenta onLogout={handleLogout} /></ProtectedRoute>} />
         </Routes>
-      </Router>
-    </ThemeProvider>
+        </Router>
+      </ThemeProvider>
+    </LanguageProvider>
   );
 }
 
