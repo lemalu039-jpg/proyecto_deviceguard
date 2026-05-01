@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUsuarios, createUsuario, updateUsuario, deleteUsuario, toggleUsuarioStatus } from "../services/api";
-import "./CSS/Equipo.css";
+import "./css/Equipo.css";
 import Pagination from "../components/Pagination";
 import { useLanguage } from "../context/LanguageContext.jsx";
 

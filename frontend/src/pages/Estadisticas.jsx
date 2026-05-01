@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useMemo } from 'react';
+﻿import React, { useEffect, useState, useMemo } from 'react';
 import { getDispositivos } from '../services/api';
-import './CSS/Estadisticas_responsive.css';
+import './css/Estadisticas_responsive.css';
 import Pagination from '../components/Pagination';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,

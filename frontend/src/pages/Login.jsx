@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext.jsx';
 import axios from 'axios';
-import './CSS/Login.css';
+import './css/Login.css';
 import logo from '../assets/icons/logo-deviceguard.svg';  
 import candado from '../assets/icons/candado.svg';
 import correo from '../assets/icons/correo.svg';

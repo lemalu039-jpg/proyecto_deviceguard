@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { getDispositivos, createDispositivo, updateDispositivo, deleteDispositivo, getDispositivoBySerial } from '../services/api';
 import { Modal } from 'bootstrap';
-import './CSS/Dispositivos.css';
+import './css/Dispositivos.css';
 import Pagination from '../components/Pagination';
 import { useLanguage } from '../context/LanguageContext.jsx';
 
