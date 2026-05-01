@@ -4,11 +4,13 @@ import axios from "axios";
 import usuariosIcon from "../assets/icons/reportes_usuario.svg";
 import dispositivosIcon from "../assets/icons/reportes_dispositivos.svg";
 import Pagination from "../components/Pagination";
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 const API = "http://localhost:5000/api/reportes";
 const ITEMS_PER_PAGE = 10;
 
 function Reportes() {
+  const { t } = useLanguage();
   const [fechaUsuarios, setFechaUsuarios] = useState({ desde: "", hasta: "", rol: "todos" });
   const [fechaDispositivos, setFechaDispositivos] = useState({ desde: "", hasta: "", estado: "todos" });
 
@@ -100,7 +102,7 @@ function Reportes() {
   // ── Generadores ──
   const generarUsuariosExcel = async () => {
     if (!fechaUsuarios.desde || !fechaUsuarios.hasta) {
-      alert("Por favor selecciona las fechas Desde y Hasta para continuar.");
+      alert(t('reportes_err_fechas'));
       return;
     }
     try {
@@ -115,12 +117,12 @@ function Reportes() {
       recargarContador();
       setModalExport(null);
       resetFiltros();
-    } catch { alert("Error al descargar Excel de usuarios"); }
+    } catch { alert(t('reportes_err_excel_usuarios')); }
   };
 
   const generarUsuariosPdf = async () => {
     if (!fechaUsuarios.desde || !fechaUsuarios.hasta) {
-      alert("Por favor selecciona las fechas Desde y Hasta para continuar.");
+      alert(t('reportes_err_fechas'));
       return;
     }
     try {
@@ -135,12 +137,12 @@ function Reportes() {
       recargarContador();
       setModalExport(null);
       resetFiltros();
-    } catch { alert("Error al descargar PDF de usuarios"); }
+    } catch { alert(t('reportes_err_pdf_usuarios')); }
   };
 
   const generarDispositivosExcel = async () => {
     if (!fechaDispositivos.desde || !fechaDispositivos.hasta) {
-      alert("Por favor selecciona las fechas Desde y Hasta para continuar.");
+      alert(t('reportes_err_fechas'));
       return;
     }
     try {
@@ -155,12 +157,12 @@ function Reportes() {
       recargarContador();
       setModalExport(null);
       resetFiltros();
-    } catch { alert("Error al descargar Excel de dispositivos"); }
+    } catch { alert(t('reportes_err_excel_disp')); }
   };
 
   const generarDispositivosPdf = async () => {
     if (!fechaDispositivos.desde || !fechaDispositivos.hasta) {
-      alert("Por favor selecciona las fechas Desde y Hasta para continuar.");
+      alert(t('reportes_err_fechas'));
       return;
     }
     try {
@@ -175,12 +177,12 @@ function Reportes() {
       recargarContador();
       setModalExport(null);
       resetFiltros();
-    } catch { alert("Error al descargar PDF de dispositivos"); }
+    } catch { alert(t('reportes_err_pdf_disp')); }
   };
 
   // ── Columnas de la tabla según tipo ──
-  const columnasUsuarios = ["ID", "Nombre", "Correo", "Rol", "Fecha de creación"];
-  const columnasDispositivos = ["ID", "Nombre", "Serial", "Estado", "Usuario", "Fecha de registro"];
+  const columnasUsuarios = [t('id'), t('dash_col_nombre'), t('correo_col_correo'), t('rol'), t('reportes_fecha_creacion')];
+  const columnasDispositivos = [t('id'), t('dash_col_nombre'), t('dash_col_serial'), t('dash_col_estado'), t('equipo_col_usuario'), t('dash_col_fecha_reg')];
 
   const rolBadge = (rol) => {
     const map = {
@@ -248,27 +250,21 @@ function Reportes() {
   return (
     <div className="reportes-container">
       <div className="page-title-row">
-        <h1 className="page-title">Generar Reportes</h1>
-        <button
-          className="rpt-export-btn"
-          onClick={() => setModalExport(true)}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-          </svg>
-          Exportar reportes
+        <h1 className="page-title">{t('reportes_title')}</h1>
+        <button className="card-open-btn" onClick={() => setModalExport(true)}>
+          {t('reportes_exportar')}
         </button>
       </div>
-      <p className="subtitle">Genera los reportes que vayan según tu necesidad</p>
+      <p className="subtitle">{t('reportes_subtitle')}</p>
 
       {/* ── STAT CARDS ── */}
       <div className="reportes-stats">
         <div className="stat-card">
-          <span className="stat-label">Registros en vista previa</span>
+          <span className="stat-label">{t('reportes_reg_vista')}</span>
           <span className="stat-value">{previewTotal}</span>
         </div>
         <div className="stat-card">
-          <span className="stat-label">Reportes generados</span>
+          <span className="stat-label">{t('reportes_generados')}</span>
           <span className="stat-value">{totalReportes}</span>
         </div>
       </div>
@@ -276,22 +272,22 @@ function Reportes() {
       {/* ── VISTA PREVIA ── */}
       <div className="reportes-preview">
         <div className="preview-header">
-          <h2>Vista previa</h2>
+          <h2>{t('reportes_vista_previa')}</h2>
           <select
             className="preview-select"
             value={tipoPreview}
             onChange={e => { setTipoPreview(e.target.value); setBusqueda(""); }}
           >
-            <option value="usuarios">Usuarios</option>
-            <option value="dispositivos">Dispositivos</option>
+            <option value="usuarios">{t('dash_usuarios')}</option>
+            <option value="dispositivos">{t('dash_dispositivos')}</option>
           </select>
           <input
             className="preview-search"
             type="text"
             placeholder={
               tipoPreview === "usuarios"
-                ? "Buscar por nombre, correo o rol..."
-                : "Buscar por nombre, serial, estado o usuario..."
+                ? t('reportes_buscar_usu')
+                : t('reportes_buscar_disp')
             }
             value={busqueda}
             onChange={e => setBusqueda(e.target.value)}
@@ -300,9 +296,9 @@ function Reportes() {
 
         <div className="preview-table-wrapper">
           {loadingPreview ? (
-            <p className="preview-loading">Cargando datos...</p>
+            <p className="preview-loading">{t('reportes_cargando')}</p>
           ) : previewDatos.length === 0 ? (
-            <p className="preview-empty">No se encontraron registros.</p>
+            <p className="preview-empty">{t('reportes_no_registros')}</p>
           ) : (
             <table className="preview-table">
               <thead>
@@ -331,7 +327,7 @@ function Reportes() {
         <div className="modal-overlay" onClick={() => { setModalExport(null); resetFiltros(); }}>
           <div className="modal-content modal-export" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Exportar reportes</h2>
+              <h2>{t('reportes_exportar')}</h2>
               <button className="modal-close" onClick={() => { setModalExport(null); resetFiltros(); }}>✕</button>
             </div>
             <div className="modal-export-body">
@@ -339,33 +335,33 @@ function Reportes() {
                 {/* Usuarios */}
                 <div className="reporte-card">
                   <img src={usuariosIcon} alt="usuarios" />
-                  <h3>Reporte Usuarios</h3>
+                  <h3>{t('reportes_rep_usuarios')}</h3>
                   <div className="reporte-fechas">
-                    <label>Rol
+                    <label>{t('rol')}
                       <select
                         value={fechaUsuarios.rol}
                         onChange={e => setFechaUsuarios(f => ({ ...f, rol: e.target.value }))}
                       >
-                        <option value="todos">Todos</option>
-                        <option value="usuario">Usuarios</option>
-                        <option value="tecnico">Técnicos</option>
+                        <option value="todos">{t('reportes_todos')}</option>
+                        <option value="usuario">{t('dash_usuarios')}</option>
+                        <option value="tecnico">{t('reportes_tecnicos')}</option>
                       </select>
                     </label>
-                    <label>Desde
+                    <label>{t('reportes_desde')}
                       <input type="date" value={fechaUsuarios.desde}
                         onChange={e => setFechaUsuarios(f => ({ ...f, desde: e.target.value }))} />
                     </label>
-                    <label>Hasta
+                    <label>{t('reportes_hasta')}
                       <input type="date" value={fechaUsuarios.hasta}
                         onChange={e => setFechaUsuarios(f => ({ ...f, hasta: e.target.value }))} />
                     </label>
                   </div>
                   <div className="btn-group">
                     <button onClick={generarUsuariosExcel} disabled={!fechaUsuarios.desde || !fechaUsuarios.hasta}>
-                      Generar Excel
+                      {t('reportes_gen_excel')}
                     </button>
                     <button onClick={generarUsuariosPdf} disabled={!fechaUsuarios.desde || !fechaUsuarios.hasta}>
-                      Generar PDF
+                      {t('reportes_gen_pdf')}
                     </button>
                   </div>
                 </div>
@@ -373,35 +369,35 @@ function Reportes() {
                 {/* Dispositivos */}
                 <div className="reporte-card">
                   <img src={dispositivosIcon} alt="dispositivos" />
-                  <h3>Reporte Dispositivos</h3>
+                  <h3>{t('reportes_rep_disp')}</h3>
                   <div className="reporte-fechas">
-                    <label>Estado
+                    <label>{t('dash_col_estado')}
                       <select
                         value={fechaDispositivos.estado}
                         onChange={e => setFechaDispositivos(f => ({ ...f, estado: e.target.value }))}
                       >
-                        <option value="todos">Todos</option>
-                        <option value="En Revision">En Revisión</option>
-                        <option value="Listo para entrega">Listo para entrega</option>
-                        <option value="En Mantenimiento">En Mantenimiento</option>
-                        <option value="Entregado">Entregado</option>
+                        <option value="todos">{t('reportes_todos')}</option>
+                        <option value="En Revision">{t('dash_en_revision')}</option>
+                        <option value="Listo para entrega">{t('dash_listo_entrega')}</option>
+                        <option value="En Mantenimiento">{t('dash_en_mantenimiento')}</option>
+                        <option value="Entregado">{t('dash_entregado')}</option>
                       </select>
                     </label>
-                    <label>Desde
+                    <label>{t('reportes_desde')}
                       <input type="date" value={fechaDispositivos.desde}
                         onChange={e => setFechaDispositivos(f => ({ ...f, desde: e.target.value }))} />
                     </label>
-                    <label>Hasta
+                    <label>{t('reportes_hasta')}
                       <input type="date" value={fechaDispositivos.hasta}
                         onChange={e => setFechaDispositivos(f => ({ ...f, hasta: e.target.value }))} />
                     </label>
                   </div>
                   <div className="btn-group">
                     <button onClick={generarDispositivosExcel} disabled={!fechaDispositivos.desde || !fechaDispositivos.hasta}>
-                      Generar Excel
+                      {t('reportes_gen_excel')}
                     </button>
                     <button onClick={generarDispositivosPdf} disabled={!fechaDispositivos.desde || !fechaDispositivos.hasta}>
-                      Generar PDF
+                      {t('reportes_gen_pdf')}
                     </button>
                   </div>
                 </div>
@@ -411,6 +407,74 @@ function Reportes() {
         </div>
       )}
 
+      {/* ── MODAL STATS ── */}
+      {modalAbierto && (
+        <div className="modal-overlay" onClick={() => setModalAbierto(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>
+                {modalTipo === "preview"
+                  ? (tipoPreview === "usuarios" ? t('reportes_vista_usu') : t('reportes_vista_disp'))
+                  : t('reportes_generados')}
+              </h2>
+              <button className="modal-close" onClick={() => setModalAbierto(false)}>✕</button>
+            </div>
+
+            {modalTipo === "preview" ? (
+              <>
+                <div className="modal-toolbar">
+                  <select
+                    className="preview-select"
+                    value={tipoPreview}
+                    onChange={e => { setTipoPreview(e.target.value); setBusqueda(""); }}
+                  >
+                    <option value="usuarios">{t('dash_usuarios')}</option>
+                    <option value="dispositivos">{t('dash_dispositivos')}</option>
+                  </select>
+                  <input
+                    className="preview-search"
+                    type="text"
+                    placeholder={
+                      tipoPreview === "usuarios"
+                        ? t('reportes_buscar_usu')
+                        : t('reportes_buscar_disp')
+                    }
+                    value={busqueda}
+                    onChange={e => setBusqueda(e.target.value)}
+                  />
+                </div>
+                <div className="preview-table-wrapper">
+                  {loadingPreview ? (
+                    <p className="preview-loading">{t('reportes_cargando')}</p>
+                  ) : previewDatos.length === 0 ? (
+                    <p className="preview-empty">{t('reportes_no_registros')}</p>
+                  ) : (
+                    <table className="preview-table">
+                      <thead>
+                        <tr>{columnas.map(col => <th key={col}>{col}</th>)}</tr>
+                      </thead>
+                      <tbody>
+                        {datosPagina.map((row, i) => renderFila(row, i))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+                <Pagination
+                  totalItems={previewDatos.length}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  currentPage={paginaActual}
+                  onPageChange={setPaginaActual}
+                />
+              </>
+            ) : (
+              <div className="modal-reportes-info">
+                <p className="modal-reportes-num">{totalReportes}</p>
+                <p className="modal-reportes-label">{t('reportes_han_sido_generados')}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

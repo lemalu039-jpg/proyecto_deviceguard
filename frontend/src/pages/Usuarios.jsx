@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getUsuarios, createUsuario, updateUsuario, deleteUsuario } from '../services/api';
+import { useLanguage } from '../context/LanguageContext.jsx';
 
 function Usuarios() {
+  const { t } = useLanguage();
   const [usuarios, setUsuarios] = useState([]);
   const [form, setForm] = useState({ nombre: '', correo: '', contrasena: '', rol: 'usuario' });
   const [editingId, setEditingId] = useState(null);
@@ -37,7 +39,7 @@ function Usuarios() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('¿Seguro que deseas eliminar este usuario?')) {
+    if (window.confirm(t('usu_eliminar_confirm'))) {
       await deleteUsuario(id);
       loadData();
     }
@@ -45,39 +47,39 @@ function Usuarios() {
 
   return (
     <div>
-      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>Gestión de Usuarios</h1>
+      <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>{t('usu_title')}</h1>
 
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ marginBottom: '1rem' }}>{editingId ? 'Editar Usuario' : 'Registrar Nuevo Usuario'}</h3>
+        <h3 style={{ marginBottom: '1rem' }}>{editingId ? t('equipo_editar_usuario') : t('usu_registrar_nuevo')}</h3>
         <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
           <div>
-            <label>Nombre:</label>
+            <label>{t('usu_form_nombre')}</label>
             <input type="text" name="nombre" value={form.nombre} onChange={handleChange} className="form-control" required />
           </div>
           <div>
-            <label>Correo Electrónico:</label>
+            <label>{t('usu_form_correo')}</label>
             <input type="email" name="correo" value={form.correo} onChange={handleChange} className="form-control" required />
           </div>
           {!editingId && (
             <div>
-              <label>Contraseña:</label>
+              <label>{t('usu_form_pass')}</label>
               <input type="password" name="contrasena" value={form.contrasena} onChange={handleChange} className="form-control" required />
             </div>
           )}
           <div>
-            <label>Rol:</label>
+            <label>{t('usu_form_rol')}</label>
             <select name="rol" value={form.rol} onChange={handleChange} className="form-control" required>
-              <option value="usuario">Usuario Estándar</option>
-              <option value="admin">Administrador</option>
+              <option value="usuario">{t('usu_estandar')}</option>
+              <option value="admin">{t('admin')}</option>
             </select>
           </div>
           <div style={{ gridColumn: 'span 2' }}>
             <button type="submit" className="btn btn-primary">
-              {editingId ? 'Actualizar Usuario' : 'Registrar Usuario'}
+              {editingId ? t('usu_actualizar') : t('usu_registrar')}
             </button>
             {editingId && (
               <button type="button" className="btn" onClick={() => { setEditingId(null); setForm({ nombre: '', correo: '', contrasena: '', rol: 'usuario' }); }} style={{ marginLeft: '1rem' }}>
-                Cancelar
+                {t('cancelar')}
               </button>
             )}
           </div>
@@ -85,15 +87,15 @@ function Usuarios() {
       </div>
 
       <div className="card">
-        <h3 style={{ marginBottom: '1rem' }}>Lista de Usuarios</h3>
+        <h3 style={{ marginBottom: '1rem' }}>{t('equipo_lista_usuarios')}</h3>
         <div className="table-container">
           <table>
             <thead>
               <tr>
-                <th>Nombre</th>
-                <th>Correo</th>
-                <th>Rol</th>
-                <th>Acciones</th>
+                <th>{t('dash_col_nombre')}</th>
+                <th>{t('correo_col_correo')}</th>
+                <th>{t('rol')}</th>
+                <th>{t('equipo_col_acciones')}</th>
               </tr>
             </thead>
             <tbody>
@@ -103,13 +105,13 @@ function Usuarios() {
                   <td>{u.correo}</td>
                   <td><span className={`badge ${u.rol === 'admin' ? 'badge-warning' : 'badge-success'}`}>{u.rol}</span></td>
                   <td>
-                    <button className="btn" style={{ padding: '0.25rem 0.5rem', background: 'var(--border)', marginRight: '0.5rem' }} onClick={() => handleEdit(u)}>Editar</button>
-                    <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem' }} onClick={() => handleDelete(u.id)}>Eliminar</button>
+                    <button className="btn" style={{ padding: '0.25rem 0.5rem', background: 'var(--border)', marginRight: '0.5rem' }} onClick={() => handleEdit(u)}>{t('editar')}</button>
+                    <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem' }} onClick={() => handleDelete(u.id)}>{t('eliminar')}</button>
                   </td>
                 </tr>
               ))}
               {usuarios.length === 0 && (
-                <tr><td colSpan="4" style={{ textAlign: 'center', padding: '2rem' }}>No hay usuarios registrados</td></tr>
+                <tr><td colSpan="4" style={{ textAlign: 'center', padding: '2rem' }}>{t('usu_no_registrados')}</td></tr>
               )}
             </tbody>
           </table>

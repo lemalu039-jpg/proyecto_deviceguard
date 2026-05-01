@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext.jsx';
 import axios from 'axios';
 import './CSS/Login.css';
 import logo from '../assets/icons/logo-deviceguard.svg';  
@@ -7,6 +8,7 @@ import correo from '../assets/icons/correo.svg';
 import usuario from '../assets/icons/usuario.svg';
 
 function Login({ onLogin }) {
+  const { t } = useLanguage();
   const [vista, setVista] = useState('login');
   const [panelSlide, setPanelSlide] = useState(false);
   const [resetToken, setResetToken] = useState('');
@@ -257,90 +259,90 @@ function Login({ onLogin }) {
                    style={{ width: '120px', height: '120px', objectFit: 'contain' }}
                 />
               </div>
-              <div style={s.title} className="login-title">Iniciar sesión</div>
+              <div style={s.title} className="login-title">{t('login_title')}</div>
               {errorLogin && <div style={s.alertErr} className="login-alert">{errorLogin}</div>}
               <div style={s.field} className="login-field">
                 <img src={correo} alt="correo" style={{ width: "16px", marginRight: "6px" }} />
-                <input className="login-input" style={s.input} type="email" placeholder="correo@deviceguard.com"
+                <input className="login-input" style={s.input} type="email" placeholder={t('login_email_ph')}
                   value={email} onChange={e => setEmail(e.target.value)} disabled={loadingLogin} />
               </div>
               <div style={s.field} className="login-field">
                 <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
-                <input className="login-input" style={s.input} type={mostrarPassword ? "text" : "password"} placeholder="••••••••••"
+                <input className="login-input" style={s.input} type={mostrarPassword ? "text" : "password"} placeholder={t('login_pass_ph')}
                   value={password} onChange={e => setPassword(e.target.value)} disabled={loadingLogin} />
               </div>
-              <div style={s.forgot} className="login-forgot" onClick={irRecuperar}>¿Olvidaste tu contraseña?</div>
+              <div style={s.forgot} className="login-forgot" onClick={irRecuperar}>{t('login_forgot')}</div>
               <button type="submit" style={loadingLogin ? s.btnOff : s.btnMain} className="login-btn" disabled={loadingLogin}>
-                {loadingLogin ? 'Iniciando sesión...' : 'Inicia sesión'}
+                {loadingLogin ? t('login_btn_loading') : t('login_btn_login')}
               </button>
             </form>
           ) : vista === 'registro' ? (
             <form onSubmit={handleRegistro}>
-              <div style={s.title} className="login-title">Crear cuenta</div>
+              <div style={s.title} className="login-title">{t('login_reg_title')}</div>
               {errorReg && <div style={s.alertErr} className="login-alert">{errorReg}</div>}
               {exitoReg && <div style={s.alertOk} className="login-alert">{exitoReg}</div>}
               <div style={s.row2} className="login-row2">
                 <div style={{ flex: 1 }}>
                   <div style={s.field} className="login-field">
                     <img src={usuario} alt="usuario" style={{ width: "14px", marginRight: "6px" }} />
-                    <input className="login-input" style={s.input} type="text" placeholder="Nombre completo"
+                    <input className="login-input" style={s.input} type="text" placeholder={t('login_reg_name_ph')}
                       value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} disabled={loadingReg} />
                   </div>
                 </div>
               </div>
               <div style={s.field} className="login-field">
                 <img src={correo} alt="correo" style={{ width: "16px", marginRight: "6px" }} />
-                <input className="login-input" style={s.input} type="email" placeholder="Correo electrónico"
+                <input className="login-input" style={s.input} type="email" placeholder={t('login_reg_email_ph')}
                   value={form.correo} onChange={e => setForm({ ...form, correo: e.target.value })} disabled={loadingReg} />
               </div>
               <div style={s.field} className="login-field">
                 <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
-                <input className="login-input" style={s.input} type="password" placeholder="Contraseña (mín. 6 caracteres)"
+                <input className="login-input" style={s.input} type="password" placeholder={t('login_reg_pass_ph')}
                   value={form.contrasena} onChange={e => setForm({ ...form, contrasena: e.target.value })} disabled={loadingReg} />
               </div>
               <div style={s.field} className="login-field">
                 <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
-                <input className="login-input" style={s.input} type="password" placeholder="Confirmar contraseña"
+                <input className="login-input" style={s.input} type="password" placeholder={t('login_reg_conf_ph')}
                   value={form.confirmar} onChange={e => setForm({ ...form, confirmar: e.target.value })} disabled={loadingReg} />
               </div>
               <button type="submit" style={loadingReg ? s.btnOff : s.btnMain} className="login-btn" disabled={loadingReg}>
-                {loadingReg ? 'Creando cuenta...' : 'Crear cuenta'}
+                {loadingReg ? t('login_btn_reg_loading') : t('login_btn_reg')}
               </button>
             </form>
           ) : vista === 'recuperar' ? (
             <form onSubmit={handleRecuperar}>
-              <div style={s.title} className="login-title">Recuperar Contraseña</div>
+              <div style={s.title} className="login-title">{t('login_rec_title')}</div>
               <p style={{textAlign: 'center', fontSize: '0.85rem', marginBottom: '1rem', color: isDark ? '#cbd5e1' : '#555'}}>
-                Ingresa tu correo y te enviaremos las instrucciones.
+                {t('login_rec_sub')}
               </p>
               {errorRecuperar && <div style={s.alertErr} className="login-alert">{errorRecuperar}</div>}
               {exitoRecuperar && <div style={s.alertOk} className="login-alert">{exitoRecuperar}</div>}
               <div style={s.field} className="login-field">
                 <img src={correo} alt="correo" style={{ width: "16px", marginRight: "6px" }} />
-                <input className="login-input" style={s.input} type="email" placeholder="Correo electrónico"
+                <input className="login-input" style={s.input} type="email" placeholder={t('login_reg_email_ph')}
                   value={emailRecuperar} onChange={e => setEmailRecuperar(e.target.value)} disabled={loadingRecuperar} />
               </div>
               <button type="submit" style={loadingRecuperar ? s.btnOff : s.btnMain} className="login-btn" disabled={loadingRecuperar}>
-                {loadingRecuperar ? 'Enviando...' : 'Enviar correo'}
+                {loadingRecuperar ? t('login_btn_rec_loading') : t('login_btn_rec')}
               </button>
             </form>
           ) : (
             <form onSubmit={handleRestablecer}>
-              <div style={s.title} className="login-title">Restablecer Contraseña</div>
+              <div style={s.title} className="login-title">{t('login_res_title')}</div>
               {errorRestablecer && <div style={s.alertErr} className="login-alert">{errorRestablecer}</div>}
               {exitoRestablecer && <div style={s.alertOk} className="login-alert">{exitoRestablecer}</div>}
               <div style={s.field} className="login-field">
                 <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
-                <input className="login-input" style={s.input} type="password" placeholder="Nueva contraseña"
+                <input className="login-input" style={s.input} type="password" placeholder={t('login_res_pass_ph')}
                   value={nuevaContrasena} onChange={e => setNuevaContrasena(e.target.value)} disabled={loadingRestablecer} />
               </div>
               <div style={s.field} className="login-field">
                 <img src={candado} alt="password" style={{ width: "16px", marginRight: "6px" }} />
-                <input className="login-input" style={s.input} type="password" placeholder="Confirmar nueva contraseña"
+                <input className="login-input" style={s.input} type="password" placeholder={t('login_res_conf_ph')}
                   value={confirmarNueva} onChange={e => setConfirmarNueva(e.target.value)} disabled={loadingRestablecer} />
               </div>
               <button type="submit" style={loadingRestablecer ? s.btnOff : s.btnMain} className="login-btn" disabled={loadingRestablecer}>
-                {loadingRestablecer ? 'Guardando...' : 'Guardar contraseña'}
+                {loadingRestablecer ? t('login_btn_res_loading') : t('login_btn_res')}
               </button>
             </form>
           )}
@@ -351,30 +353,30 @@ function Login({ onLogin }) {
           {vista === 'login' ? (
             <>
               <div style={s.panelLogo}>DeviceGuard</div>
-              <div style={s.panelTitle} className="login-panel-title">¡Bienvenido!</div>
-              <div style={s.panelSub} className="login-panel-sub">¿No tienes cuenta aún?<br />Regístrate y comienza<br />a gestionar dispositivos</div>
-              <button style={s.btnOutline} className="login-btn-outline" onClick={irRegistro} type="button">Registrarse</button>
+              <div style={s.panelTitle} className="login-panel-title">{t('login_panel_login_title')}</div>
+              <div style={s.panelSub} className="login-panel-sub">{t('login_panel_login_sub1')}<br />{t('login_panel_login_sub2')}<br />{t('login_panel_login_sub3')}</div>
+              <button style={s.btnOutline} className="login-btn-outline" onClick={irRegistro} type="button">{t('login_panel_login_btn')}</button>
             </>
           ) : vista === 'registro' ? (
             <>
               <div style={s.panelLogo}>DeviceGuard</div>
-              <div style={s.panelTitle} className="login-panel-title">¡Bienvenido de nuevo!</div>
-              <div style={s.panelSub} className="login-panel-sub">¿Ya tienes cuenta?<br />Inicia sesión para<br />continuar</div>
-              <button style={s.btnOutline} className="login-btn-outline" onClick={irLogin} type="button">Iniciar sesión</button>
+              <div style={s.panelTitle} className="login-panel-title">{t('login_panel_reg_title')}</div>
+              <div style={s.panelSub} className="login-panel-sub">{t('login_panel_reg_sub1')}<br />{t('login_panel_reg_sub2')}<br />{t('login_panel_reg_sub3')}</div>
+              <button style={s.btnOutline} className="login-btn-outline" onClick={irLogin} type="button">{t('login_panel_reg_btn')}</button>
             </>
           ) : vista === 'recuperar' ? (
             <>
               <div style={s.panelLogo}>DeviceGuard</div>
-              <div style={s.panelTitle} className="login-panel-title">Tranquilo</div>
-              <div style={s.panelSub} className="login-panel-sub">Suele pasar.<br />Ingresa tu correo y te ayudaremos<br />a recuperar el acceso.</div>
-              <button style={s.btnOutline} className="login-btn-outline" onClick={irLogin} type="button">Volver al Login</button>
+              <div style={s.panelTitle} className="login-panel-title">{t('login_panel_rec_title')}</div>
+              <div style={s.panelSub} className="login-panel-sub">{t('login_panel_rec_sub1')}<br />{t('login_panel_rec_sub2')}<br />{t('login_panel_rec_sub3')}</div>
+              <button style={s.btnOutline} className="login-btn-outline" onClick={irLogin} type="button">{t('login_panel_rec_btn')}</button>
             </>
           ) : (
             <>
               <div style={s.panelLogo}>DeviceGuard</div>
-              <div style={s.panelTitle} className="login-panel-title">Casi listo</div>
-              <div style={s.panelSub} className="login-panel-sub">Ingresa una nueva contraseña<br />para tu cuenta y asegúrate<br />de recordarla.</div>
-              <button style={s.btnOutline} className="login-btn-outline" onClick={irLogin} type="button">Volver al Login</button>
+              <div style={s.panelTitle} className="login-panel-title">{t('login_panel_res_title')}</div>
+              <div style={s.panelSub} className="login-panel-sub">{t('login_panel_res_sub1')}<br />{t('login_panel_res_sub2')}<br />{t('login_panel_res_sub3')}</div>
+              <button style={s.btnOutline} className="login-btn-outline" onClick={irLogin} type="button">{t('login_panel_rec_btn')}</button>
             </>
           )}
         </div>

@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import "./CSS/Consultarfiltros.css";
 import { getDispositivos } from "../services/api";
 import Pagination from "../components/Pagination";
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 function ConsultarFiltros() {
+  const { t } = useLanguage();
   const [data, setData] = useState([]);
   const [filtros, setFiltros] = useState({ fecha: "", nombre: "", ubicacion: "", estado: "" });
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,12 +50,12 @@ function ConsultarFiltros() {
     <div className="filtros-wrapper">
 
       {/* 🔹 TÍTULO */}
-      <h2 className="filtros-title">Consulta Con Filtros</h2>
+      <h2 className="filtros-title">{t('consulta_filtros_title')}</h2>
 
       {/* 🔍 BARRA */}
       <div className="filtros-bar">
 
-        <span className="filtros-label">Filtrar Por</span>
+        <span className="filtros-label">{t('filtrar')}</span>
 
         <input
           type="date"
@@ -65,7 +67,7 @@ function ConsultarFiltros() {
         <input
           type="text"
           name="nombre"
-          placeholder="Nombre"
+          placeholder={t('dash_col_nombre')}
           value={filtros.nombre}
           onChange={handleChange}
         />
@@ -73,7 +75,7 @@ function ConsultarFiltros() {
         <input
           type="text"
           name="ubicacion"
-          placeholder="Ubicación"
+          placeholder={t('dash_col_ubicacion')}
           value={filtros.ubicacion}
           onChange={handleChange}
         />
@@ -84,15 +86,15 @@ function ConsultarFiltros() {
           onChange={handleChange}
           className="filtros-select"
         >
-          <option value="">Estado</option>
-          <option value="En Revision">En Revision</option>
-          <option value="En Mantenimiento">En Mantenimiento</option>
-          <option value="Listo para Entrega">Listo para Entrega</option>
-          <option value="Entregado">Entregado</option>
+          <option value="">{t('dash_col_estado')}</option>
+          <option value="En Revision">{t('dash_en_revision')}</option>
+          <option value="En Mantenimiento">{t('dash_en_mantenimiento')}</option>
+          <option value="Listo para Entrega">{t('dash_listo_entrega')}</option>
+          <option value="Entregado">{t('dash_entregado')}</option>
         </select>
 
         <button className="btn-clear" onClick={limpiarFiltros}>
-          Borrar Filtro
+          {t('limpiar_filtros')}
         </button>
 
       </div>
@@ -102,18 +104,18 @@ function ConsultarFiltros() {
         <table className="filtros-table">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Ubicación</th>
-              <th>Fecha Registro</th>
-              <th>Serial</th>
-              <th>Estado</th>
-              {esSuperAdmin && <th>Registrado por</th>}
+              <th>{t('dash_col_nombre')}</th>
+              <th>{t('dash_col_ubicacion')}</th>
+              <th>{t('dash_col_fecha_reg')}</th>
+              <th>{t('dash_col_serial')}</th>
+              <th>{t('dash_col_estado')}</th>
+              {esSuperAdmin && <th>{t('dash_col_reg_por')}</th>}
             </tr>
           </thead>
 
           <tbody>
             {dataFiltrada.length === 0 ? (
-              <tr><td colSpan={esSuperAdmin ? 6 : 5}>No hay resultados</td></tr>
+              <tr><td colSpan={esSuperAdmin ? 6 : 5}>{t('dash_no_dispositivos')}</td></tr>
             ) : (
               dataFiltrada.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((d) => (
                 <tr key={d.id}>
