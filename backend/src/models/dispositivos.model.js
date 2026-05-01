@@ -10,10 +10,12 @@ class DispositivoModel {
   static async findAll() {
     const [rows] = await pool.query(`
       SELECT d.*, COALESCE(e.nombre, 'Sin estado') AS estado,
-             u.nombre AS registrado_por
+             u.nombre AS registrado_por,
+             t.nombre AS tecnico_asignado
       FROM dispositivos d
       LEFT JOIN estados e  ON d.estado_id = e.id
       LEFT JOIN usuarios u ON d.usuario_id = u.id
+      LEFT JOIN usuarios t ON d.tecnico_id = t.id
       WHERE d.activo = 1
       ORDER BY d.id DESC
     `);
@@ -23,10 +25,12 @@ class DispositivoModel {
   static async findById(id) {
     const [rows] = await pool.query(`
       SELECT d.*, COALESCE(e.nombre, 'Sin estado') AS estado,
-             u.nombre AS registrado_por
+             u.nombre AS registrado_por,
+             t.nombre AS tecnico_asignado
       FROM dispositivos d
       LEFT JOIN estados e  ON d.estado_id = e.id
       LEFT JOIN usuarios u ON d.usuario_id = u.id
+      LEFT JOIN usuarios t ON d.tecnico_id = t.id
       WHERE d.id = ? AND d.activo = 1
     `, [id]);
     return rows[0];

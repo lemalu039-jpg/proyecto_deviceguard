@@ -38,6 +38,21 @@ async function runMigration() {
         const [resDevices] = await pool.query('UPDATE dispositivos SET activo = 1');
         console.log(`Dispositivos actualizados: ${resDevices.affectedRows}`);
 
+        // Agregar columna tecnico_id a dispositivos
+        try {
+            await pool.query('ALTER TABLE dispositivos ADD COLUMN tecnico_id INT NULL');
+            console.log("Columna 'tecnico_id' agregada a 'dispositivos'");
+            
+            await pool.query('ALTER TABLE dispositivos ADD CONSTRAINT fk_tecnico FOREIGN KEY (tecnico_id) REFERENCES usuarios(id) ON DELETE SET NULL');
+            console.log("Foreign Key 'fk_tecnico' añadida");
+        } catch (e) {
+            if (e.code === 'ER_DUP_FIELDNAME') {
+                console.log("La columna 'tecnico_id' ya existe en 'dispositivos'");
+            } else {
+                console.log("Aviso en tecnico_id/FK (puede que ya exista):", e.message);
+            }
+        }
+
         console.log("Migración completada con éxito.");
     } catch (error) {
         console.error("Error durante la migración:", error.message);

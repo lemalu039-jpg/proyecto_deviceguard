@@ -168,12 +168,14 @@ function Equipo() {
             <span className="equipo-card-correo">{u.correo}</span>
             <span className={`equipo-card-rol ${
               u.rol === "super_admin" ? "super-admin" : 
+              u.rol === "admin" ? "admin" :
               u.rol === "tecnico" ? "tecnico" : 
               "usuario"
             }`}>
               {u.rol === "super_admin" ? "Super Admin" : 
-               u.rol === "tecnico" ? t('tecnico') : 
-               t('usuario_normal')}
+              u.rol === "admin" ? t('admin') || "Administrador" :
+              u.rol === "tecnico" ? t('tecnico') : 
+              t('usuario_normal')}
             </span>
             {u.id !== usuarioActual.id && (
               <button className="equipo-card-msg-btn" onClick={() => navigate("/correo", { state: { contacto: u } })}>
@@ -278,17 +280,19 @@ function Equipo() {
                     </td>
                     <td>{u.correo}</td>
                     <td>
-                      <span className={`equipo-badge ${
-                        u.activo === 0 ? "inactivo" :
-                        u.rol === "super_admin" ? "super-admin" : 
-                        u.rol === "tecnico" ? "tecnico" : 
-                        "usuario"
-                      }`}>
-                        {u.activo === 0 ? t('equipo_suspendido') : 
-                         u.rol === "super_admin" ? "Super Admin" : 
-                         u.rol === "tecnico" ? t('tecnico') : 
-                         t('usuario_normal')}
-                      </span>
+                     <span className={`equipo-badge ${
+  u.activo === 0 ? "inactivo" :
+  u.rol === "super_admin" ? "super-admin" : 
+  u.rol === "admin" ? "admin" :
+  u.rol === "tecnico" ? "tecnico" : 
+  "usuario"
+}`}>
+  {u.activo === 0 ? t('equipo_suspendido') : 
+   u.rol === "super_admin" ? "Super Admin" : 
+   u.rol === "admin" ? t('admin') || "Administrador" :
+   u.rol === "tecnico" ? t('tecnico') : 
+   t('usuario_normal')}
+</span>
                     </td>
                     <td>{u.fecha_creacion ? (
                       <>
@@ -394,6 +398,7 @@ function Equipo() {
                   <select name="rol" value={form.rol} onChange={handleChange}>
                     <option value="usuario">{t('usuario_normal')}</option>
                     <option value="tecnico">{t('tecnico')}</option>
+                    <option value="admin">{t('admin') || 'Administrador'}</option>
                   </select>
                 </div>
                 <div className="equipo-form-group">
@@ -433,6 +438,7 @@ function Equipo() {
                   <select value={formEditar.rol} onChange={e => setFormEditar({ ...formEditar, rol: e.target.value })}>
                     <option value="usuario">{t('usuario_normal')}</option>
                     <option value="tecnico">{t('tecnico')}</option>
+                    <option value="admin">{t('admin') || 'Administrador'}</option>
                   </select>
                 </div>
               </div>

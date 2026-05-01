@@ -97,10 +97,11 @@ const usuariosFiltrados = usuarios
     { path: "/estadisticas", label: t('estadisticas'), icon: estadisticas_ },
     { path: "/ajustes-cuenta", label: t('ajustes_cuenta_nav'), icon: settings },
   ] : [
+    { path: "/asignaciones", label: t('asignacion_title') || "Asignar Tareas", icon: gestion_mantenimiento }, 
     { path: "/reportes", label: t('generar_reportes'), icon: generar_reportes_ },
     { path: "/registrarsalida", label: t('registrar_salida'), icon: registrarsalida_ },
     { path: "/estadisticas", label: t('estadisticas'), icon: estadisticas_ },
-    { path: "/equipo", label: t('equipo'), icon: equipo_ },
+    ...(esSuperAdmin || rol === "admin" ? [{ path: "/equipo", label: t('equipo'), icon: equipo_ }] : []),
     { path: "/gestion", label: t('gestion_mantenimiento'), icon: gestion_mantenimiento },
     { path: "/ajustes-cuenta", label: t('ajustes_cuenta_nav'), icon: settings },
   ];
@@ -276,7 +277,7 @@ const usuariosFiltrados = usuarios
               {usuario?.nombre || "Usuario"}
             </p>
             <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-muted)" }}>
-              {usuario?.rol === "super_admin" ? "Super Admin" : usuario?.rol === "tecnico" ? t('tecnico') : t('usuario_normal')}
+              {usuario?.rol === "super_admin" ? "Super Admin" : usuario?.rol === "admin" ? t('admin') || "Administrador" : usuario?.rol === "tecnico" ? t('tecnico') : t('usuario_normal')}
             </p>
           </div>
         </div>
