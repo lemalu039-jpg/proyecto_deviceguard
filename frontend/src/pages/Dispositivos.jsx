@@ -80,7 +80,7 @@ function Dispositivos() {
       const ahora = new Date();
       formData.set('fecha_registro', ahora.toISOString().split('T')[0]);
       formData.set('hora_registro', ahora.toTimeString().slice(0, 5));
-      if (!editingId) formData.set('estado', 'En Revision');
+      if (!editingId) formData.set('estado', 'En Revisión');
       const archivo = document.getElementById('archivo');
       if (archivo && archivo.files[0]) formData.append('archivo', archivo.files[0]);
       if (editingId) {
@@ -210,12 +210,12 @@ function Dispositivos() {
                   <div className="col-md-6">
                     <label className="disp-modal-label">Nombre</label>
                     <input type="text" name="nombre" value={form.nombre} onChange={handleChange}
-                      placeholder="Ej: Portatil HP ProBook" required className="disp-modal-input" />
+                      placeholder="Ej: Portátil HP ProBook" required className="disp-modal-input" />
                   </div>
                   <div className="col-md-6">
                     <label className="disp-modal-label">Tipo</label>
                     <input type="text" name="tipo" value={form.tipo} onChange={handleChange}
-                      placeholder="Ej: Portatil, Proyector..." required className="disp-modal-input" />
+                      placeholder="Ej: Portátil, Proyector..." required className="disp-modal-input" />
                   </div>
                   <div className="col-md-6">
                     <label className="disp-modal-label">Serial</label>
@@ -238,7 +238,7 @@ function Dispositivos() {
                     <input type="text" value="En Revision" disabled className="disp-modal-input" />
                   </div>
                   <div className="col-12">
-                    <label className="disp-modal-label">Descripcion del equipo</label>
+                    <label className="disp-modal-label">Descripción del equipo</label>
                     <textarea
                       name="descripcion"
                       value={form.descripcion}
@@ -311,7 +311,7 @@ function Dispositivos() {
                   ))}
                   {reingreso.dispositivo.descripcion && (
                     <div className="reingreso-info-row" style={{ flexDirection: 'column', gap: '3px' }}>
-                      <span className="reingreso-info-label">Descripci�n</span>
+                      <span className="reingreso-info-label">Descripción</span>
                       <span className="reingreso-info-val" style={{ fontSize: '.78rem' }}>
                         {reingreso.dispositivo.descripcion}
                       </span>
@@ -319,7 +319,7 @@ function Dispositivos() {
                   )}
                   <div className="reingreso-confirm-msg">
                     �Deseas reingresar este dispositivo?<br />
-                    <span>Su estado cambiar� a <strong>En Revisi�n</strong></span>
+                    <span>Su estado cambiará a <strong>En Revisión</strong></span>
                   </div>
                 </div>
               )}
@@ -354,7 +354,7 @@ function Dispositivos() {
             style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none', flexShrink: 0 }}
           >
             <option value="">Todos los estados</option>
-            <option value="En Revision">En Revision</option>
+            <option value="En Revision">En Revisión</option>
             <option value="En Mantenimiento">En Mantenimiento</option>
             <option value="Listo para Entrega">Listo para Entrega</option>
             <option value="Entregado">Entregado</option>
@@ -394,7 +394,7 @@ function Dispositivos() {
                   </td>
                   <td>{d.serial}</td>
                   <td>{d.marca}</td>
-                  <td>{d.ubicacion || 'N/A'}</td>
+                  <td>{d.Ubicación || 'N/A'}</td>
                   <td>
                     {formatFecha(d.fecha_registro)}<br />
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>

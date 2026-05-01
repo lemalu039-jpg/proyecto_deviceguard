@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "./Sidebar.css";
 import dashboard_ from "../assets/icons/dashboard_.svg";
-import dispositivos_ from "../assets/icons/dispositivos_.svg";
+import dispositivos_ from "../assets/icons/Dispositivos_.svg";
 import correo_ from "../assets/icons/correo_.svg";
 import consultafiltros_ from "../assets/icons/consultafiltros_.svg";
 import generar_reportes_ from "../assets/icons/generar_reportes_.svg";
