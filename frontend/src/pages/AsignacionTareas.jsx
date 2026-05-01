@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { getDispositivos, updateDispositivo } from "../services/api";
 import axios from 'axios';
-import "./CSS/GestionMantenimiento.css"; // Reutilizamos estilos
+import "./css/GestionMantenimiento.css"; // Reutilizamos estilos
 import Pagination from "../components/Pagination";
 import { useLanguage } from "../context/LanguageContext.jsx";
 
