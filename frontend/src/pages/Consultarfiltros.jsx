@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./CSS/Consultarfiltros.css";
-import { getDispositivos } from "../services/api";
+import { getDispositivos, getDispositivosAsignados } from "../services/api";
 import Pagination from "../components/Pagination";
 import { useLanguage } from "../context/LanguageContext.jsx";
 
@@ -10,16 +10,20 @@ function ConsultarFiltros() {
   const [filtros, setFiltros] = useState({ fecha: "", nombre: "", ubicacion: "", estado: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
-  const esSuperAdmin = (JSON.parse(localStorage.getItem('usuario')||'{}')).rol === 'super_admin';
+  const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+  const esSuperAdmin = usuario.rol === 'super_admin';
+  const esTecnico = usuario.rol === 'tecnico';
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
-    const res = await getDispositivos();
-    console.log('dispositivos en Consultar filtros',res.data); // AGREGA ESTO
-    setData(res.data);
+    if (esTecnico) {
+      const res = await getDispositivosAsignados(usuario.id);
+      setData(res.data || []);
+    } else {
+      const res = await getDispositivos();
+      setData(res.data);
+    }
   };
 
   const handleChange = (e) => {

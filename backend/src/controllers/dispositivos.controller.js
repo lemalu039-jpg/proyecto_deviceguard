@@ -192,3 +192,20 @@ exports.getBySerial = async (req, res) => {
         res.status(500).json({ message: "Error servidor" });
     }
 };
+
+exports.getAsignados = async (req, res) => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT d.id, d.nombre, d.serial, d.marca, d.tipo,
+                   COALESCE(e.nombre, 'Sin estado') AS estado,
+                   d.fecha_registro
+            FROM dispositivos d
+            LEFT JOIN estados e ON d.estado_id = e.id
+            WHERE d.tecnico_id = ? AND d.activo = 1
+            ORDER BY d.id DESC
+        `, [req.params.tecnico_id]);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};

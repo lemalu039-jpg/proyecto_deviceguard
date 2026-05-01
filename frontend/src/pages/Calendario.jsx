@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getDispositivos, updateDispositivo, deleteDispositivo } from '../services/api';
+import { getDispositivos, getDispositivosAsignados, updateDispositivo, deleteDispositivo } from '../services/api';
 import './CSS/Calendario_responsive.css';
 import { useLanguage } from '../context/LanguageContext.jsx';
 
@@ -27,6 +27,7 @@ function Calendario() {
 
   const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
   const esUsuario = usuarioActual.rol === 'usuario';
+  const esTecnico = usuarioActual.rol === 'tecnico';
   const storageKey = `eventosCustom_${usuarioActual.id || 'guest'}`;
 
   const [eventosCustom, setEventosCustom] = useState(() => {
@@ -35,13 +36,25 @@ function Calendario() {
   });
 
   useEffect(() => {
-    getDispositivos().then(res => {
-      const todos = res.data;
-      const filtrados = esUsuario
-        ? todos.filter(d => d.usuario_id === usuarioActual.id)
-        : todos;
-      setDispositivos(filtrados);
-    }).catch(console.error);
+    const cargar = async () => {
+      try {
+        let filtrados;
+        if (esTecnico) {
+          const res = await getDispositivosAsignados(usuarioActual.id);
+          filtrados = (res.data || []).filter(d => d.estado !== 'Entregado');
+        } else {
+          const res = await getDispositivos();
+          const todos = res.data;
+          if (esUsuario) {
+            filtrados = todos.filter(d => d.usuario_id === usuarioActual.id && d.estado !== 'Entregado');
+          } else {
+            filtrados = todos.filter(d => d.estado !== 'Entregado');
+          }
+        }
+        setDispositivos(filtrados);
+      } catch (e) { console.error(e); }
+    };
+    cargar();
   }, []);
 
   const year = fecha.getFullYear();
@@ -60,6 +73,7 @@ function Calendario() {
   const eventosDia = (dia) => {
     const regEvents = dispositivos.filter(d => {
       if (!d.fecha_registro) return false;
+      if (d.estado === 'Entregado') return false;
       const f = new Date(d.fecha_registro);
       return f.getDate() === dia && f.getMonth() === month && f.getFullYear() === year;
     }).map(d => ({ ...d, isRegistro: true }));
@@ -91,7 +105,7 @@ function Calendario() {
   };
 
   const proximosEventos = [
-    ...dispositivos.filter(d => d.fecha_registro).map(d => ({
+    ...dispositivos.filter(d => d.fecha_registro && d.estado !== 'Entregado').map(d => ({
       ...d, _fecha: new Date(d.fecha_registro), isRegistro: true
     })),
     ...eventosCustom.filter(e => e.fecha_estimada).map(e => {
@@ -163,8 +177,17 @@ function Calendario() {
         hora_salida: esSalida ? ahora.toTimeString().slice(0, 5) : null,
       });
       setMensajeSalida(t('cal_accion_registrada'));
-      const res = await getDispositivos();
-      setDispositivos(res.data);
+      if (esTecnico) {
+        const res = await getDispositivosAsignados(usuarioActual.id);
+        setDispositivos((res.data || []).filter(d => d.estado !== 'Entregado'));
+      } else {
+        const res = await getDispositivos();
+        const todos = res.data;
+        setDispositivos(esUsuario
+          ? todos.filter(d => d.usuario_id === usuarioActual.id && d.estado !== 'Entregado')
+          : todos.filter(d => d.estado !== 'Entregado')
+        );
+      }
 
       if (eventoSalida.isCustom && eventoSalida.id_evento) {
         const eventosActualizados = eventosCustom.map(e =>
