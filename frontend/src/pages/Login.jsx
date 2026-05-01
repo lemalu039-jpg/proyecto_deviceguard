@@ -37,6 +37,26 @@ function Login({ onLogin }) {
   const [errorLogin, setErrorLogin] = useState('');
   const [loadingLogin, setLoadingLogin] = useState(false);
 
+  const [intentosFallidos, setIntentosFallidos] = useState(0);
+  const [bloqueadoHasta, setBloqueadoHasta] = useState(null);
+  const [tiempoRestante, setTiempoRestante] = useState(0);
+
+  useEffect(() => {
+  if (!bloqueadoHasta) return;
+  const intervalo = setInterval(() => {
+    const restante = Math.ceil((bloqueadoHasta - Date.now()) / 1000);
+    if (restante <= 0) {
+      setBloqueadoHasta(null);
+      setIntentosFallidos(0);
+      setTiempoRestante(0);
+      clearInterval(intervalo);
+    } else {
+      setTiempoRestante(restante);
+    }
+  }, 1000);
+  return () => clearInterval(intervalo);
+}, [bloqueadoHasta]);
+
   const [form, setForm] = useState({ nombre: '', correo: '', contrasena: '', confirmar: '', rol: 'usuario' });
   const [errorReg, setErrorReg] = useState('');
   const [exitoReg, setExitoReg] = useState('');
@@ -110,27 +130,44 @@ function Login({ onLogin }) {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setErrorLogin('');
-    if (!email || !password) { setErrorLogin('Por favor ingresa tu correo y contraseña.'); return; }
-    setLoadingLogin(true);
-    try {
-      const response = await axios.post('http://localhost:5000/api/usuarios/login', {
-        correo: email,
-        contrasena: password
-      });
-      if (response.data.usuario) {
-        localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
-        onLogin(response.data.usuario);
-      }
-    } catch (err) {
-      if (err.response) setErrorLogin(err.response.data.error || 'Error al iniciar sesión');
+  e.preventDefault();
+  setErrorLogin('');
+
+  if (bloqueadoHasta && Date.now() < bloqueadoHasta) {
+    setErrorLogin(`Demasiados intentos fallidos. Espera ${tiempoRestante} segundos.`);
+    return;
+  }
+
+  if (!email || !password) { setErrorLogin('Por favor ingresa tu correo y contraseña.'); return; }
+  setLoadingLogin(true);
+  try {
+    const response = await axios.post('http://localhost:5000/api/usuarios/login', {
+      correo: email,
+      contrasena: password
+    });
+    if (response.data.usuario) {
+      setIntentosFallidos(0);
+      setBloqueadoHasta(null);
+      localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
+      onLogin(response.data.usuario);
+    }
+  } catch (err) {
+    const nuevoIntentos = intentosFallidos + 1;
+    setIntentosFallidos(nuevoIntentos);
+    if (nuevoIntentos >= 5) {
+      const hasta = Date.now() + 60000;
+      setBloqueadoHasta(hasta);
+      setErrorLogin('Demasiados intentos fallidos. Espera 60 segundos.');
+    } else {
+      const restantes = 5 - nuevoIntentos;
+      if (err.response) setErrorLogin(`${err.response.data.error || 'Error al iniciar sesión'} — ${restantes} intento${restantes !== 1 ? 's' : ''} restante${restantes !== 1 ? 's' : ''}.`);
       else if (err.request) setErrorLogin('No se pudo conectar con el servidor.');
       else setErrorLogin('Error al procesar la solicitud');
-    } finally {
-      setLoadingLogin(false);
     }
-  };
+  } finally {
+    setLoadingLogin(false);
+  }
+};
 
   const handleRegistro = async (e) => {
     e.preventDefault();
@@ -272,9 +309,9 @@ function Login({ onLogin }) {
                   value={password} onChange={e => setPassword(e.target.value)} disabled={loadingLogin} />
               </div>
               <div style={s.forgot} className="login-forgot" onClick={irRecuperar}>{t('login_forgot')}</div>
-              <button type="submit" style={loadingLogin ? s.btnOff : s.btnMain} className="login-btn" disabled={loadingLogin}>
-                {loadingLogin ? t('login_btn_loading') : t('login_btn_login')}
-              </button>
+              <button type="submit" style={loadingLogin || bloqueadoHasta ? s.btnOff : s.btnMain} className="login-btn" disabled={loadingLogin || !!bloqueadoHasta}>
+  {bloqueadoHasta ? `Espera ${tiempoRestante}s` : loadingLogin ? t('login_btn_loading') : t('login_btn_login')}
+</button>
             </form>
           ) : vista === 'registro' ? (
             <form onSubmit={handleRegistro}>
