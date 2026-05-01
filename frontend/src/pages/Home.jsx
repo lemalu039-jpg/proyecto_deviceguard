@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
+﻿import { useEffect, useRef } from 'react';
 import { useLanguage } from '../context/LanguageContext.jsx';
 import { useNavigate } from 'react-router-dom';
-import './CSS/Home.css';
+import './css/Home.css';
 import candado from '../assets/icons/logo-deviceguard.svg';
 
 function Home() {

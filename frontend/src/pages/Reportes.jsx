@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import "./CSS/Reportes.css";
+﻿import { useState, useEffect, useCallback } from "react";
+import "./css/Reportes.css";
 import axios from "axios";
 import api from "../services/api";
 import usuariosIcon from "../assets/icons/reportes_usuario.svg";

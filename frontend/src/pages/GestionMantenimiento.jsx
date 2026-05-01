@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { getDispositivos, updateDispositivo } from "../services/api";
-import "./CSS/GestionMantenimiento.css";
+import "./css/GestionMantenimiento.css";
 import Pagination from "../components/Pagination";
 import { useLanguage } from "../context/LanguageContext.jsx";
 

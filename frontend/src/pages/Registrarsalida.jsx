@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Modal } from 'bootstrap';
 import {
   getDispositivos,
   getDispositivoBySerial,
   updateDispositivo
 } from "../services/api";
-import "./CSS/Registrarsalida.css";
+import "./css/Registrarsalida.css";
 import Pagination from "../components/Pagination";
 import { useLanguage } from "../context/LanguageContext.jsx";
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
   getCorreos,
@@ -6,7 +6,7 @@ import {
   getConversacion,
   enviarMensaje,
 } from "../services/api";
-import "./CSS/Correo.css";
+import "./css/Correo.css";
 import { useLanguage } from "../context/LanguageContext.jsx";
 
 // Íconos inline simples

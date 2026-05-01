@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getHistorial, createObservacion } from '../services/api';
-import './CSS/HistorialDispositivo.css';
+import './css/HistorialDispositivo.css';
 import { useLanguage } from '../context/LanguageContext.jsx';
 
 function HistorialDispositivo() {
