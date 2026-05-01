@@ -522,7 +522,19 @@ const translations = {
     cal_confirmar_btn: "✓ Confirmar",
     cal_detalle_equipo: "Detalle del equipo",
     ene: "Enero", feb: "Febrero", mar: "Marzo", abr: "Abril", may: "Mayo", jun: "Junio", jul: "Julio", ago: "Agosto", sep: "Septiembre", oct: "Octubre", nov: "Noviembre", dic: "Diciembre",
-    dom: "Dom", lun: "Lun", mar_dia: "Mar", mie: "Mié", jue: "Jue", vie: "Vie", sab: "Sáb"
+    dom: "Dom", lun: "Lun", mar_dia: "Mar", mie: "Mié", jue: "Jue", vie: "Vie", sab: "Sáb",
+
+    // Asignaciones
+    asignacion_title: "Asignación de Tareas",
+    asignacion_sin_tecnicos: "No hay técnicos disponibles.",
+    asignacion_sin_dispositivos: "No hay dispositivos pendientes por asignar.",
+    asignacion_tecnicos_disponibles: "Técnicos Disponibles",
+    asignacion_tareas_activas: "tareas activas",
+    asignacion_btn_asignar: "Asignar",
+    asignacion_seleccionar_tecnico: "Seleccionar técnico...",
+    asignacion_exito: "Dispositivo asignado exitosamente",
+    asignacion_error: "Error al asignar dispositivo",
+    asignacion_pendientes: "Dispositivos por Asignar"
   },
   en: {
     // Account settings
@@ -1045,7 +1057,18 @@ const translations = {
     cal_confirmar_btn: "✓ Confirm",
     cal_detalle_equipo: "Equipment Detail",
     ene: "January", feb: "February", mar: "March", abr: "April", may: "May", jun: "June", jul: "July", ago: "August", sep: "September", oct: "October", nov: "November", dic: "December",
-    dom: "Sun", lun: "Mon", mar_dia: "Tue", mie: "Wed", jue: "Thu", vie: "Fri", sab: "Sat"
+    dom: "Sun", lun: "Mon", mar_dia: "Tue", mie: "Wed", jue: "Thu", vie: "Fri", sab: "Sat",
+    // Asignaciones
+    asignacion_title: "Task Assignment",
+    asignacion_sin_tecnicos: "No technicians available.",
+    asignacion_sin_dispositivos: "No devices pending assignment.",
+    asignacion_tecnicos_disponibles: "Available Technicians",
+    asignacion_tareas_activas: "active tasks",
+    asignacion_btn_asignar: "Assign",
+    asignacion_seleccionar_tecnico: "Select technician...",
+    asignacion_exito: "Device assigned successfully",
+    asignacion_error: "Error assigning device",
+    asignacion_pendientes: "Pending Devices"
   }
 };
 

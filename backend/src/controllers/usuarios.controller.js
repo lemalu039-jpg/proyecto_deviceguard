@@ -29,7 +29,11 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        const insertId = await UsuarioModel.create(req.body);
+        const data = { ...req.body };
+        if (data.contrasena) {
+            data.contrasena = await bcrypt.hash(data.contrasena, SALT_ROUNDS);
+        }
+        const insertId = await UsuarioModel.create(data);
         res.status(201).json({ id: insertId, ...req.body });
     } catch (error) {
         res.status(500).json({ error: error.message });

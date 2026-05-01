@@ -634,3 +634,13 @@
   color: var(--text-muted);
   font-weight: 400;
 }
+
+.equipo-badge.admin {
+  background: #7c3aed20;
+  color: #7c3aed;
+}
+
+.equipo-card-rol.admin {
+  background: #7c3aed20;
+  color: #7c3aed;
+}

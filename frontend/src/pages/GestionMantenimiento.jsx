@@ -20,9 +20,18 @@ function GestionMantenimiento() {
   const loadData = async () => {
     try {
       const res = await getDispositivos();
-      const filtrados = res.data.filter(d => 
-  d.estado === "En Revision" || d.estado === "Listo para Entrega"
-);
+      const user = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const isAdmin = user.rol === 'admin' || user.rol === 'super_admin';
+      
+      const filtrados = res.data.filter(d => {
+        const estadoValido = d.estado === "En Revision" || d.estado === "Listo para Entrega" || d.estado === "En Mantenimiento";
+        if (!estadoValido) return false;
+        
+        // Si no es admin, solo ve los que le fueron asignados
+        if (!isAdmin && d.tecnico_id !== user.id) return false;
+        
+        return true;
+      });
       setDispositivos(filtrados);
     } catch (error) {
       console.error(error);

@@ -25,6 +25,7 @@ import Equipo from './pages/Equipo';
 import Calendario from './pages/Calendario';
 import HistorialDispositivo from './pages/HistorialDispositivo';
 import AjustesCuenta from './pages/AjustesCuenta';
+import AsignacionTareas from './pages/AsignacionTareas';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -105,6 +106,7 @@ function App() {
           <Route path="/gestion" element={<ProtectedRoute><GestionMantenimiento /></ProtectedRoute>} />
           <Route path="/equipo" element={<ProtectedRoute><Equipo /></ProtectedRoute>} />
           <Route path="/calendario" element={<ProtectedRoute><Calendario /></ProtectedRoute>} />
+          <Route path="/asignaciones" element={<ProtectedRoute><AsignacionTareas /></ProtectedRoute>} />
           <Route path="/historial/:id" element={<ProtectedRoute><HistorialDispositivo /></ProtectedRoute>} />
           <Route path="/ajustes-cuenta" element={<ProtectedRoute><AjustesCuenta onLogout={handleLogout} /></ProtectedRoute>} />
         </Routes>
