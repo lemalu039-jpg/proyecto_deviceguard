@@ -9,11 +9,15 @@ const crearReporte = async (tipo, modulo, usuario_id) => {
   return result;
 };
 
-const obtenerTotalReportes = async () => {
-  const [rows] = await db.query(`
-    SELECT COUNT(*) as total FROM reportes
-  `);
-
+const obtenerTotalReportes = async (usuario_id = null) => {
+  if (usuario_id) {
+    const [rows] = await db.query(
+      `SELECT COUNT(*) as total FROM reportes WHERE usuario_id = ?`,
+      [usuario_id]
+    );
+    return rows[0];
+  }
+  const [rows] = await db.query(`SELECT COUNT(*) as total FROM reportes`);
   return rows[0];
 };
 

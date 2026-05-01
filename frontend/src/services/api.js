@@ -30,6 +30,8 @@ apiMultipart.interceptors.request.use(config => {
     return config;
 });
 
+
+export const getDispositivosAsignados = (tecnicoId) => api.get(`/dispositivos/asignados/${tecnicoId}`);
 // Usuarios
 export const getUsuarios = () => api.get('/usuarios');
 export const getUsuario = (id) => api.get(`/usuarios/${id}`);

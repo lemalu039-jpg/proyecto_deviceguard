@@ -23,19 +23,22 @@ const previewUsuarios = async (req, res) => {
   }
 };
 
-// ── Vista previa de dispositivos ──
 const previewDispositivos = async (req, res) => {
   try {
-    const { busqueda } = req.query;
+    const { busqueda, tecnico_id } = req.query;
     let query = `
       SELECT d.id, d.nombre, d.serial, COALESCE(e.nombre, 'Sin estado') AS estado,
-             u.nombre AS usuario, d.fecha_registro
+             u.nombre AS usuario, d.fecha_registro, d.hora_registro
       FROM dispositivos d
       LEFT JOIN estados e ON d.estado_id = e.id
       LEFT JOIN usuarios u ON d.usuario_id = u.id
       WHERE d.activo = 1
     `;
     const params = [];
+    if (tecnico_id) {
+      query += " AND d.tecnico_id = ?";
+      params.push(tecnico_id);
+    }
     if (busqueda) {
       query += " AND (d.nombre LIKE ? OR d.serial LIKE ? OR e.nombre LIKE ? OR u.nombre LIKE ?)";
       const like = `%${busqueda}%`;
@@ -53,6 +56,15 @@ const previewDispositivos = async (req, res) => {
 const generarExcelDispositivos = async (req, res) => {
   try {
     const { desde, hasta, estado } = req.query;
+    const usuario_id = req.headers['x-usuario-id'] || null;
+
+    // Verificar si es técnico
+    let esTecnico = false;
+    if (usuario_id) {
+      const [rows] = await db.query('SELECT rol FROM usuarios WHERE id = ? LIMIT 1', [usuario_id]);
+      esTecnico = rows[0]?.rol === 'tecnico';
+    }
+
     let query = `
       SELECT d.*, COALESCE(e.nombre, 'Sin estado') AS estado_nombre
       FROM dispositivos d
@@ -60,21 +72,16 @@ const generarExcelDispositivos = async (req, res) => {
       WHERE d.activo = 1
     `;
     const params = [];
+    if (esTecnico) { query += " AND d.tecnico_id = ?"; params.push(usuario_id); }
     if (desde) { query += " AND DATE(d.fecha_registro) >= ?"; params.push(desde); }
     if (hasta) { query += " AND DATE(d.fecha_registro) <= ?"; params.push(hasta); }
     if (estado && estado !== "todos") { query += " AND e.nombre = ?"; params.push(estado); }
 
     const [dispositivos] = await db.query(query, params);
 
-    if (!dispositivos || dispositivos.length === 0) {
-      return res.status(404).send("No hay dispositivos en la base de datos");
-    }
-
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Dispositivos");
 
-
-    // 📊 COLUMNAS (ajústalas si tu tabla es diferente)
     worksheet.columns = [
       { header: "ID", key: "id", width: 10 },
       { header: "Nombre", key: "nombre", width: 25 },
@@ -111,8 +118,6 @@ const generarExcelDispositivos = async (req, res) => {
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     res.setHeader("Content-Disposition", `attachment; filename=${nombreArchivo}`);
 
-    const usuario_id = req.headers['x-usuario-id'] || null;
-
     await ReportesModel.crearReporte('excel', 'dispositivos', usuario_id);
 
     await workbook.xlsx.write(res);
@@ -135,10 +140,6 @@ const generarExcelUsuarios = async (req, res) => {
     if (rol && rol !== "todos") { query += " AND rol = ?"; params.push(rol); }
 
     const [usuarios] = await db.query(query, params);
-
-    if (!usuarios || usuarios.length === 0) {
-      return res.status(404).send("No hay usuarios en la base de datos");
-    }
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Usuarios");
@@ -188,6 +189,14 @@ const generarExcelUsuarios = async (req, res) => {
 const generarPdfDispositivos = async (req, res) => {
   try {
     const { desde, hasta, estado } = req.query;
+    const usuario_id = req.headers['x-usuario-id'] || null;
+
+    let esTecnico = false;
+    if (usuario_id) {
+      const [rows] = await db.query('SELECT rol FROM usuarios WHERE id = ? LIMIT 1', [usuario_id]);
+      esTecnico = rows[0]?.rol === 'tecnico';
+    }
+
     let query = `
       SELECT d.*, COALESCE(e.nombre, 'Sin estado') AS estado_nombre
       FROM dispositivos d
@@ -195,15 +204,12 @@ const generarPdfDispositivos = async (req, res) => {
       WHERE d.activo = 1
     `;
     const params = [];
+    if (esTecnico) { query += " AND d.tecnico_id = ?"; params.push(usuario_id); }
     if (desde) { query += " AND DATE(d.fecha_registro) >= ?"; params.push(desde); }
     if (hasta) { query += " AND DATE(d.fecha_registro) <= ?"; params.push(hasta); }
     if (estado && estado !== "todos") { query += " AND e.nombre = ?"; params.push(estado); }
 
     const [dispositivos] = await db.query(query, params);
-
-    if (!dispositivos || dispositivos.length === 0) {
-      return res.status(404).send("No hay dispositivos en la base de datos");
-    }
 
     const doc = new PDFDocument();
     const ahora = new Date();
@@ -219,6 +225,13 @@ const generarPdfDispositivos = async (req, res) => {
     doc.fontSize(18).font("Helvetica-Bold").text("Reporte de Dispositivos", { align: "center" });
     doc.fontSize(10).text(`Generado: ${ahora.toLocaleString()}`, { align: "center" });
     doc.moveDown();
+
+    if (!dispositivos || dispositivos.length === 0) {
+      doc.fontSize(12).font("Helvetica").text("No hay dispositivos para el rango seleccionado.", { align: "center" });
+      await ReportesModel.crearReporte('pdf', 'dispositivos', usuario_id);
+      doc.end();
+      return;
+    }
 
     const columnWidth = 90;
     const startX = 50;
@@ -251,9 +264,7 @@ const generarPdfDispositivos = async (req, res) => {
       doc.moveDown();
     });
 
-    const usuario_id = req.headers['x-usuario-id'] || null;
-
-await ReportesModel.crearReporte('pdf', 'dispositivos', usuario_id);
+    await ReportesModel.crearReporte('pdf', 'dispositivos', usuario_id);
     doc.end();
   } catch (error) {
     console.error(error);
@@ -272,10 +283,6 @@ const generarPdfUsuarios = async (req, res) => {
     if (rol && rol !== "todos") { query += " AND rol = ?"; params.push(rol); }
 
     const [usuarios] = await db.query(query, params);
-
-    if (!usuarios || usuarios.length === 0) {
-      return res.status(404).send("No hay usuarios en la base de datos");
-    }
 
     const doc = new PDFDocument();
     const ahora = new Date();
@@ -324,11 +331,11 @@ const generarPdfUsuarios = async (req, res) => {
     res.status(500).send("Error al generar PDF");
   }
 };
-// ── Obtener total de reportes ──
 const obtenerTotalReportes = async (req, res) => {
   try {
-  const total = await ReportesModel.obtenerTotalReportes();
-res.json(total);
+    const usuario_id = req.headers['x-usuario-id'] || null;
+    const total = await ReportesModel.obtenerTotalReportes(usuario_id);
+    res.json(total);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

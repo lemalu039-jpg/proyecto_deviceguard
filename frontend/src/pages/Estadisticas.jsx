@@ -1,6 +1,6 @@
-﻿import React, { useEffect, useState, useMemo } from 'react';
-import { getDispositivos } from '../services/api';
-import './css/Estadisticas_responsive.css';
+import React, { useEffect, useState, useMemo } from 'react';
+import { getDispositivos, getDispositivosAsignados } from '../services/api';
+import './CSS/Estadisticas_responsive.css';
 import Pagination from '../components/Pagination';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
@@ -47,8 +47,16 @@ function Estadisticas() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getDispositivos();
-        setDispositivos(res.data);
+        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+        let data;
+        if (usuario.rol === 'tecnico') {
+          const res = await getDispositivosAsignados(usuario.id);
+          data = res.data || [];
+        } else {
+          const res = await getDispositivos();
+          data = res.data;
+        }
+        setDispositivos(data);
       } catch (err) {
         console.error('Error cargando estadísticas:', err);
       } finally {

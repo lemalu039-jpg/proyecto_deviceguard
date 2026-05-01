@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { getDispositivos, getUsuarios } from '../services/api';
+import { getDispositivos, getDispositivosAsignados, getUsuarios } from '../services/api';
+import api from '../services/api';
 import { estadosDispositivo } from "../ejemplo/generador2";
 import Pagination from '../components/Pagination';
 import { useLanguage } from '../context/LanguageContext.jsx';
@@ -41,15 +41,21 @@ function Dashboard() {
         const [devicesRes, usuariosRes] = await Promise.all([
           getDispositivos(),
           getUsuarios(),
-          axios.get('http://localhost:5000/api/reportes/total')
         ]);
-        const allDevices = devicesRes.data;
-        const reportesRes = await axios.get('http://localhost:5000/api/reportes/total');
+        const reportesRes = await api.get('/reportes/total');
 
+        const allDevices = devicesRes.data;
         const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
-        const dispositivos = usuarioActual.rol === 'usuario'
-          ? allDevices.filter(d => d.usuario_id === usuarioActual.id)
-          : allDevices;
+        let dispositivos;
+
+        if (usuarioActual.rol === 'tecnico') {
+          const asignadosRes = await getDispositivosAsignados(usuarioActual.id);
+          dispositivos = asignadosRes.data || [];
+        } else if (usuarioActual.rol === 'usuario') {
+          dispositivos = allDevices.filter(d => d.usuario_id === usuarioActual.id);
+        } else {
+          dispositivos = allDevices;
+        }
 
         setStats({
           totalDispositivos: dispositivos.length,

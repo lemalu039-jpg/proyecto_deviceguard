@@ -1,6 +1,8 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useLanguage } from "../context/LanguageContext.jsx";
+import { updateDispositivo } from "../services/api";
 import "./Sidebar.css";
 import dashboard_ from "../assets/icons/dashboard_.svg";
 import dispositivos_ from "../assets/icons/Dispositivos_.svg";
@@ -17,14 +19,13 @@ import settings from "../assets/icons/settings.svg";
 function Sidebar({ usuario: usuarioProp, onLogout, onImpersonate }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  const [notifAbierto, setNotifAbierto] = useState(false);
+  const [dispositivos, setDispositivos] = useState([]);
+  const [modalDispositivo, setModalDispositivo] = useState(null);
+  const [confirmando, setConfirmando] = useState(false);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 768) setSidebarOpen(false);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  
 
   const usuario = usuarioProp || JSON.parse(localStorage.getItem("usuario") || "{}");
   const adminOriginal = JSON.parse(localStorage.getItem("adminOriginal") || "null");
@@ -40,6 +41,22 @@ function Sidebar({ usuario: usuarioProp, onLogout, onImpersonate }) {
   .filter(u =>
     u.nombre.toLowerCase().includes(busquedaUsuario.toLowerCase())
   );
+
+
+  useEffect(() => {
+  if (!esTecnico) return;
+  const cargar = () => {
+    fetch(`http://localhost:5000/api/dispositivos/asignados/${usuario.id}`, {
+      headers: { "x-usuario-id": usuario.id }
+    })
+      .then(r => r.json())
+      .then(data => setDispositivos(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  };
+  cargar();
+  const intervalo = setInterval(cargar, 30000); // refresca cada 30s
+  return () => clearInterval(intervalo);
+}, [esTecnico, usuario.id]);
 
 const usuariosFiltrados = usuarios
   .filter(u => u.rol === "usuario")
@@ -106,6 +123,17 @@ const usuariosFiltrados = usuarios
     { path: "/ajustes-cuenta", label: t('ajustes_cuenta_nav'), icon: settings },
   ];
 
+  const handleConfirmarMantenimiento = async () => {
+    if (!modalDispositivo) return;
+    setConfirmando(true);
+    try {
+      await updateDispositivo(modalDispositivo.id, { estado: 'En Mantenimiento' });
+      setDispositivos(prev => prev.map(d => d.id === modalDispositivo.id ? { ...d, estado: 'En Mantenimiento' } : d));
+      setModalDispositivo(null);
+    } catch (e) { console.error(e); }
+    finally { setConfirmando(false); }
+  };
+
   const navStyle = ({ isActive }) => ({
     display: "flex", alignItems: "center", gap: "1rem",
     padding: "0.75rem 1rem", borderRadius: "10px",
@@ -156,11 +184,28 @@ const usuariosFiltrados = usuarios
         }}
         className={sidebarOpen ? "active" : ""}
       >
-        <div style={{ padding: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem", borderBottom: "1px solid var(--border)", background: "var(--bg-sidebar)" }}>
-          <h1 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, letterSpacing: "-0.5px", background: "linear-gradient(135deg, #0492C2, #82EEFD)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-            DeviceGuard
-          </h1>
-        </div>
+        <div style={{ padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--border)", background: "var(--bg-sidebar)" }}>
+  <h1 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, letterSpacing: "-0.5px", background: "linear-gradient(135deg, #0492C2, #82EEFD)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+    DeviceGuard
+  </h1>
+  {esTecnico && (
+  <div style={{ position: "relative" }}>
+    <button
+      onClick={() => setNotifAbierto(!notifAbierto)}
+      style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />
+      </svg>
+      {dispositivos.filter(d => d.estado === "En Revision").length > 0 && (
+        <span style={{ position: "absolute", top: "-4px", right: "-4px", background: "#ef4444", color: "#fff", fontSize: "0.6rem", fontWeight: 700, width: "16px", height: "16px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {dispositivos.filter(d => d.estado === "En Revision").length}
+        </span>
+      )}
+    </button>
+  </div>
+)}
+</div>
 
         <div style={{ flexGrow: 1, overflowY: "auto", padding: "1rem 0" }}>
           <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem", padding: "0 1rem" }}>
@@ -286,6 +331,89 @@ const usuariosFiltrados = usuarios
       {/* OVERLAY para cerrar sidebar */}
       {sidebarOpen && (
         <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      {/* DROPDOWN NOTIFICACIONES - portal */}
+      {notifAbierto && esTecnico && createPortal(
+        <>
+          <div style={{ position: "fixed", inset: 0, zIndex: 99998 }} onClick={() => setNotifAbierto(false)} />
+          <div style={{ position: "fixed", top: "70px", left: "270px", width: "290px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "12px", boxShadow: "0 12px 40px rgba(0,0,0,0.4)", zIndex: 99999, overflow: "hidden" }}>
+            <div style={{ padding: "0.75rem 1rem", borderBottom: "1px solid var(--border)", fontWeight: 700, fontSize: "0.82rem", color: "var(--text-main)" }}>
+              Dispositivos asignados
+            </div>
+            <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+              {dispositivos.filter(d => d.estado === "En Revision").length === 0 ? (
+                <p style={{ padding: "1rem", fontSize: "0.78rem", color: "var(--text-muted)", textAlign: "center" }}>Sin dispositivos pendientes</p>
+              ) : (
+                dispositivos.filter(d => d.estado === "En Revision").map(d => (
+                  <div key={d.id}
+                    onClick={() => { setModalDispositivo(d); setNotifAbierto(false); }}
+                    style={{ padding: "0.7rem 1rem", borderBottom: "1px solid var(--border)", cursor: "pointer" }}
+                    onMouseEnter={e => e.currentTarget.style.background = "var(--hover)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                  >
+                    <p style={{ margin: 0, fontWeight: 600, fontSize: "0.83rem", color: "var(--text-main)" }}>{d.nombre}</p>
+                    <p style={{ margin: "2px 0 0", fontSize: "0.72rem", color: "var(--text-muted)" }}>{d.marca} · {d.tipo}</p>
+                    <span style={{ display: "inline-block", marginTop: "5px", padding: "2px 8px", borderRadius: "20px", fontSize: "0.68rem", fontWeight: 700, background: "#f3e8ff", color: "#7e22ce" }}>
+                      {d.estado}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </>,
+        document.body
+      )}
+
+      {/* MODAL DISPOSITIVO - portal */}
+      {modalDispositivo && createPortal(
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 999999 }}
+          onClick={() => setModalDispositivo(null)}>
+          <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "14px", width: "400px", maxWidth: "92%", overflow: "hidden", boxShadow: "0 30px 80px rgba(0,0,0,0.4)" }}
+            onClick={e => e.stopPropagation()}>
+            <div style={{ background: "linear-gradient(135deg,#151E3D,#0492C2)", padding: "1rem 1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: ".95rem" }}>Dispositivo asignado</span>
+              <button onClick={() => setModalDispositivo(null)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", fontSize: "1rem" }}>✕</button>
+            </div>
+            <div style={{ padding: "1.5rem" }}>
+              <div style={{ background: "var(--table-head)", borderRadius: "10px", padding: "1rem", marginBottom: "1rem" }}>
+                <div style={{ fontSize: "1rem", fontWeight: 800, color: "var(--text-main)", marginBottom: ".75rem" }}>{modalDispositivo.nombre}</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".5rem .75rem" }}>
+                  {[
+                    { label: "Marca",     value: modalDispositivo.marca     || "—" },
+                    { label: "Serial",    value: modalDispositivo.serial    || "—" },
+                    { label: "Tipo",      value: modalDispositivo.tipo      || "—" },
+                    { label: "Estado",    value: modalDispositivo.estado    || "—" },
+                    { label: "Ubicación", value: modalDispositivo.ubicacion || "—" },
+                  ].map(({ label, value }) => (
+                    <div key={label}>
+                      <div style={{ fontSize: ".62rem", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase" }}>{label}</div>
+                      <div style={{ fontSize: ".8rem", color: "var(--text-main)", fontWeight: 600 }}>{value}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {modalDispositivo.estado === "En Revision" && (
+                <p style={{ fontSize: ".8rem", color: "var(--text-muted)", marginBottom: "1rem" }}>
+                  Al confirmar, el dispositivo pasará a <strong style={{ color: "#0492C2" }}>En Mantenimiento</strong> y comenzarás a trabajar en él.
+                </p>
+              )}
+              <div style={{ display: "flex", gap: ".75rem" }}>
+                <button onClick={() => setModalDispositivo(null)} style={{ flex: 1, padding: ".65rem", background: "transparent", border: "1px solid var(--border)", color: "var(--text-main)", borderRadius: "8px", cursor: "pointer", fontWeight: 600 }}>
+                  Cerrar
+                </button>
+                {modalDispositivo.estado === "En Revision" && (
+                  <button onClick={handleConfirmarMantenimiento} disabled={confirmando}
+                    style={{ flex: 1, padding: ".65rem", background: "linear-gradient(135deg,#0492C2,#82EEFD)", border: "none", color: "#fff", borderRadius: "8px", cursor: confirmando ? "not-allowed" : "pointer", fontWeight: 700 }}>
+                    {confirmando ? "Guardando..." : "✓ Iniciar mantenimiento"}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </>
   );

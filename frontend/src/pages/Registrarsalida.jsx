@@ -31,7 +31,12 @@ function SalidaDispositivos() {
   const loadData = async () => {
     try {
       const res = await getDispositivos();
-      setSalidas(res.data);
+      const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+      let todos = res.data;
+      if (usuario.rol === 'tecnico') {
+        todos = todos.filter(d => d.tecnico_id === usuario.id || String(d.tecnico_id) === String(usuario.id));
+      }
+      setSalidas(todos);
     } catch (error) {
       console.error("Error cargando:", error);
     }

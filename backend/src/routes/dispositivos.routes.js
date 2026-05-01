@@ -8,6 +8,7 @@ router.get('/serial/:serial', dispositivosController.getBySerial);
 router.get('/', dispositivosController.getAll);
 router.get('/:id', dispositivosController.getById);
 // Solo usuario puede registrar dispositivos
+router.get('/asignados/:tecnico_id', dispositivosController.getAsignados);
 router.post('/', verificarRol('usuario', 'super_admin'), upload.single('archivo'), dispositivosController.create);
 router.put('/:id', dispositivosController.update);
 router.delete('/:id', verificarRol('super_admin'), dispositivosController.delete);

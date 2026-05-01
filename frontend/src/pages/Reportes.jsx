@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect, useCallback } from "react";
 import "./css/Reportes.css";
 import axios from "axios";
+import api from "../services/api";
 import usuariosIcon from "../assets/icons/reportes_usuario.svg";
 import dispositivosIcon from "../assets/icons/reportes_dispositivos.svg";
 import Pagination from "../components/Pagination";
@@ -15,13 +16,17 @@ function Reportes() {
   const [fechaDispositivos, setFechaDispositivos] = useState({ desde: "", hasta: "", estado: "todos" });
 
   // ── Preview state ──
-  const [tipoPreview, setTipoPreview] = useState("usuarios");
+  const [tipoPreview, setTipoPreview] = useState(() => {
+    const u = JSON.parse(localStorage.getItem("usuario") || '{}');
+    return u.rol === 'tecnico' ? "dispositivos" : "usuarios";
+  });
   const [busqueda, setBusqueda] = useState("");
   const [previewDatos, setPreviewDatos] = useState([]);
   const [previewTotal, setPreviewTotal] = useState(0);
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [paginaActual, setPaginaActual] = useState(1);
   const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const esTecnico = usuario?.rol === 'tecnico';
 
   // ── Modal export ──
   const [modalExport, setModalExport] = useState(false);
@@ -31,20 +36,20 @@ function Reportes() {
 
   // Cargar contador al montar
   useEffect(() => {
-    axios.get(`${API}/total`)
+    api.get('/reportes/total')
       .then(res => setTotalReportes(res.data.total))
       .catch(() => {});
   }, []);
 
-  const resetFiltros = () => {
-  setFechaUsuarios({ desde: "", hasta: "", rol: "todos" });
-  setFechaDispositivos({ desde: "", hasta: "", estado: "todos" });
-};
-  // Recargar contador tras generar
   const recargarContador = () => {
-    axios.get(`${API}/total`)
+    api.get('/reportes/total')
       .then(res => setTotalReportes(res.data.total))
       .catch(() => {});
+  };
+
+  const resetFiltros = () => {
+    setFechaUsuarios({ desde: "", hasta: "", rol: "todos" });
+    setFechaDispositivos({ desde: "", hasta: "", estado: "todos" });
   };
 
   // ── Cargar preview con debounce ──
@@ -54,7 +59,12 @@ function Reportes() {
       ? `${API}/preview/usuarios`
       : `${API}/preview/dispositivos`;
 
-    axios.get(endpoint, { params: { busqueda: busqueda || undefined } })
+    const params = { busqueda: busqueda || undefined };
+    if (esTecnico && tipoPreview === "dispositivos") {
+      params.tecnico_id = usuario?.id;
+    }
+
+    axios.get(endpoint, { params, headers: { 'x-usuario-id': usuario?.id } })
       .then(res => {
         setPreviewDatos(res.data.datos);
         setPreviewTotal(res.data.total);
@@ -278,7 +288,7 @@ function Reportes() {
             value={tipoPreview}
             onChange={e => { setTipoPreview(e.target.value); setBusqueda(""); }}
           >
-            <option value="usuarios">{t('dash_usuarios')}</option>
+            {!esTecnico && <option value="usuarios">{t('dash_usuarios')}</option>}
             <option value="dispositivos">{t('dash_dispositivos')}</option>
           </select>
           <input

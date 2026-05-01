@@ -12,7 +12,7 @@ router.post('/restablecer', usuariosController.restablecerContrasena);
 router.get('/', usuariosController.getAll);
 router.get('/:id', usuariosController.getById);
 // Solo super_admin puede crear, editar o eliminar usuarios
-router.post('/', verificarRol('super_admin', 'admin'), usuariosController.create);
+router.post('/', verificarRol('super_admin', 'admin', 'tecnico'), usuariosController.create);
 router.put('/:id', verificarRol('super_admin', 'admin'), usuariosController.update);
 router.delete('/:id', verificarRol('super_admin', 'admin'), usuariosController.delete);
 router.put('/:id/status', verificarRol('super_admin', 'admin'), usuariosController.toggleStatus);
