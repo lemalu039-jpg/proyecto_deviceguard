@@ -82,7 +82,7 @@ function Dispositivos() {
       const ahora = new Date();
       formData.set('fecha_registro', ahora.toISOString().split('T')[0]);
       formData.set('hora_registro', ahora.toTimeString().slice(0, 5));
-      if (!editingId) formData.set('estado', 'En Revision');
+      if (!editingId) formData.set('estado', 'En Revisión');
       const archivo = document.getElementById('archivo');
       if (archivo && archivo.files[0]) formData.append('archivo', archivo.files[0]);
       if (editingId) {
@@ -240,7 +240,7 @@ function Dispositivos() {
                     <input type="text" value={t('disp_en_revision')} disabled className="disp-modal-input" />
                   </div>
                   <div className="col-12">
-                    <label className="disp-modal-label">{t('descripcion')}</label>
+                    <label className="disp-modal-label">Descripción del equipo</label>
                     <textarea
                       name="descripcion"
                       value={form.descripcion}
@@ -313,15 +313,15 @@ function Dispositivos() {
                   ))}
                   {reingreso.dispositivo.descripcion && (
                     <div className="reingreso-info-row" style={{ flexDirection: 'column', gap: '3px' }}>
-                      <span className="reingreso-info-label">{t('descripcion')}</span>
+                      <span className="reingreso-info-label">Descripción</span>
                       <span className="reingreso-info-val" style={{ fontSize: '.78rem' }}>
                         {reingreso.dispositivo.descripcion}
                       </span>
                     </div>
                   )}
                   <div className="reingreso-confirm-msg">
-                    {t('disp_confirmar_reingreso')}<br />
-                    <span>{t('disp_estado_cambiara')} <strong>{t('disp_en_revision')}</strong></span>
+                    �Deseas reingresar este dispositivo?<br />
+                    <span>Su estado cambiará a <strong>En Revisión</strong></span>
                   </div>
                 </div>
               )}
@@ -359,11 +359,11 @@ function Dispositivos() {
             onChange={e => { setFiltroEstadoDisp(e.target.value); setCurrentPage(1); }}
             style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none', flexShrink: 0 }}
           >
-            <option value="">{t('disp_todos_estados')}</option>
-            <option value="En Revision">{t('disp_en_revision')}</option>
-            <option value="En Mantenimiento">{t('disp_en_mantenimiento')}</option>
-            <option value="Listo para Entrega">{t('disp_listo_entrega')}</option>
-            <option value="Entregado">{t('disp_entregado')}</option>
+            <option value="">Todos los estados</option>
+            <option value="En Revision">En Revisión</option>
+            <option value="En Mantenimiento">En Mantenimiento</option>
+            <option value="Listo para Entrega">Listo para Entrega</option>
+            <option value="Entregado">Entregado</option>
           </select>
           {(filtroBusqueda || filtroEstadoDisp) && (
             <button onClick={() => { setFiltroBusqueda(''); setFiltroEstadoDisp(''); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
@@ -400,7 +400,7 @@ function Dispositivos() {
                   </td>
                   <td>{d.serial}</td>
                   <td>{d.marca}</td>
-                  <td>{d.ubicacion || 'N/A'}</td>
+                  <td>{d.Ubicación || 'N/A'}</td>
                   <td>
                     {formatFecha(d.fecha_registro)}<br />
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>

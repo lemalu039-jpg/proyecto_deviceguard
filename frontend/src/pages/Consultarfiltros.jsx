@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./CSS/ConsultarFiltros.css";
+import "./CSS/Consultarfiltros.css";
 import { getDispositivos } from "../services/api";
 import Pagination from "../components/Pagination";
 import { useLanguage } from "../context/LanguageContext.jsx";
