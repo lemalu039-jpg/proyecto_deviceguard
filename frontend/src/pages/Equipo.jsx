@@ -383,7 +383,7 @@ function Equipo() {
                 </div>
                 <div className="equipo-form-group">
                   <label>{t('equipo_form_puesto')}</label>
-                  <input name="puesto" placeholder="CEO" value={form.puesto} onChange={handleChange} />
+                  <input name="puesto" placeholder={t('equipo_form_puesto')} value={form.puesto} onChange={handleChange} />
                 </div>
                 <div className="equipo-form-group">
                   <label>{t('equipo_form_genero')}</label>

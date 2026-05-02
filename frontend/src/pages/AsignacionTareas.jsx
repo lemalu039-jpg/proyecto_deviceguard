@@ -17,7 +17,12 @@ function AsignacionTareas() {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
+  const [tecnicosPage, setTecnicosPage] = useState(1);
+  const tecnicosPorPagina = 8;
   
+  // Filtros
+  const [filtroBusqueda, setFiltroBusqueda] = useState('');
+
   // Estado local para selecciones de técnico por dispositivo
   const [selecciones, setSelecciones] = useState({});
 
@@ -89,40 +94,65 @@ function AsignacionTareas() {
       </div>
 
       {/* Panel de Técnicos (Overview) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-        {tecnicos.length === 0 ? (
-          <p style={{ color: 'var(--text-muted)', fontSize: '.85rem' }}>{t('asignacion_sin_tecnicos')}</p>
-        ) : (
-          tecnicos.map(t_tec => {
-            const activas = getTareasActivas(t_tec.id);
-            return (
-              <div key={t_tec.id} style={{
-                background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)',
-                padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem'
-              }}>
-                <div style={{
-                  width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #0492C2, #82EEFD)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold'
-                }}>
-                  {t_tec.nombre.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.9rem' }}>{t_tec.nombre}</div>
-                  <div style={{ fontSize: '.75rem', color: activas === 0 ? '#10b981' : (activas > 3 ? '#ef4444' : 'var(--text-muted)'), fontWeight: 600 }}>
-                    {activas} {t('asignacion_tareas_activas')}
+      {tecnicos.length === 0 ? (
+        <p style={{ color: 'var(--text-muted)', fontSize: '.85rem' }}>{t('asignacion_sin_tecnicos')}</p>
+      ) : (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+            {tecnicos
+              .slice((tecnicosPage - 1) * tecnicosPorPagina, tecnicosPage * tecnicosPorPagina)
+              .map(t_tec => {
+                const activas = getTareasActivas(t_tec.id);
+                return (
+                  <div key={t_tec.id} style={{
+                    background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)',
+                    padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem'
+                  }}>
+                    <div style={{
+                      width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #0492C2, #82EEFD)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold'
+                    }}>
+                      {t_tec.nombre.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.9rem' }}>{t_tec.nombre}</div>
+                      <div style={{ fontSize: '.75rem', color: activas === 0 ? '#10b981' : (activas > 3 ? '#ef4444' : 'var(--text-muted)'), fontWeight: 600 }}>
+                        {activas} {t('asignacion_tareas_activas')}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
+                );
+              })}
+          </div>
+          <Pagination
+            totalItems={tecnicos.length}
+            itemsPerPage={tecnicosPorPagina}
+            currentPage={tecnicosPage}
+            onPageChange={setTecnicosPage}
+          />
+        </>
+      )}
 
       {/* Panel de Asignaciones */}
       <div className="mant-card">
         <div className="mant-card-title">
           <div className="mant-dot" style={{ background: '#7e22ce' }}></div>
-          <span>{t('asignacion_pendientes')}</span>
+          <span style={{ whiteSpace: 'nowrap' }}>{t('asignacion_pendientes')}</span>
+          <input
+            type="text"
+            placeholder={t('dash_buscar_ph')}
+            value={filtroBusqueda}
+            onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
+            style={{ flex: 1, minWidth: '160px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
+          />
+          {filtroBusqueda && (
+            <button
+              onClick={() => { setFiltroBusqueda(''); setCurrentPage(1); }}
+              style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
+            >
+              {t('dash_limpiar')} ✕
+            </button>
+          )}
         </div>
 
         <div className="mant-table-wrap">
@@ -146,11 +176,18 @@ function AsignacionTareas() {
                 </tr>
               ) : (
                 dispositivosPorAsignar
+                  .filter(d => {
+                    const texto = `${d.nombre} ${d.serial} ${d.registrado_por || ''}`.toLowerCase();
+                    return !filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase());
+                  })
                   .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                   .map(d => (
                     <tr key={d.id}>
-                      <td>{d.nombre}</td>
-                      <td style={{ fontFamily: 'monospace' }}>{d.serial}</td>
+                      <td>
+                        <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
+                        <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo || ''}</div>
+                      </td>
+                      <td style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial}</td>
                       <td style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
                         {d.registrado_por || '—'}
                       </td>
@@ -191,7 +228,10 @@ function AsignacionTareas() {
 
         {dispositivosPorAsignar.length > 0 && (
           <Pagination
-            totalItems={dispositivosPorAsignar.length}
+            totalItems={dispositivosPorAsignar.filter(d => {
+              const texto = `${d.nombre} ${d.serial} ${d.registrado_por || ''}`.toLowerCase();
+              return !filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase());
+            }).length}
             itemsPerPage={itemsPerPage}
             currentPage={currentPage}
             onPageChange={setCurrentPage}

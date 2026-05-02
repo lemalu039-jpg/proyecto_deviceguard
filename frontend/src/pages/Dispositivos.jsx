@@ -240,7 +240,7 @@ function Dispositivos() {
                     <input type="text" value={t('disp_en_revision')} disabled className="disp-modal-input" />
                   </div>
                   <div className="col-12">
-                    <label className="disp-modal-label">Descripción del equipo</label>
+                    <label className="disp-modal-label">{t('disp_descripcion')}</label>
                     <textarea
                       name="descripcion"
                       value={form.descripcion}
@@ -313,15 +313,15 @@ function Dispositivos() {
                   ))}
                   {reingreso.dispositivo.descripcion && (
                     <div className="reingreso-info-row" style={{ flexDirection: 'column', gap: '3px' }}>
-                      <span className="reingreso-info-label">Descripción</span>
+                      <span className="reingreso-info-label">{t('disp_descripcion')}</span>
                       <span className="reingreso-info-val" style={{ fontSize: '.78rem' }}>
                         {reingreso.dispositivo.descripcion}
                       </span>
                     </div>
                   )}
                   <div className="reingreso-confirm-msg">
-                    �Deseas reingresar este dispositivo?<br />
-                    <span>Su estado cambiará a <strong>En Revisión</strong></span>
+                    {t('disp_confirmar_reingreso')}<br />
+                    <span>{t('disp_estado_cambiara')} <strong>En Revisión</strong></span>
                   </div>
                 </div>
               )}
@@ -342,31 +342,28 @@ function Dispositivos() {
       <div className="disp-card">
         <div className="disp-card-title">
           <div className="disp-card-dot"></div>
-          <span>{t('disp_lista')}</span>
+          <span style={{ whiteSpace: 'nowrap' }}>{t('disp_lista')}</span>
           <span className="disp-count">{dispositivos.length} {t('disp_registrados')}</span>
-        </div>
-        {/* Filtros */}
-        <div style={{ display: 'flex', gap: '.5rem', padding: '.75rem 1.25rem', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', alignItems: 'center' }}>
           <input
             type="text"
             placeholder={t('disp_buscar_placeholder')}
             value={filtroBusqueda}
             onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
-            style={{ flex: 1, minWidth: '180px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
+            style={{ flex: 1, minWidth: '160px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
           />
           <select
             value={filtroEstadoDisp}
             onChange={e => { setFiltroEstadoDisp(e.target.value); setCurrentPage(1); }}
             style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none', flexShrink: 0 }}
           >
-            <option value="">Todos los estados</option>
-            <option value="En Revision">En Revisión</option>
-            <option value="En Mantenimiento">En Mantenimiento</option>
-            <option value="Listo para Entrega">Listo para Entrega</option>
-            <option value="Entregado">Entregado</option>
+            <option value="">{t('disp_todos_estados')}</option>
+            <option value="En Revision">{t('dash_en_revision')}</option>
+            <option value="En Mantenimiento">{t('dash_en_mantenimiento')}</option>
+            <option value="Listo para Entrega">{t('dash_listo_entrega')}</option>
+            <option value="Entregado">{t('dash_entregado')}</option>
           </select>
           {(filtroBusqueda || filtroEstadoDisp) && (
-            <button onClick={() => { setFiltroBusqueda(''); setFiltroEstadoDisp(''); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={() => { setFiltroBusqueda(''); setFiltroEstadoDisp(''); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
               {t('limpiar_filtros')}
             </button>
           )}
@@ -375,7 +372,7 @@ function Dispositivos() {
           <table className="disp-table">
             <thead>
               <tr>
-                <th>{t('nombre_dispositivo')}</th>
+                <th>{t('dash_col_nombre')}</th>
                 <th>{t('disp_serial')}</th>
                 <th>{t('disp_marca')}</th>
                 <th>{t('disp_ubicacion')}</th>
@@ -400,7 +397,7 @@ function Dispositivos() {
                   </td>
                   <td>{d.serial}</td>
                   <td>{d.marca}</td>
-                  <td>{d.Ubicación || 'N/A'}</td>
+                  <td>{d.ubicacion || 'N/A'}</td>
                   <td>
                     {formatFecha(d.fecha_registro)}<br />
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>

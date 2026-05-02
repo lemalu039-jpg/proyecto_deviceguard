@@ -21,16 +21,16 @@ const ESTADOS_FIJOS = [
 const COLOR_ESTADO = Object.fromEntries(ESTADOS_FIJOS.map(e => [e.key, e.color]));
 const BG_ESTADO    = Object.fromEntries(ESTADOS_FIJOS.map(e => [e.key, e.bg]));
 
-const filtrosLinea = [
-  { label: 'Todos',              value: 'todos' },
-  { label: 'Listo para Entrega', value: 'Listo para Entrega' },
-  { label: 'En Revisión',        value: 'En Revision' },
-  { label: 'En Mantenimiento',   value: 'En Mantenimiento' },
-  { label: 'Entregado',          value: 'Entregado' },
-];
-
 function Estadisticas() {
   const { t } = useLanguage();
+
+  const filtrosLinea = [
+    { labelKey: 'dash_todos_estados', value: 'todos' },
+    { labelKey: 'dash_listo_entrega', value: 'Listo para Entrega' },
+    { labelKey: 'dash_en_revision',   value: 'En Revision' },
+    { labelKey: 'dash_en_mantenimiento', value: 'En Mantenimiento' },
+    { labelKey: 'dash_entregado',     value: 'Entregado' },
+  ];
   const [dispositivos, setDispositivos] = useState([]);
   const [loading, setLoading]           = useState(true);
 
@@ -132,7 +132,7 @@ function Estadisticas() {
   // ── Filtro adicional de la barra de búsqueda de la tabla ────────────
   const dispositivosTabla = useMemo(() => {
     return dispositivosFiltrados.filter(d => {
-      const texto = `${d.nombre} ${d.serial} ${d.marca}`.toLowerCase();
+      const texto = `${d.nombre} ${d.serial} ${d.tipo} ${d.marca} ${d.ubicacion}`.toLowerCase();
       const okBusqueda = !filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase());
       const okEstado   = filtroTablaEstado === 'todos' || d.estado === filtroTablaEstado;
       return okBusqueda && okEstado;
@@ -419,7 +419,7 @@ function Estadisticas() {
                       color: filtroLinea === f.value ? '#fff' : 'var(--text-muted)',
                       transition: 'all .2s'
                     }}>
-                    {f.label}
+                    {t(f.labelKey)}
                   </button>
                 ))}
               </div>
@@ -467,11 +467,34 @@ function Estadisticas() {
 
         
           <div style={{ background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>
-            <div style={{ padding: '1.25rem 1.25rem .75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '4px', height: '16px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px' }}></div>
+            <div style={{ padding: '1.25rem 1.25rem .75rem', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <div style={{ width: '4px', height: '16px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px', flexShrink: 0 }}></div>
               <span style={{ fontSize: '.88rem', fontWeight: 700, color: 'var(--text-main)' }}>{t('dash_lista_dispositivos')}</span>
-              <span style={{ marginLeft: 'auto', fontSize: '.72rem', color: 'var(--text-muted)', background: 'var(--input-bg)', padding: '2px 9px', borderRadius: '20px' }}>
-                {dispositivosFiltrados.length} {dispositivosFiltrados.length !== 1 ? t('estadisticas_resultados') : t('estadisticas_resultado')}
+              <input
+                type="text"
+                placeholder={t('dash_buscar_ph')}
+                value={filtroBusqueda}
+                onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
+                style={{ flex: 1, minWidth: '200px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
+              />
+              <select
+                value={filtroTablaEstado}
+                onChange={e => { setFiltroTablaEstado(e.target.value); setCurrentPage(1); }}
+                style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none', flexShrink: 0 }}
+              >
+                <option value="todos">{t('dash_todos_estados')}</option>
+                {ESTADOS_FIJOS.map(e => <option key={e.key} value={e.key}>{e.key}</option>)}
+              </select>
+              {(filtroBusqueda || filtroTablaEstado !== 'todos') && (
+                <button
+                  onClick={() => { setFiltroBusqueda(''); setFiltroTablaEstado('todos'); setCurrentPage(1); }}
+                  style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
+                >
+                  {t('dash_limpiar') || 'Limpiar'} ✕
+                </button>
+              )}
+              <span style={{ fontSize: '.72rem', color: 'var(--text-muted)', background: 'var(--input-bg)', padding: '2px 9px', borderRadius: '20px', flexShrink: 0 }}>
+                {dispositivosTabla.length} {dispositivosTabla.length !== 1 ? t('estadisticas_resultados') : t('estadisticas_resultado')}
               </span>
             </div>
             <div style={{ overflowX: 'auto' }} className="estadisticas-table-wrapper">
@@ -479,6 +502,7 @@ function Estadisticas() {
                 <thead>
                   <tr>
                     <th style={thStyle}>{t('dash_col_nombre')}</th>
+                    <th style={thStyle}>Serial</th>
                     <th style={thStyle}>{t('estadisticas_col_tipo')}</th>
                     <th style={thStyle}>{t('estadisticas_col_marca')}</th>
                     <th style={thStyle}>{t('dash_col_ubicacion')}</th>
@@ -492,6 +516,7 @@ function Estadisticas() {
                     .map((d, i) => (
                     <tr key={d.id} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
                       <td style={tdStyle}><div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div></td>
+                      <td style={tdStyle}>{d.serial || 'N/A'}</td>
                       <td style={tdStyle}>{d.tipo || 'N/A'}</td>
                       <td style={tdStyle}>{d.marca || 'N/A'}</td>
                       <td style={tdStyle}>{d.ubicacion || 'N/A'}</td>
@@ -511,7 +536,7 @@ function Estadisticas() {
                   ))}
                   {dispositivosTabla.length === 0 && (
                     <tr>
-                      <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
+                      <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
                         {t('estadisticas_no_disp_filtros')}
                       </td>
                     </tr>

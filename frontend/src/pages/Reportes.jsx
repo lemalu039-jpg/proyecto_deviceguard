@@ -196,23 +196,24 @@ function Reportes() {
 
   const rolBadge = (rol) => {
     const map = {
-      super_admin: { label: "Super Admin", cls: "rpt-badge-superadmin" },
-      tecnico:     { label: "Técnico",     cls: "rpt-badge-tecnico"    },
-      usuario:     { label: "Usuario",     cls: "rpt-badge-usuario"    },
+      super_admin: { labelKey: 'rpt_rol_superadmin', cls: "rpt-badge-superadmin" },
+      admin:       { labelKey: 'admin',              cls: "rpt-badge-admin"      },
+      tecnico:     { labelKey: 'rpt_rol_tecnico',    cls: "rpt-badge-tecnico"    },
+      usuario:     { labelKey: 'rpt_rol_usuario',    cls: "rpt-badge-usuario"    },
     };
-    const { label, cls } = map[rol] || { label: rol, cls: "" };
-    return <span className={`rpt-badge ${cls}`}>{label}</span>;
+    const { labelKey, cls } = map[rol] || { labelKey: null, cls: "" };
+    return <span className={`rpt-badge ${cls}`}>{labelKey ? t(labelKey) : rol}</span>;
   };
 
   const estadoBadge = (estado) => {
     const map = {
-      "En Revision":        { label: "En Revisión",       cls: "rpt-badge-revision"     },
-      "En Mantenimiento":   { label: "En Mantenimiento",  cls: "rpt-badge-mantenimiento" },
-      "Listo para Entrega": { label: "Listo para Entrega",cls: "rpt-badge-listo"         },
-      "Entregado":          { label: "Entregado",         cls: "rpt-badge-entregado"     },
+      "En Revision":        { labelKey: 'dash_en_revision',      cls: "rpt-badge-revision"     },
+      "En Mantenimiento":   { labelKey: 'dash_en_mantenimiento',  cls: "rpt-badge-mantenimiento" },
+      "Listo para Entrega": { labelKey: 'dash_listo_entrega',     cls: "rpt-badge-listo"         },
+      "Entregado":          { labelKey: 'dash_entregado',         cls: "rpt-badge-entregado"     },
     };
-    const { label, cls } = map[estado] || { label: estado || "—", cls: "" };
-    return <span className={`rpt-badge ${cls}`}>{label}</span>;
+    const { labelKey, cls } = map[estado] || { labelKey: null, cls: "" };
+    return <span className={`rpt-badge ${cls}`}>{labelKey ? t(labelKey) : (estado || "—")}</span>;
   };
 
   const renderFila = (row, i) => {
@@ -238,7 +239,10 @@ function Reportes() {
     return (
       <tr key={i}>
         <td>{row.id}</td>
-        <td>{row.nombre}</td>
+        <td>
+          <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{row.nombre}</div>
+          <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{row.tipo || ''}</div>
+        </td>
         <td>{row.serial}</td>
         <td>{estadoBadge(row.estado)}</td>
         <td>{row.usuario || "—"}</td>

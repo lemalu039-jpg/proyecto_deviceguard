@@ -230,21 +230,18 @@ const handleSubmit = async (e) => {
       <div className="salida-card">
         <div className="salida-card-title">
           <div className="salida-card-dot"></div>
-          <span>{t('dash_lista_dispositivos')}</span>
+          <span style={{ whiteSpace: 'nowrap' }}>{t('dash_lista_dispositivos')}</span>
           <span className="salida-count">{salidas.length} {t('correo_registros')}</span>
-        </div>
-        {/* Filtros */}
-        <div style={{ display: 'flex', gap: '.5rem', padding: '.75rem 1.25rem', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', alignItems: 'center' }}>
           <input
             type="text"
             placeholder={t('salida_buscar_ph')}
             value={filtroBusqueda}
             onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
-            style={{ flex: 1, minWidth: '160px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none', fontWeight: 400 }}
+            style={{ flex: 1, minWidth: '160px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
           />
           {(filtroBusqueda || filtroEstado) && (
-            <button onClick={() => { setFiltroBusqueda(''); setFiltroEstado(''); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
-              {t('dash_limpiar')}
+            <button onClick={() => { setFiltroBusqueda(''); setFiltroEstado(''); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
+              {t('dash_limpiar')} ✕
             </button>
           )}
         </div>
@@ -253,6 +250,7 @@ const handleSubmit = async (e) => {
           <table className="salida-table">
             <thead>
               <tr>
+                <th>{t('dash_col_nombre')}</th>
                 <th>{t('dash_col_serial')}</th>
                 <th>{t('salida_col_fecha_ent')}</th>
                 <th>{t('salida_col_fecha_sal')}</th>
@@ -262,10 +260,14 @@ const handleSubmit = async (e) => {
             </thead>
             <tbody>
               {filteredSalidas.length === 0 ? (
-                <tr><td colSpan={esSuperAdmin ? 5 : 4} className="salida-empty">{t('salida_no_registros')}</td></tr>
+                <tr><td colSpan={esSuperAdmin ? 6 : 5} className="salida-empty">{t('salida_no_registros')}</td></tr>
               ) : (
                 filteredSalidas.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(s => (
                   <tr key={s.id}>
+                    <td>
+                      <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{s.nombre || '—'}</div>
+                      <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{s.tipo || ''}</div>
+                    </td>
                     <td style={{ fontWeight: 700, color: 'var(--text-main)' }}>{s.serial}</td>
                     <td>
                       {s.fecha_registro

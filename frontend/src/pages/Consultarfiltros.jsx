@@ -123,7 +123,10 @@ function ConsultarFiltros() {
             ) : (
               dataFiltrada.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((d) => (
                 <tr key={d.id}>
-                  <td>{d.nombre}</td>
+                  <td>
+                    <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
+                    <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo || ''}</div>
+                  </td>
                   <td>{d.ubicacion}</td>
                   <td>
                     {d.fecha_registro

@@ -239,7 +239,7 @@ const usuariosFiltrados = usuarios
               // Modo impersonación activa — mostrar banner y botón volver
               <div style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: "8px", padding: "0.6rem 0.8rem" }}>
                 <p style={{ margin: "0 0 6px", fontSize: "0.7rem", fontWeight: 700, color: "#ef4444" }}>
-                  👁 Simulando como:
+                  {t('sidebar_simulando_como')}
                 </p>
                 <p style={{ margin: "0 0 8px", fontSize: "0.78rem", fontWeight: 600, color: "var(--text-main)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {usuario.nombre}
@@ -248,21 +248,21 @@ const usuariosFiltrados = usuarios
                   onClick={terminarImpersonacion}
                   style={{ width: "100%", padding: "0.4rem", borderRadius: "6px", border: "none", background: "#ef4444", color: "#fff", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer" }}
                 >
-                  ← Volver a Super Admin
+                  {t('sidebar_volver_admin')}
                 </button>
               </div>
             ) : (
               // Modo normal super_admin — selector
               <div>
                 <p style={{ margin: "0 0 5px", fontSize: "0.68rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  Simular usuario
+                  {t('sidebar_simular_usuario')}
                 </p>
                 <div style={{ position: 'relative' }}>
                   <div
                     onClick={() => setSelectorAbierto(!selectorAbierto)}
                     style={{ width: "100%", padding: "0.4rem 0.5rem", borderRadius: "6px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-main)", fontSize: "0.75rem", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
                   >
-                    <span>Seleccionar usuario...</span>
+                    <span>{t('sidebar_seleccionar_usuario')}</span>
                     <span>▾</span>
                   </div>
                   
@@ -272,7 +272,7 @@ const usuariosFiltrados = usuarios
                         <input
                           autoFocus
                           type="text"
-                          placeholder="Buscar usuario o técnico..."
+                          placeholder={t('sidebar_buscar_usuario')}
                           value={busquedaUsuario}
                           onChange={(e) => setBusquedaUsuario(e.target.value)}
                           style={{ width: "100%", padding: "0.3rem 0.5rem", borderRadius: "4px", border: "1px solid var(--border)", background: "var(--input-bg)", color: "var(--text-main)", fontSize: "0.7rem", outline: "none" }}
@@ -280,7 +280,7 @@ const usuariosFiltrados = usuarios
                       </div>
                       <div style={{ overflowY: 'auto', flex: 1 }}>
                         {tecnicosFiltrados.length > 0 && (
-                          <div style={{ padding: '4px 8px', fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', background: 'var(--table-head)' }}>Técnicos</div>
+                          <div style={{ padding: '4px 8px', fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', background: 'var(--table-head)' }}>{t('sidebar_tecnicos')}</div>
                         )}
                         {tecnicosFiltrados.map(u => (
                           <div key={u.id} 
@@ -292,7 +292,7 @@ const usuariosFiltrados = usuarios
                           </div>
                         ))}
                         {usuariosFiltrados.length > 0 && (
-                          <div style={{ padding: '4px 8px', fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', background: 'var(--table-head)' }}>Usuarios</div>
+                          <div style={{ padding: '4px 8px', fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', background: 'var(--table-head)' }}>{t('sidebar_usuarios')}</div>
                         )}
                         {usuariosFiltrados.map(u => (
                           <div key={u.id} 
@@ -339,11 +339,11 @@ const usuariosFiltrados = usuarios
           <div style={{ position: "fixed", inset: 0, zIndex: 99998 }} onClick={() => setNotifAbierto(false)} />
           <div style={{ position: "fixed", top: "70px", left: "270px", width: "290px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "12px", boxShadow: "0 12px 40px rgba(0,0,0,0.4)", zIndex: 99999, overflow: "hidden" }}>
             <div style={{ padding: "0.75rem 1rem", borderBottom: "1px solid var(--border)", fontWeight: 700, fontSize: "0.82rem", color: "var(--text-main)" }}>
-              Dispositivos asignados
+              {t('sidebar_disp_asignados')}
             </div>
             <div style={{ maxHeight: "300px", overflowY: "auto" }}>
               {dispositivos.filter(d => d.estado === "En Revision").length === 0 ? (
-                <p style={{ padding: "1rem", fontSize: "0.78rem", color: "var(--text-muted)", textAlign: "center" }}>Sin dispositivos pendientes</p>
+                <p style={{ padding: "1rem", fontSize: "0.78rem", color: "var(--text-muted)", textAlign: "center" }}>{t('sidebar_sin_disp_pendientes')}</p>
               ) : (
                 dispositivos.filter(d => d.estado === "En Revision").map(d => (
                   <div key={d.id}
@@ -373,7 +373,7 @@ const usuariosFiltrados = usuarios
           <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "14px", width: "400px", maxWidth: "92%", overflow: "hidden", boxShadow: "0 30px 80px rgba(0,0,0,0.4)" }}
             onClick={e => e.stopPropagation()}>
             <div style={{ background: "linear-gradient(135deg,#151E3D,#0492C2)", padding: "1rem 1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ color: "#fff", fontWeight: 700, fontSize: ".95rem" }}>Dispositivo asignado</span>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: ".95rem" }}>{t('sidebar_disp_asignado')}</span>
               <button onClick={() => setModalDispositivo(null)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", fontSize: "1rem" }}>✕</button>
             </div>
             <div style={{ padding: "1.5rem" }}>
@@ -381,11 +381,11 @@ const usuariosFiltrados = usuarios
                 <div style={{ fontSize: "1rem", fontWeight: 800, color: "var(--text-main)", marginBottom: ".75rem" }}>{modalDispositivo.nombre}</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".5rem .75rem" }}>
                   {[
-                    { label: "Marca",     value: modalDispositivo.marca     || "—" },
-                    { label: "Serial",    value: modalDispositivo.serial    || "—" },
-                    { label: "Tipo",      value: modalDispositivo.tipo      || "—" },
-                    { label: "Estado",    value: modalDispositivo.estado    || "—" },
-                    { label: "Ubicación", value: modalDispositivo.ubicacion || "—" },
+                    { label: t('estadisticas_col_marca'),  value: modalDispositivo.marca     || "—" },
+                    { label: "Serial",                     value: modalDispositivo.serial    || "—" },
+                    { label: t('estadisticas_col_tipo'),   value: modalDispositivo.tipo      || "—" },
+                    { label: t('dash_col_estado'),         value: modalDispositivo.estado    || "—" },
+                    { label: t('dash_col_ubicacion'),      value: modalDispositivo.ubicacion || "—" },
                   ].map(({ label, value }) => (
                     <div key={label}>
                       <div style={{ fontSize: ".62rem", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase" }}>{label}</div>
@@ -396,17 +396,17 @@ const usuariosFiltrados = usuarios
               </div>
               {modalDispositivo.estado === "En Revision" && (
                 <p style={{ fontSize: ".8rem", color: "var(--text-muted)", marginBottom: "1rem" }}>
-                  Al confirmar, el dispositivo pasará a <strong style={{ color: "#0492C2" }}>En Mantenimiento</strong> y comenzarás a trabajar en él.
+                  {t('sidebar_al_confirmar')} <strong style={{ color: "#0492C2" }}>{t('sidebar_en_mantenimiento_bold')}</strong> {t('sidebar_comenzaras')}
                 </p>
               )}
               <div style={{ display: "flex", gap: ".75rem" }}>
                 <button onClick={() => setModalDispositivo(null)} style={{ flex: 1, padding: ".65rem", background: "transparent", border: "1px solid var(--border)", color: "var(--text-main)", borderRadius: "8px", cursor: "pointer", fontWeight: 600 }}>
-                  Cerrar
+                  {t('cerrar')}
                 </button>
                 {modalDispositivo.estado === "En Revision" && (
                   <button onClick={handleConfirmarMantenimiento} disabled={confirmando}
                     style={{ flex: 1, padding: ".65rem", background: "linear-gradient(135deg,#0492C2,#82EEFD)", border: "none", color: "#fff", borderRadius: "8px", cursor: confirmando ? "not-allowed" : "pointer", fontWeight: 700 }}>
-                    {confirmando ? "Guardando..." : "✓ Iniciar mantenimiento"}
+                    {confirmando ? t('sidebar_guardando') : t('sidebar_iniciar_mant')}
                   </button>
                 )}
               </div>
