@@ -8,7 +8,7 @@ import Pagination from "../components/Pagination";
 import { useLanguage } from "../context/LanguageContext.jsx";
 
 const API = "http://localhost:5000/api/reportes";
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 7;
 
 function Reportes() {
   const { t } = useLanguage();

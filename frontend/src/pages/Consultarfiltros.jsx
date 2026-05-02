@@ -109,9 +109,9 @@ function ConsultarFiltros() {
           <thead>
             <tr>
               <th>{t('dash_col_nombre')}</th>
+              <th>{t('dash_col_serial')}</th>
               <th>{t('dash_col_ubicacion')}</th>
               <th>{t('dash_col_fecha_reg')}</th>
-              <th>{t('dash_col_serial')}</th>
               <th>{t('dash_col_estado')}</th>
               {esSuperAdmin && <th>{t('dash_col_reg_por')}</th>}
             </tr>
@@ -127,6 +127,7 @@ function ConsultarFiltros() {
                     <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
                     <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo || ''}</div>
                   </td>
+                  <td style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial}</td>
                   <td>{d.ubicacion}</td>
                   <td>
                     {d.fecha_registro
@@ -135,7 +136,6 @@ function ConsultarFiltros() {
                     <br />
                     <span className="hora">{d.hora_registro || new Date(d.fecha_registro).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</span>
                   </td>
-                  <td>{d.serial}</td>
                   <td>
                     <span className={` ${d.estado.toLowerCase()}`}>{d.estado}</span>
                   </td>

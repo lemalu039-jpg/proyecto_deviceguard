@@ -23,7 +23,7 @@ function Equipo() {
   const [usuarios, setUsuarios] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [currentPageCards, setCurrentPageCards] = useState(1);
-  const cardsPerPage = 12;
+  const cardsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
   const usuarioActual = JSON.parse(localStorage.getItem("usuario") || "{}");
@@ -187,30 +187,13 @@ function Equipo() {
         ))}
       </div>
 
-      {/* Paginación discreta de cards */}
-      {usuarios.length > cardsPerPage && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', margin: '0.5rem 0 1.5rem' }}>
-          <button
-            onClick={() => setCurrentPageCards(p => Math.max(1, p - 1))}
-            disabled={currentPageCards === 1}
-            style={{ padding: '4px 12px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-muted)', fontSize: '.75rem', cursor: currentPageCards === 1 ? 'not-allowed' : 'pointer', opacity: currentPageCards === 1 ? 0.4 : 1 }}>
-            ‹
-          </button>
-          {Array.from({ length: Math.ceil(usuarios.length / cardsPerPage) }, (_, i) => (
-            <button key={i}
-              onClick={() => setCurrentPageCards(i + 1)}
-              style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: currentPageCards === i + 1 ? 'linear-gradient(135deg,#0492C2,#82EEFD)' : 'var(--bg-card)', color: currentPageCards === i + 1 ? '#fff' : 'var(--text-muted)', fontSize: '.75rem', fontWeight: currentPageCards === i + 1 ? 700 : 400, cursor: 'pointer' }}>
-              {i + 1}
-            </button>
-          ))}
-          <button
-            onClick={() => setCurrentPageCards(p => Math.min(Math.ceil(usuarios.length / cardsPerPage), p + 1))}
-            disabled={currentPageCards === Math.ceil(usuarios.length / cardsPerPage)}
-            style={{ padding: '4px 12px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-muted)', fontSize: '.75rem', cursor: currentPageCards === Math.ceil(usuarios.length / cardsPerPage) ? 'not-allowed' : 'pointer', opacity: currentPageCards === Math.ceil(usuarios.length / cardsPerPage) ? 0.4 : 1 }}>
-            ›
-          </button>
-        </div>
-      )}
+      {/* Paginación de cards */}
+      <Pagination
+        totalItems={usuarios.length}
+        itemsPerPage={cardsPerPage}
+        currentPage={currentPageCards}
+        onPageChange={setCurrentPageCards}
+      />
 
       {/* Tabla */}
       <div className="equipo-tabla-section">

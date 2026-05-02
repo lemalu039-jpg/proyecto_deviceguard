@@ -1,0 +1,362 @@
+/* ── WRAPPER ─────────────────────────────────────────── */
+.papelera-wrapper {
+  padding: 0;
+}
+
+/* ── HEADER ──────────────────────────────────────────── */
+.papelera-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.papelera-header-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.papelera-titulo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 0.2rem;
+}
+
+.papelera-subtitulo {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ── CARD ────────────────────────────────────────────── */
+.papelera-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.papelera-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.papelera-dot {
+  width: 4px;
+  height: 16px;
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.papelera-search {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.38rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.78rem;
+  outline: none;
+}
+
+.papelera-btn-clear {
+  padding: 0.38rem 0.7rem;
+  border-radius: 8px;
+  border: none;
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.papelera-count {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background: var(--input-bg);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ── TABLA ───────────────────────────────────────────── */
+.papelera-table-wrap {
+  overflow-x: auto;
+}
+
+.papelera-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.papelera-table thead th {
+  padding: 0.6rem 1rem;
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--table-head);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+
+.papelera-table tbody tr {
+  border-bottom: 1px solid var(--input-bg);
+  transition: background 0.12s;
+}
+
+.papelera-table tbody tr:hover {
+  background: var(--table-head);
+}
+
+.papelera-table tbody td {
+  padding: 0.65rem 1rem;
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.papelera-dev-name {
+  font-weight: 600;
+  color: var(--text-main);
+  font-size: 0.82rem;
+}
+
+.papelera-dev-type {
+  font-size: 0.71rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.papelera-serial {
+  font-weight: 700;
+  color: var(--text-main);
+  font-family: monospace;
+}
+
+.papelera-muted {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.papelera-hora {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.papelera-empty {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ── ACCIONES ────────────────────────────────────────── */
+.papelera-acciones {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.papelera-btn-restaurar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: none;
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.papelera-btn-restaurar:hover {
+  background: #bbf7d0;
+}
+
+.papelera-btn-eliminar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: none;
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.papelera-btn-eliminar:hover {
+  background: #fecaca;
+}
+
+/* ── MODALES ─────────────────────────────────────────── */
+.papelera-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.papelera-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.papelera-modal-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+
+.papelera-modal-icon.restaurar {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.papelera-modal-icon.eliminar {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.papelera-modal-msg {
+  font-size: 0.9rem;
+  color: var(--text-main);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.papelera-modal-msg span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.papelera-modal-btns {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.papelera-btn-cancel {
+  flex: 1;
+  padding: 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-main);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.papelera-btn-confirm-restaurar {
+  flex: 1;
+  padding: 0.65rem;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.papelera-btn-confirm-restaurar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.papelera-btn-confirm-eliminar {
+  flex: 1;
+  padding: 0.65rem;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.papelera-btn-confirm-eliminar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── TOAST ───────────────────────────────────────────── */
+.papelera-toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  z-index: 9999;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.25s ease;
+}
+
+.papelera-toast.ok {
+  background: var(--text-main);
+  color: var(--bg-card);
+}
+
+.papelera-toast.error {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

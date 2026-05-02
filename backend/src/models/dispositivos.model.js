@@ -101,6 +101,31 @@ class DispositivoModel {
     return result.affectedRows;
   }
 
+  static async findAllDeleted() {
+    const [rows] = await pool.query(`
+      SELECT d.*, COALESCE(e.nombre, 'Sin estado') AS estado,
+             u.nombre AS registrado_por,
+             t.nombre AS tecnico_asignado
+      FROM dispositivos d
+      LEFT JOIN estados e  ON d.estado_id = e.id
+      LEFT JOIN usuarios u ON d.usuario_id = u.id
+      LEFT JOIN usuarios t ON d.tecnico_id = t.id
+      WHERE d.activo = 0
+      ORDER BY d.id DESC
+    `);
+    return rows;
+  }
+
+  static async restore(id) {
+    const [result] = await pool.query('UPDATE dispositivos SET activo = 1 WHERE id = ?', [id]);
+    return result.affectedRows;
+  }
+
+  static async permanentDelete(id) {
+    const [result] = await pool.query('DELETE FROM dispositivos WHERE id = ? AND activo = 0', [id]);
+    return result.affectedRows;
+  }
+
   static async findBySerial(serial) {
     const [rows] = await pool.query(`
       SELECT d.*, COALESCE(e.nombre, 'Sin estado') AS estado

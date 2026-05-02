@@ -231,7 +231,6 @@ const handleSubmit = async (e) => {
         <div className="salida-card-title">
           <div className="salida-card-dot"></div>
           <span style={{ whiteSpace: 'nowrap' }}>{t('dash_lista_dispositivos')}</span>
-          <span className="salida-count">{salidas.length} {t('correo_registros')}</span>
           <input
             type="text"
             placeholder={t('salida_buscar_ph')}
@@ -244,6 +243,7 @@ const handleSubmit = async (e) => {
               {t('dash_limpiar')} ✕
             </button>
           )}
+          <span className="salida-count">{salidas.length} {t('correo_registros')}</span>
         </div>
 
         <div className="salida-table-wrap">

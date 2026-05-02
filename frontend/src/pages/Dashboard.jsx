@@ -323,8 +323,8 @@ function Dashboard() {
               <tr style={{ background: 'var(--table-head)', borderBottom: '2px solid var(--border)' }}>
                 <th style={thStyle}>{t('dash_col_imagen')}</th>
                 <th style={thStyle}>{t('dash_col_nombre')}</th>
-                <th style={thStyle}>{t('dash_col_ubicacion')}</th>
                 <th style={thStyle}>{t('dash_col_serial')}</th>
+                <th style={thStyle}>{t('dash_col_ubicacion')}</th>
                 <th style={thStyle}>{t('dash_col_fecha_reg')}</th>
                 <th style={thStyle}>{t('dash_col_estado')}</th>
                 {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='super_admin' && <th style={thStyle}>{t('dash_col_reg_por')}</th>}
@@ -359,8 +359,8 @@ function Dashboard() {
                     <div style={{ fontWeight: 600, color: 'var(--primary)', fontSize: '.82rem', textDecoration: 'underline dotted' }}>{d.nombre}</div>
                     <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo}</div>
                   </td>
+                  <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace', cursor: 'pointer' }} className="hover-link">{d.serial}</td>
                   <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">{d.ubicacion || 'N/A'}</td>
-                  <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', fontFamily: 'monospace', cursor: 'pointer' }} className="hover-link">{d.serial}</td>
                   <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">
                     {formatFecha(d.fecha_registro)}
                     {d.hora_registro && (

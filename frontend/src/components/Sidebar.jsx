@@ -15,6 +15,7 @@ import estadisticas_ from "../assets/icons/estadisticas_.svg";
 import equipo_ from "../assets/icons/equipo_.svg";
 import gestion_mantenimiento from "../assets/icons/gestion_mantenimiento.svg";
 import settings from "../assets/icons/settings.svg";
+import papelera_ from "../assets/icons/papelera_.svg";
 
 function Sidebar({ usuario: usuarioProp, onLogout, onImpersonate }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -112,6 +113,7 @@ const usuariosFiltrados = usuarios
     { path: "/registrarsalida", label: t('registrar_salida'), icon: registrarsalida_ },
     { path: "/reportes", label: t('generar_reportes'), icon: generar_reportes_ },
     { path: "/estadisticas", label: t('estadisticas'), icon: estadisticas_ },
+    { path: "/papelera", label: "Papelera", icon: papelera_ },
     { path: "/ajustes-cuenta", label: t('ajustes_cuenta_nav'), icon: settings },
   ] : [
     { path: "/asignaciones", label: t('asignacion_title') || "Asignar Tareas", icon: gestion_mantenimiento }, 
@@ -120,6 +122,7 @@ const usuariosFiltrados = usuarios
     { path: "/estadisticas", label: t('estadisticas'), icon: estadisticas_ },
     ...(esSuperAdmin || rol === "admin" ? [{ path: "/equipo", label: t('equipo'), icon: equipo_ }] : []),
     { path: "/gestion", label: t('gestion_mantenimiento'), icon: gestion_mantenimiento },
+    { path: "/papelera", label: "Papelera", icon: papelera_ },
     { path: "/ajustes-cuenta", label: t('ajustes_cuenta_nav'), icon: settings },
   ];
 
