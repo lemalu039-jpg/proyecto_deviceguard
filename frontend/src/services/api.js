@@ -51,6 +51,11 @@ export const createDispositivo = (data) => {
 export const updateDispositivo = (id, data) => api.put(`/dispositivos/${id}`, data);
 export const deleteDispositivo = (id) => api.delete(`/dispositivos/${id}`);
 
+// Papelera
+export const getDispositivosPapelera = () => api.get('/dispositivos/papelera/todos');
+export const restaurarDispositivo = (id) => api.put(`/dispositivos/${id}/restaurar`);
+export const eliminarDefinitivoDispositivo = (id) => api.delete(`/dispositivos/${id}/permanente`);
+
 // Salidas
 export const getSalidas = () => api.get('/salidas');
 export const createSalida = (data) => api.post('/salidas', data);

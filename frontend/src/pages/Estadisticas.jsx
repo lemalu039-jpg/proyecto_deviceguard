@@ -42,7 +42,7 @@ function Estadisticas() {
   const [filtroBusqueda, setFiltroBusqueda] = useState('');
   const [filtroTablaEstado, setFiltroTablaEstado] = useState('todos');
   const [currentPage,  setCurrentPage]  = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 7;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -503,7 +503,6 @@ function Estadisticas() {
                   <tr>
                     <th style={thStyle}>{t('dash_col_nombre')}</th>
                     <th style={thStyle}>Serial</th>
-                    <th style={thStyle}>{t('estadisticas_col_tipo')}</th>
                     <th style={thStyle}>{t('estadisticas_col_marca')}</th>
                     <th style={thStyle}>{t('dash_col_ubicacion')}</th>
                     <th style={thStyle}>{t('fecha')}</th>
@@ -515,9 +514,11 @@ function Estadisticas() {
                     .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                     .map((d, i) => (
                     <tr key={d.id} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
-                      <td style={tdStyle}><div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div></td>
-                      <td style={tdStyle}>{d.serial || 'N/A'}</td>
-                      <td style={tdStyle}>{d.tipo || 'N/A'}</td>
+                      <td style={tdStyle}>
+                        <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
+                        <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo || ''}</div>
+                      </td>
+                      <td style={{ ...tdStyle, fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial || 'N/A'}</td>
                       <td style={tdStyle}>{d.marca || 'N/A'}</td>
                       <td style={tdStyle}>{d.ubicacion || 'N/A'}</td>
                       <td style={tdStyle}>
@@ -536,7 +537,7 @@ function Estadisticas() {
                   ))}
                   {dispositivosTabla.length === 0 && (
                     <tr>
-                      <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
+                      <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
                         {t('estadisticas_no_disp_filtros')}
                       </td>
                     </tr>

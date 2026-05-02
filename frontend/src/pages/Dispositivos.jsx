@@ -33,6 +33,16 @@ function Dispositivos() {
   });
   const [loadingReingreso, setLoadingReingreso] = useState(false);
 
+  // Modal eliminar + toast
+  const [modalEliminar, setModalEliminar] = useState(null); // dispositivo a eliminar
+  const [eliminando, setEliminando] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const mostrarToast = (msg, error = false) => {
+    setToast({ msg, error });
+    setTimeout(() => setToast(null), 3000);
+  };
+
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
@@ -116,9 +126,22 @@ function Dispositivos() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm(t('confirmar'))) {
-      await deleteDispositivo(id);
+    const dispositivo = dispositivos.find(d => d.id === id);
+    if (dispositivo) setModalEliminar(dispositivo);
+  };
+
+  const confirmarEliminar = async () => {
+    if (!modalEliminar) return;
+    setEliminando(true);
+    try {
+      await deleteDispositivo(modalEliminar.id);
+      mostrarToast(`"${modalEliminar.nombre}" movido a la papelera`);
+      setModalEliminar(null);
       loadData();
+    } catch {
+      mostrarToast(t('disp_err_eliminar') || 'Error al eliminar el dispositivo', true);
+    } finally {
+      setEliminando(false);
     }
   };
 
@@ -343,7 +366,6 @@ function Dispositivos() {
         <div className="disp-card-title">
           <div className="disp-card-dot"></div>
           <span style={{ whiteSpace: 'nowrap' }}>{t('disp_lista')}</span>
-          <span className="disp-count">{dispositivos.length} {t('disp_registrados')}</span>
           <input
             type="text"
             placeholder={t('disp_buscar_placeholder')}
@@ -367,6 +389,7 @@ function Dispositivos() {
               {t('limpiar_filtros')}
             </button>
           )}
+          <span className="disp-count">{dispositivos.length} {t('disp_registrados')}</span>
         </div>
         <div className="disp-table-wrap">
           <table className="disp-table">
@@ -441,6 +464,52 @@ function Dispositivos() {
           onPageChange={setCurrentPage}
         />
       </div>
+
+      {/* Modal confirmar eliminar */}
+      {modalEliminar && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}
+          onClick={() => setModalEliminar(null)}
+        >
+          <div
+            style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '16px', padding: '2rem', maxWidth: '400px', width: '90%', textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', color: '#dc2626' }}>
+              <Icon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6" size={28} />
+            </div>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-main)', marginBottom: '0.5rem', lineHeight: 1.6 }}>
+              ¿Mover <strong>{modalEliminar.nombre}</strong> a la papelera?
+            </p>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+              El dispositivo podrá restaurarse desde el módulo de Papelera.
+            </p>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button
+                onClick={() => setModalEliminar(null)}
+                style={{ flex: 1, padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-main)', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}
+              >
+                {t('cancelar')}
+              </button>
+              <button
+                onClick={confirmarEliminar}
+                disabled={eliminando}
+                style={{ flex: 1, padding: '0.65rem', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg, #dc2626, #ef4444)', color: '#fff', fontSize: '0.85rem', fontWeight: 700, cursor: eliminando ? 'not-allowed' : 'pointer', opacity: eliminando ? 0.7 : 1 }}
+              >
+                {eliminando ? 'Moviendo...' : 'Sí, mover a papelera'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div style={{ position: 'fixed', bottom: '1.5rem', right: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.7rem 1.2rem', borderRadius: '10px', fontSize: '0.875rem', fontWeight: 500, zIndex: 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.15)', animation: 'slideUp 0.25s ease', background: toast.error ? '#fee2e2' : 'var(--text-main)', color: toast.error ? '#dc2626' : 'var(--bg-card)' }}>
+          <Icon d={toast.error ? "M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" : "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"} size={16} />
+          {toast.msg}
+        </div>
+      )}
 
     </div>
   );

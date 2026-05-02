@@ -209,3 +209,38 @@ exports.getAsignados = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.getPapelera = async (req, res) => {
+    try {
+        const dispositivos = await DispositivoModel.findAllDeleted();
+        res.json(dispositivos);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.restore = async (req, res) => {
+    try {
+        const affectedRows = await DispositivoModel.restore(req.params.id);
+        if (affectedRows > 0) {
+            res.json({ message: 'Dispositivo restaurado exitosamente' });
+        } else {
+            res.status(404).json({ error: 'Dispositivo no encontrado en la papelera' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.permanentDelete = async (req, res) => {
+    try {
+        const affectedRows = await DispositivoModel.permanentDelete(req.params.id);
+        if (affectedRows > 0) {
+            res.json({ message: 'Dispositivo eliminado permanentemente' });
+        } else {
+            res.status(404).json({ error: 'Dispositivo no encontrado en la papelera' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
