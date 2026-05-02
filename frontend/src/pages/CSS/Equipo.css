@@ -18,11 +18,12 @@
   color: var(--text-main);
 }
 
+
 .equipo-btn-add {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #0492C2, #82EEFD);
+  background: var(--btn-gradient, linear-gradient(135deg, #0492C2, #82EEFD));
   color: #fff;
   border: none;
   padding: 0.65rem 1.4rem;
@@ -30,12 +31,13 @@
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
+  transition: all 0.3s ease;
 }
 
 .equipo-btn-add:hover {
-  opacity: 0.88;
+  background: var(--btn-gradient-hover, linear-gradient(135deg, #0378a6, #5dd8f0));
   transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(4, 146, 194, 0.35);
 }
 
 .equipo-btn-add:active { transform: scale(0.98); }
@@ -57,8 +59,6 @@
   align-items: center;
   gap: 0.4rem;
   transition: box-shadow 0.15s;
-  height: 100%;
-  justify-content: space-between;
 }
 
 .equipo-card:hover { box-shadow: 0 6px 24px rgba(45,58,140,0.1); }
@@ -88,7 +88,6 @@
   color: var(--text-muted);
   text-align: center;
   word-break: break-all;
-  min-height: 38px;
 }
 
 .equipo-card-rol {
@@ -99,8 +98,9 @@
   margin: 0.2rem 0 0.6rem;
 }
 
-.equipo-card-rol.admin { background: #eef0fb; color: #2d3a8c; }
-.equipo-card-rol.usuario { background: #f0fdf4; color: #059669; }
+.equipo-card-rol.admin      { background: #ede9fe; color: #6d28d9; }
+.equipo-card-rol.usuario    { background: #f0fdf4; color: #059669; }
+.equipo-card-rol.inactivo   { background: #fee2e2; color: #dc2626; }
 
 .equipo-card-msg-btn {
   display: flex;
@@ -115,7 +115,6 @@
   cursor: pointer;
   transition: background 0.12s;
   margin-top: 0.4rem;
-  margin-top: auto;
 }
 
 .equipo-card-msg-btn:hover { background: var(--input-bg); }
@@ -204,13 +203,14 @@
 
 .equipo-badge {
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 0.2rem 0.7rem;
   border-radius: 999px;
 }
 
-.equipo-badge.admin { background: #eef0fb; color: #2d3a8c; }
-.equipo-badge.usuario { background: #f0fdf4; color: #059669; }
+.equipo-badge.admin    { background: #ede9fe; color: #6d28d9; }
+.equipo-badge.usuario  { background: #f0fdf4; color: #059669; }
+.equipo-badge.inactivo { background: #fee2e2; color: #dc2626; }
 
 .equipo-tabla-empty {
   text-align: center;
@@ -388,7 +388,7 @@
 }
 
 .equipo-btn-submit {
-  background: linear-gradient(135deg, #0492C2, #82EEFD);
+  background: var(--btn-gradient, var(--primary));
   color: #fff;
   border: none;
   padding: 0.75rem;
@@ -450,12 +450,13 @@
 }
 
 .equipo-btn-editar {
-  background: linear-gradient(135deg, #0492C2, #82EEFD);
+  background: var(--btn-gradient, var(--primary));
   color: #fff;
 }
 
 .equipo-btn-editar:hover {
-  opacity: 0.88;
+  background: var(--btn-gradient-hover, var(--primary-hover));
+  opacity: 0.9;
 }
 
 .equipo-btn-suspender {
@@ -633,14 +634,4 @@
   font-size: 0.7rem;
   color: var(--text-muted);
   font-weight: 400;
-}
-
-.equipo-badge.admin {
-  background: #7c3aed20;
-  color: #7c3aed;
-}
-
-.equipo-card-rol.admin {
-  background: #7c3aed20;
-  color: #7c3aed;
 }

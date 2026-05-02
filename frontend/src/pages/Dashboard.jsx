@@ -270,7 +270,7 @@ function Dashboard() {
       <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>{t('dash_inicio')}</h1>
 
       {loading ? (
-        <p>Cargando información...</p>
+        <p>{t('cargando_info')}</p>
       ) : (
         <div style={{ marginBottom: '2rem' }}>
 
@@ -290,32 +290,30 @@ function Dashboard() {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem', flexWrap: 'wrap' }}>
         <div style={{ width: '4px', height: '18px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', borderRadius: '2px', flexShrink: 0 }}></div>
-        <span style={{ fontSize: '.92rem', fontWeight: 700, color: 'var(--text-main)' }}>{t('dash_lista_dispositivos')}</span>
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: '.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <input
-            type="text"
-            placeholder={t('dash_buscar_ph')}
-            value={filtroBusqueda}
-            onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
-            style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none', minWidth: '200px' }}
-          />
-          <select
-            value={filtroEstado}
-            onChange={e => { setFiltroEstado(e.target.value); setCurrentPage(1); }}
-            style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none' }}
-          >
-            <option value="">{t('dash_todos_estados')}</option>
-            <option value="En Revision">En Revision</option>
-            <option value="En Mantenimiento">En Mantenimiento</option>
-            <option value="Listo para Entrega">Listo para Entrega</option>
-            <option value="Entregado">Entregado</option>
-          </select>
-          {(filtroEstado || filtroBusqueda) && (
-            <button onClick={() => { setFiltroEstado(''); setFiltroBusqueda(''); setCurrentPage(1); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer' }}>
-              {t('dash_limpiar')}
-            </button>
-          )}
-        </div>
+        <span style={{ fontSize: '.92rem', fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap' }}>{t('dash_lista_dispositivos')}</span>
+        <input
+          type="text"
+          placeholder={t('dash_buscar_ph')}
+          value={filtroBusqueda}
+          onChange={e => { setFiltroBusqueda(e.target.value); setCurrentPage(1); }}
+          style={{ flex: 1, minWidth: '180px', padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', outline: 'none' }}
+        />
+        <select
+          value={filtroEstado}
+          onChange={e => { setFiltroEstado(e.target.value); setCurrentPage(1); }}
+          style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none', flexShrink: 0 }}
+        >
+          <option value="">{t('dash_todos_estados')}</option>
+          <option value="En Revision">{t('dash_en_revision')}</option>
+          <option value="En Mantenimiento">{t('dash_en_mantenimiento')}</option>
+          <option value="Listo para Entrega">{t('dash_listo_entrega')}</option>
+          <option value="Entregado">{t('dash_entregado')}</option>
+        </select>
+        {(filtroEstado || filtroBusqueda) && (
+          <button onClick={() => { setFiltroEstado(''); setFiltroBusqueda(''); setCurrentPage(1); }} style={{ padding: '.38rem .7rem', borderRadius: '8px', border: 'none', background: '#fee2e2', color: '#dc2626', fontSize: '.75rem', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
+            {t('dash_limpiar')}
+          </button>
+        )}
       </div>
 
       <div style={{ background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>

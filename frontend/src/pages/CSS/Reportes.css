@@ -359,6 +359,7 @@
 
 /* Roles usuarios — mismos colores que Equipo */
 .rpt-badge-superadmin   { background: #fef3c7; color: #92400e; }
+.rpt-badge-admin        { background: #ede9fe; color: #6d28d9; }
 .rpt-badge-tecnico      { background: #dbeafe; color: #1e40af; }
 .rpt-badge-usuario      { background: #f0fdf4; color: #059669; }
 

@@ -24,6 +24,7 @@
   padding: .75rem 1.25rem;
   border-bottom: 1px solid var(--border);
   margin-bottom: 0;
+  flex-wrap: wrap;
 }
 
 .mant-dot {
@@ -42,13 +43,22 @@
 
 .mant-table th {
   text-align: left;
-  font-size: 0.8rem;
+  font-size: .71rem;
+  font-weight: 700;
   color: var(--text-muted);
-  padding: 10px 0;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  white-space: nowrap;
+  padding: .6rem .85rem;
+  background: var(--table-head);
+}
+
+.mant-table thead tr {
+  border-bottom: 2px solid var(--border);
 }
 
 .mant-table td {
-  padding: 12px 0;
+  padding: .65rem .85rem;
   border-top: 1px solid var(--input-bg);
 }
 

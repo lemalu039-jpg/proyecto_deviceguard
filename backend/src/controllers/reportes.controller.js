@@ -27,7 +27,7 @@ const previewDispositivos = async (req, res) => {
   try {
     const { busqueda, tecnico_id } = req.query;
     let query = `
-      SELECT d.id, d.nombre, d.serial, COALESCE(e.nombre, 'Sin estado') AS estado,
+      SELECT d.id, d.nombre, d.tipo, d.serial, COALESCE(e.nombre, 'Sin estado') AS estado,
              u.nombre AS usuario, d.fecha_registro, d.hora_registro
       FROM dispositivos d
       LEFT JOIN estados e ON d.estado_id = e.id

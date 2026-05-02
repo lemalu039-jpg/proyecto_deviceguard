@@ -84,6 +84,7 @@
   padding: .75rem 1.25rem;
   border-bottom: 1px solid var(--border);
   margin-bottom: 0;
+  flex-wrap: wrap;
 }
 
 .disp-card-dot {
@@ -95,7 +96,6 @@
 }
 
 .disp-count {
-  margin-left: auto;
   font-size: .72rem;
   font-weight: 600;
   color: var(--text-muted);
