@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require("path");
 const app = express();
+const calificacionesRoutes = require('./src/routes/calificaciones.routes');
 
 
 
@@ -36,6 +37,7 @@ app.use('/api/mantenimiento', mantenimientoRoutes);
 app.use('/api/reportes', reportesRoutes);
 app.use('/api/correo', correoRoutes);
 app.use('/api/historial', historialRoutes);
+app.use('/api/calificaciones', calificacionesRoutes);
 
 app.use((err, req, res, next) => {
   if (err.code === 'LIMIT_FILE_SIZE') {
@@ -50,3 +52,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });
+

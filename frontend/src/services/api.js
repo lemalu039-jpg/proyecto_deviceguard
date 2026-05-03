@@ -91,4 +91,9 @@ export const enviarMensaje = (data) => api.post('/correo/mensajes', data);
 export const getHistorial = (dispositivoId) => api.get(`/historial/${dispositivoId}`);
 export const createObservacion = (dispositivoId, data) => api.post(`/historial/${dispositivoId}`, data);
 
+export const buscarDispositivoPorSerial = (serial) => axios.get(`http://localhost:5000/api/calificaciones/serial/${serial}`);
+export const crearCalificacion = (data) => axios.post(`http://localhost:5000/api/calificaciones`, data);
+export const getCalificaciones = () => api.get('/calificaciones');
+export const getCalificacionesTecnico = (tecnicoId) => api.get(`/calificaciones/tecnico/${tecnicoId}`);
+
 export default api;
