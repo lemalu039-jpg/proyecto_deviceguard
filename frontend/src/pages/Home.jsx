@@ -4,6 +4,171 @@ import { useNavigate } from 'react-router-dom';
 import './css/Home.css';
 import candado from '../assets/icons/logo-deviceguard.svg';
 
+import { useState } from 'react';
+import axios from 'axios';
+
+function CalificacionForm() {
+  const [serial, setSerial] = useState('');
+  const [dispositivo, setDispositivo] = useState(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [paso, setPaso] = useState(1);
+  const [estrellasEmpresa, setEstrellasEmpresa] = useState(0);
+  const [estrellasTecnico, setEstrellasTecnico] = useState(0);
+  const [comentario, setComentario] = useState('');
+  const [enviado, setEnviado] = useState(false);
+
+  const buscar = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const res = await axios.get(`http://localhost:5000/api/calificaciones/serial/${serial.trim()}`);
+      setDispositivo(res.data);
+      setPaso(2);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Error al buscar dispositivo');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const enviar = async (e) => {
+    e.preventDefault();
+    if (estrellasEmpresa === 0) { setError('Por favor califica la empresa'); return; }
+    setError('');
+    setLoading(true);
+    try {
+      await axios.post('http://localhost:5000/api/calificaciones', {
+        dispositivo_id: dispositivo.id,
+        tecnico_id: dispositivo.tecnico_id,
+        estrellas_empresa: estrellasEmpresa,
+        estrellas_tecnico: estrellasTecnico || null,
+        comentario: comentario || null
+      });
+      setEnviado(true);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Error al enviar calificación');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const Estrellas = ({ valor, onChange }) => (
+    <div style={{ display: 'flex', gap: '6px' }}>
+      {[1,2,3,4,5].map(i => (
+        <span key={i} onClick={() => onChange(i)}
+          style={{ fontSize: '2rem', cursor: 'pointer', color: i <= valor ? '#f59e0b' : '#d1d5db', transition: 'color 0.15s' }}>
+          ★
+        </span>
+      ))}
+    </div>
+  );
+
+  if (enviado) return (
+    <div
+  className="cal-card anim-up"
+  style={{
+    textAlign: 'center',
+    padding: '2.5rem',
+    background: '#0b1220',
+    border: '1px solid #1e3a5f',
+    color: '#fff'
+  }}
+>
+      <div style={{ fontSize: '3rem', marginBottom: '0.75rem' }}></div>
+      <h3
+  style={{
+    background: 'linear-gradient(135deg,#0492C2,#82EEFD)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    fontWeight: 700,
+    margin: '0 0 0.5rem'
+  }}
+>
+  ¡Gracias por tu calificación!
+</h3>
+      <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>Tu opinión nos ayuda a mejorar el servicio.</p>
+    </div>
+  );
+
+  return (
+    <div className="cal-card anim-up dark-card">
+      {paso === 1 ? (
+        <form onSubmit={buscar}>
+          <p style={{ fontWeight: 600, marginBottom: '0.75rem', color: '#1a1a2e' }}>Ingresa el serial de tu dispositivo</p>
+          {error && <div className="cal-error">{error}</div>}
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <input
+              value={serial}
+              onChange={e => setSerial(e.target.value)}
+              placeholder="Ej: SN-PRO-01098"
+              required
+              style={{ flex: 1, padding: '0.6rem 0.75rem', borderRadius: '8px', border: '1.5px solid #e2e2e2', fontSize: '0.85rem', outline: 'none' }}
+            />
+            <button type="submit" disabled={loading}
+              style={{ padding: '0.6rem 1.25rem', background: 'linear-gradient(135deg,#0492C2,#82EEFD)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontSize: '0.85rem' }}>
+              {loading ? '...' : 'Buscar'}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <form onSubmit={enviar}>
+          <div style={{
+  marginBottom: '1rem',
+  padding: '0.75rem',
+  background: '#091428',
+  borderRadius: '8px',
+  border: '1px solid #1e3a5f'
+}}>
+            <p style={{ margin: 0, fontWeight: 700, color: '#0369a1', fontSize: '0.9rem' }}>{dispositivo.nombre}</p>
+            <p style={{ margin: '2px 0 0', color: '#0284c7', fontSize: '0.78rem' }}>{dispositivo.marca} · {dispositivo.serial}</p>
+            {dispositivo.tecnico_nombre && (
+              <p style={{ margin: '2px 0 0', color: '#0369a1', fontSize: '0.78rem' }}>Técnico: {dispositivo.tecnico_nombre}</p>
+            )}
+          </div>
+
+          {error && <div className="cal-error">{error}</div>}
+
+          <div style={{ marginBottom: '1rem' }}>
+            <p style={{ fontWeight: 600, color: '#1a1a2e', marginBottom: '0.4rem', fontSize: '0.9rem' }}>¿Cómo calificarías nuestro servicio?</p>
+            <Estrellas valor={estrellasEmpresa} onChange={setEstrellasEmpresa} />
+          </div>
+
+          {dispositivo.tecnico_nombre && (
+            <div style={{ marginBottom: '1rem' }}>
+              <p style={{ fontWeight: 600, color: '#1a1a2e', marginBottom: '0.4rem', fontSize: '0.9rem' }}>¿Cómo calificarías al técnico {dispositivo.tecnico_nombre}?</p>
+              <Estrellas valor={estrellasTecnico} onChange={setEstrellasTecnico} />
+            </div>
+          )}
+
+          <div style={{ marginBottom: '1rem' }}>
+            <p style={{ fontWeight: 600, color: '#1a1a2e', marginBottom: '0.4rem', fontSize: '0.9rem' }}>Comentario (opcional)</p>
+            <textarea
+              value={comentario}
+              onChange={e => setComentario(e.target.value)}
+              placeholder="Cuéntanos tu experiencia..."
+              rows={3}
+              style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '8px', border: '1.5px solid #e2e2e2', fontSize: '0.85rem', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button type="button" onClick={() => { setPaso(1); setError(''); }}
+  style={{ padding: '0.6rem 1rem', background: 'linear-gradient(135deg,#0492C2,#82EEFD)',color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}>
+              ← Volver
+            </button>
+            <button type="submit" disabled={loading}
+              style={{ flex: 1, padding: '0.6rem', background: 'linear-gradient(135deg,#0492C2,#82EEFD)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontSize: '0.85rem' }}>
+              {loading ? 'Enviando...' : 'Enviar calificación'}
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}
+
 function Home() {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -60,6 +225,7 @@ function Home() {
           <button className="nav-link" onClick={() => scrollTo('features')}>{t('home_modulos')}</button>
           <button className="nav-link" onClick={() => scrollTo('about')}>{t('home_nosotros')}</button>
           <button className="nav-link" onClick={() => scrollTo('contact')}>{t('home_contacto')}</button>
+          <button className="nav-link" onClick={() => scrollTo('calificar')}>Calificar</button>
         </div>
         <button className="nav-btn" onClick={() => navigate('/login')}>{t('home_ingresar')}</button>
       </nav>
@@ -199,6 +365,25 @@ function Home() {
           </div>
         </div>
       </div>
+
+      {/* Sección Calificaciones */}
+<div className="divider"></div>
+
+<div className="section" id="calificar" style={{ textAlign: 'center' }}>
+  <div className="sec-tag anim-left">Calificaciones</div>
+
+  <div className="sec-title anim-left d1">
+    ¿Recibiste tu dispositivo?<br />
+    Cuéntanos tu experiencia
+  </div>
+
+  <div className="sec-sub anim-left d2">
+    Ingresa el serial de tu dispositivo y califica nuestro servicio
+  </div>
+
+  <CalificacionForm />
+</div>
+
 
       <div className="contact-section" id="contact">
         <div className="sec-tag">{t('home_contact_tag')}</div>
