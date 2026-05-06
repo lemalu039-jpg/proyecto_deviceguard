@@ -352,16 +352,16 @@
 }
 
 /* Estados dispositivos */
-.rpt-badge-revision     { background: #f3e8ff; color: #7e22ce; }
-.rpt-badge-mantenimiento{ background: #ffedd5; color: #c2410c; }
-.rpt-badge-listo        { background: #fcfbdc; color: #a16207; }
-.rpt-badge-entregado    { background: #f3fef2; color: #15803d; }
+.rpt-badge-revision     { background: rgba(245, 158, 11, 0.15);  color: #f59e0b; }
+.rpt-badge-mantenimiento{ background: rgba(192, 132, 252, 0.15); color: #c084fc; }
+.rpt-badge-listo        { background: rgba(34, 197, 94, 0.15);   color: #22c55e; }
+.rpt-badge-entregado    { background: rgba(56, 189, 248, 0.15);  color: #38bdf8; }
 
-/* Roles usuarios — mismos colores que Equipo */
-.rpt-badge-superadmin   { background: #fef3c7; color: #92400e; }
-.rpt-badge-admin        { background: #ede9fe; color: #6d28d9; }
-.rpt-badge-tecnico      { background: #dbeafe; color: #1e40af; }
-.rpt-badge-usuario      { background: #f0fdf4; color: #059669; }
+/* Roles usuarios */
+.rpt-badge-superadmin   { background: rgba(251, 146, 60, 0.15);  color: #fb923c; }
+.rpt-badge-admin        { background: rgba(168, 85, 247, 0.15);  color: #c084fc; }
+.rpt-badge-tecnico      { background: rgba(56, 189, 248, 0.15);  color: #38bdf8; }
+.rpt-badge-usuario      { background: rgba(34, 197, 94, 0.15);   color: #22c55e; }
 
 /* Hora secundaria en columna de fecha */
 .rpt-hora {

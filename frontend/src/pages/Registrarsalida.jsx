@@ -7,6 +7,7 @@ import {
 } from "../services/api";
 import "./css/Registrarsalida.css";
 import Pagination from "../components/Pagination";
+import TableSkeleton from "../components/TableSkeleton";
 import { useLanguage } from "../context/LanguageContext.jsx";
 
 function SalidaDispositivos() {
@@ -18,6 +19,7 @@ function SalidaDispositivos() {
     hora: new Date().toTimeString().slice(0, 5), estado: ""
   });
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
   const esSuperAdmin = (JSON.parse(localStorage.getItem('usuario')||'{}')).rol === 'super_admin';
@@ -29,6 +31,7 @@ function SalidaDispositivos() {
   }, []);
 
   const loadData = async () => {
+    setLoadingData(true);
     try {
       const res = await getDispositivos();
       const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
@@ -39,6 +42,8 @@ function SalidaDispositivos() {
       setSalidas(todos);
     } catch (error) {
       console.error("Error cargando:", error);
+    } finally {
+      setLoadingData(false);
     }
   };
 
@@ -143,7 +148,7 @@ const handleSubmit = async (e) => {
 
   const getBadgeClass = (estado) => {
     switch (estado) {
-      case 'Listo para Entrega':       return 'badge-listo para-entrega';
+      case 'Listo para Entrega':       return 'badge-listo-entrega';
       case 'En Revision':      return 'badge-revision';
       case 'En Mantenimiento': return 'badge-mantenimiento';
       case 'Entregado':     return 'badge-entregado';
@@ -259,7 +264,9 @@ const handleSubmit = async (e) => {
               </tr>
             </thead>
             <tbody>
-              {filteredSalidas.length === 0 ? (
+              {loadingData ? (
+                <TableSkeleton rows={7} cols={esSuperAdmin ? 6 : 5} />
+              ) : filteredSalidas.length === 0 ? (
                 <tr><td colSpan={esSuperAdmin ? 6 : 5} className="salida-empty">{t('salida_no_registros')}</td></tr>
               ) : (
                 filteredSalidas.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(s => (

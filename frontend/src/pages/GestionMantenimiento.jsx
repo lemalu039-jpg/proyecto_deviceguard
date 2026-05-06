@@ -2,12 +2,14 @@
 import { getDispositivos, updateDispositivo } from "../services/api";
 import "./css/GestionMantenimiento.css";
 import Pagination from "../components/Pagination";
+import TableSkeleton from "../components/TableSkeleton";
 import { useLanguage } from "../context/LanguageContext.jsx";
 
 function GestionMantenimiento() {
   const { t } = useLanguage();
   const [dispositivos, setDispositivos] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [busqueda, setBusqueda] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("");
@@ -18,23 +20,22 @@ function GestionMantenimiento() {
   }, []);
 
   const loadData = async () => {
+    setLoadingData(true);
     try {
       const res = await getDispositivos();
       const user = JSON.parse(localStorage.getItem('usuario') || '{}');
       const isAdmin = user.rol === 'admin' || user.rol === 'super_admin';
-      
       const filtrados = res.data.filter(d => {
         const estadoValido = d.estado === "En Revision" || d.estado === "Listo para Entrega" || d.estado === "En Mantenimiento";
         if (!estadoValido) return false;
-        
-        // Si no es admin, solo ve los que le fueron asignados
         if (!isAdmin && d.tecnico_id !== user.id) return false;
-        
         return true;
       });
       setDispositivos(filtrados);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoadingData(false);
     }
   };
 
@@ -51,14 +52,14 @@ function GestionMantenimiento() {
     }
   };
   const getBadgeClass = (estado) => {
-  switch (estado) {
-    case "Listo para Entrega": return "badge-listo para-entrega";
-    case "En Revision": return "badge-revision";
-    case "En Mantenimiento": return "badge-mantenimiento";
-    case "Entregado": return "badge-entregado";
-    default: return "";
-  }
-};
+    switch (estado) {
+      case "Listo para Entrega": return "badge-listo-entrega";
+      case "En Revision":        return "badge-revision";
+      case "En Mantenimiento":   return "badge-mantenimiento";
+      case "Entregado":          return "badge-entregado";
+      default:                   return "";
+    }
+  };
 
  return (
   <div className="mant-wrapper">
@@ -110,50 +111,66 @@ function GestionMantenimiento() {
         </thead>
 
         <tbody>
-          {dispositivos
-            .filter(d => {
+          {loadingData ? (
+            <TableSkeleton rows={7} cols={5} />
+          ) : dispositivos.filter(d => {
               const texto = `${d.nombre} ${d.serial} ${d.registrado_por || ''}`.toLowerCase();
               const okBusqueda = !busqueda || texto.includes(busqueda.toLowerCase());
               const okEstado   = !filtroEstado || d.estado === filtroEstado;
               return okBusqueda && okEstado;
-            })
-            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(d => (
-            <tr key={d.id}>
-              <td>
-                <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
-                <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo || ''}</div>
+            }).length === 0 ? (
+            <tr>
+              <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
+                {t('sin_resultados')}
               </td>
-              <td style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial}</td>
-              <td style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
-                {d.registrado_por || '—'}
-              </td>
-
-              <td>
-                <span className={`mant-badge ${getBadgeClass(d.estado)}`}>
-                  {d.estado}
-                </span>
-              </td>
-
-              <td>
-                <select
-                  className="mant-select"
-                  value=""
-                  onChange={(e) => {
-                    if (e.target.value) cambiarEstado(d.id, e.target.value);
-                  }}
-                >
-                  <option value="">{t('mant_cambiar_estado')}</option>
-                  {d.estado === "En Revision" && (
-                    <option value="En Mantenimiento">{t('dash_en_mantenimiento')}</option>
-                  )}
-                  {d.estado === "Listo para Entrega" && (
-                    <option value="Entregado">{t('dash_entregado')}</option>
-                  )}
-                </select>
-              </td>
-
             </tr>
-          ))}
+          ) : (
+            dispositivos
+              .filter(d => {
+                const texto = `${d.nombre} ${d.serial} ${d.registrado_por || ''}`.toLowerCase();
+                const okBusqueda = !busqueda || texto.includes(busqueda.toLowerCase());
+                const okEstado   = !filtroEstado || d.estado === filtroEstado;
+                return okBusqueda && okEstado;
+              })
+              .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+              .map(d => (
+                <tr key={d.id}>
+                  <td>
+                    <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
+                    <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo || ''}</div>
+                  </td>
+                  <td style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial}</td>
+                  <td style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
+                    {d.registrado_por || '—'}
+                  </td>
+                  <td>
+                    <span className={`mant-badge ${getBadgeClass(d.estado)}`}>
+                      {d.estado}
+                    </span>
+                  </td>
+                  <td>
+                    <select
+                      className="mant-select"
+                      value=""
+                      onChange={(e) => {
+                        if (e.target.value) cambiarEstado(d.id, e.target.value);
+                      }}
+                    >
+                      <option value="">{t('mant_cambiar_estado')}</option>
+                      {d.estado === "En Revision" && (
+                        <option value="En Mantenimiento">{t('dash_en_mantenimiento')}</option>
+                      )}
+                      {d.estado === "En Mantenimiento" && (
+                        <option value="Listo para Entrega">{t('dash_listo_entrega')}</option>
+                      )}
+                      {d.estado === "Listo para Entrega" && (
+                        <option value="Entregado">{t('dash_entregado')}</option>
+                      )}
+                    </select>
+                  </td>
+                </tr>
+              ))
+          )}
         </tbody>
       </table>
     </div>

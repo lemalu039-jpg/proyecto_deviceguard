@@ -3,6 +3,7 @@ import { getDispositivos, createDispositivo, updateDispositivo, deleteDispositiv
 import { Modal } from 'bootstrap';
 import './css/Dispositivos.css';
 import Pagination from '../components/Pagination';
+import TableSkeleton from '../components/TableSkeleton';
 import { useLanguage } from '../context/LanguageContext.jsx';
 
 const Icon = ({ d, size = 14 }) => (
@@ -26,6 +27,7 @@ function Dispositivos() {
   });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
   const modalRef = useRef(null);
 
   const [reingreso, setReingreso] = useState({
@@ -46,6 +48,7 @@ function Dispositivos() {
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
+    setLoadingData(true);
     try {
       const res = await getDispositivos();
       const usuarioActual = (JSON.parse(localStorage.getItem('usuario')||'{}'));
@@ -55,6 +58,8 @@ function Dispositivos() {
       setDispositivos(dispositivos);
     } catch (err) {
       console.error('Error cargando dispositivos:', err);
+    } finally {
+      setLoadingData(false);
     }
   };
 
@@ -188,7 +193,7 @@ function Dispositivos() {
 
   const getBadgeClass = (estado) => {
     switch (estado) {
-      case 'Listo para Entrega': return 'badge-listo';
+      case 'Listo para Entrega': return 'badge-listo-entrega';
       case 'En Revision':        return 'badge-revision';
       case 'En Mantenimiento':   return 'badge-mantenimiento';
       case 'Entregado':          return 'badge-entregado';
@@ -405,7 +410,9 @@ function Dispositivos() {
               </tr>
             </thead>
             <tbody>
-              {(() => {
+              {loadingData ? (
+                <TableSkeleton rows={7} cols={7} />
+              ) : (() => {
                 const filtrados = dispositivos.filter(d => {
                   const texto = `${d.nombre} ${d.serial} ${d.marca}`.toLowerCase();
                   const okBusqueda = !filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase());
@@ -445,7 +452,7 @@ function Dispositivos() {
                 </tr>
                 ));
               })()}
-              {dispositivos.filter(d => {
+              {!loadingData && dispositivos.filter(d => {
                 const texto = `${d.nombre} ${d.serial} ${d.marca}`.toLowerCase();
                 return (!filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase())) && (!filtroEstadoDisp || d.estado === filtroEstadoDisp);
               }).length === 0 && (

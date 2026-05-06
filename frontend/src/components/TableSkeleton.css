@@ -1,0 +1,63 @@
+/* ── SKELETON ROWS ───────────────────────────────────── */
+.sk-row {
+  border-bottom: 1px solid var(--input-bg);
+}
+
+.sk-cell {
+  padding: 0.75rem 0.85rem;
+  vertical-align: middle;
+}
+
+/* Barra genérica */
+.sk-bar {
+  height: 12px;
+  border-radius: 6px;
+  background: var(--sk-base, #e2e8f0);
+}
+
+/* Celda con avatar (Equipo) */
+.sk-cell-avatar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sk-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--sk-base, #e2e8f0);
+}
+
+.sk-lines {
+  flex: 1;
+}
+
+/* ── ANIMACIÓN SHIMMER ───────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.sk-shine {
+  background: linear-gradient(
+    90deg,
+    var(--sk-base, #e2e8f0) 25%,
+    var(--sk-highlight, #f1f5f9) 50%,
+    var(--sk-base, #e2e8f0) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+/* ── MODO OSCURO ─────────────────────────────────────── */
+[data-theme='dark'] .sk-shine {
+  --sk-base:      #0d1e35;
+  --sk-highlight: #1a3050;
+}
+
+[data-theme='light'] .sk-shine {
+  --sk-base:      #e2e8f0;
+  --sk-highlight: #f8fafc;
+}

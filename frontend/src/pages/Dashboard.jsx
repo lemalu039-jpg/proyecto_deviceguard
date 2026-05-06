@@ -4,6 +4,7 @@ import { getDispositivos, getDispositivosAsignados, getUsuarios } from '../servi
 import api from '../services/api';
 import { estadosDispositivo } from "../ejemplo/generador2";
 import Pagination from '../components/Pagination';
+import TableSkeleton from '../components/TableSkeleton';
 import { useLanguage } from '../context/LanguageContext.jsx';
 
 function Dashboard() {
@@ -86,11 +87,11 @@ function Dashboard() {
       letterSpacing: '.3px'
     };
     switch (estado) {
-      case 'Listo para Entrega':       return { ...base, background: '#fcfbdc', color: '#dacd1c' };
-      case 'En Revision':      return { ...base, background: '#f3e8ff', color: '#7e22ce' };
-      case 'En Mantenimiento': return { ...base, background: '#ffedd5', color: '#c2410c' };
-      case 'Entregado':     return { ...base, background: '#f3fef2', color: '#15803d' };
-      default:                 return { ...base, background: 'var(--input-bg)', color: 'var(--text-muted)' };
+      case 'Listo para Entrega': return { ...base, background: 'rgba(34,197,94,0.15)',   color: '#22c55e' };
+      case 'En Revision':        return { ...base, background: 'rgba(245,158,11,0.15)',  color: '#f59e0b' };
+      case 'En Mantenimiento':   return { ...base, background: 'rgba(192,132,252,0.15)', color: '#c084fc' };
+      case 'Entregado':          return { ...base, background: 'rgba(56,189,248,0.15)',  color: '#38bdf8' };
+      default:                   return { ...base, background: 'var(--input-bg)', color: 'var(--text-muted)' };
     }
   };
 
@@ -126,25 +127,29 @@ function Dashboard() {
     </svg>
   );
   const IconoListoparaentrega = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dacd1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
     </svg>
   );
   const IconoRevision = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7e22ce" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+      <circle cx="12" cy="12" r="3"/>
     </svg>
   );
   const IconoMantenimiento = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c2410c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c084fc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
     </svg>
   );
   const IconoEntregado = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
-      <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {/* Caja */}
+      <path d="M20 7l-8-4-8 4v10l8 4 8-4V7z"/>
+      <polyline points="4 7 12 11 20 7"/>
+      <line x1="12" y1="11" x2="12" y2="21"/>
+      {/* Check superpuesto, desplazado a la derecha */}
+      <polyline points="15 12 17 14 21 10" strokeWidth="2.2"/>
     </svg>
   );
 
@@ -163,52 +168,51 @@ function Dashboard() {
     {
       label: t('dash_listo_entrega'),
       value: stats.listoparaEntrega,
-      accentColor: '#dacd1c',
-      textColor: '#dacd1c',
-      iconBg: 'rgba(218, 205, 24, 0.13)',
+      accentColor: '#22c55e',
+      textColor: '#22c55e',
+      iconBg: 'rgba(34, 197, 94, 0.12)',
       icono: <IconoListoparaentrega />,
-      badge: { label: t('dash_listo_entrega'), bg: '#fcfbdc', color: '#dacd1c' }
+      badge: { label: t('dash_listo_entrega'), bg: 'rgba(34, 197, 94, 0.15)', color: '#22c55e' }
     },
     {
       label: t('dash_en_revision'),
       value: stats.enRevision,
-      accentColor: '#7e22ce',
-      textColor: '#7e22ce',
-      iconBg: 'rgba(126, 34, 206, .1)',
+      accentColor: '#f59e0b',
+      textColor: '#f59e0b',
+      iconBg: 'rgba(245, 158, 11, 0.12)',
       icono: <IconoRevision />,
-      badge: { label: t('dash_en_revision'), bg: '#f3e8ff', color: '#7e22ce' }
+      badge: { label: t('dash_en_revision'), bg: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' }
     },
-    
     {
       label: t('dash_en_mantenimiento'),
       value: stats.enMantenimiento,
-      accentColor: '#c2410c',
-      textColor: '#c2410c',
-      iconBg: 'rgba(194, 65, 12, .1)',
+      accentColor: '#c084fc',
+      textColor: '#c084fc',
+      iconBg: 'rgba(192, 132, 252, 0.12)',
       icono: <IconoMantenimiento />,
-      badge: { label: t('dash_en_mantenimiento'), bg: '#ffedd5', color: '#c2410c' }
+      badge: { label: t('dash_en_mantenimiento'), bg: 'rgba(192, 132, 252, 0.15)', color: '#c084fc' }
     },
     {
       label: t('dash_entregado'),
       value: stats.entregado,
-      accentColor: '#15803d',
-      textColor: '#15803d',
-      iconBg: 'rgba(19, 112, 15, 0.1)',
+      accentColor: '#38bdf8',
+      textColor: '#38bdf8',
+      iconBg: 'rgba(56, 189, 248, 0.12)',
       icono: <IconoEntregado />,
-      badge: { label: t('dash_entregado'), bg: '#f3fef2', color: '#15803d' }
+      badge: { label: t('dash_entregado'), bg: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8' }
     },
     {
       label: t('dash_total_reportes'),
       value: stats.totalMantenimientos,
-      accentColor: '#0369a1',
-      textColor: '#0369a1',
-      iconBg: 'rgba(3, 105, 161, 0.1)',
+      accentColor: '#fb923c',
+      textColor: '#fb923c',
+      iconBg: 'rgba(251, 146, 60, 0.12)',
       icono: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0369a1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fb923c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
         </svg>
       ),
-      badge: { label: t('dash_reportes_enviados'), bg: '#e0f2fe', color: '#0369a1' }
+      badge: { label: t('dash_reportes_enviados'), bg: 'rgba(251, 146, 60, 0.15)', color: '#fb923c' }
     },
   ];
 
@@ -225,27 +229,34 @@ function Dashboard() {
       overflow: 'hidden',
       flex: `0 1 ${cardW}`
     }}>
+      {/* Barra de acento izquierda */}
       <div style={{
         position: 'absolute', top: 0, left: 0,
         width: '4px', height: '100%',
         background: card.accentColor,
         borderRadius: '12px 0 0 12px'
       }} />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '.5rem' }}>
-        <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '.8rem', margin: 0 }}>
-          {card.label}
-        </p>
+
+      {/* Label arriba */}
+      <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '.8rem', margin: '0 0 .4rem 0' }}>
+        {card.label}
+      </p>
+
+      {/* Número + icono en el mismo row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.65rem' }}>
+        <h2 style={{ fontSize: '2rem', fontWeight: 700, margin: 0, color: card.textColor }}>
+          {card.value}
+        </h2>
         <div style={{
-          width: '34px', height: '34px', borderRadius: '9px',
+          width: '36px', height: '36px', borderRadius: '10px',
           background: card.iconBg,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         }}>
           {card.icono}
         </div>
       </div>
-      <h2 style={{ fontSize: '2rem', fontWeight: 700, margin: '0 0 .65rem 0', color: card.textColor }}>
-        {card.value}
-      </h2>
+
+      {/* Badge / subtítulo */}
       <div>
         {card.badge ? (
           <span style={{
@@ -331,7 +342,9 @@ function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {(() => {
+              {loading ? (
+                <TableSkeleton rows={7} cols={7} />
+              ) : (() => {
                 const filtrados = dispositivos.filter(d => {
                   const texto = `${d.nombre} ${d.serial} ${d.ubicacion}`.toLowerCase();
                   const okBusqueda = !filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase());
@@ -380,7 +393,7 @@ function Dashboard() {
                 </tr>
                 ));
               })()}
-              {dispositivos.filter(d => {
+              {!loading && dispositivos.filter(d => {
                 const texto = `${d.nombre} ${d.serial} ${d.ubicacion}`.toLowerCase();
                 return (!filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase())) && (!filtroEstado || d.estado === filtroEstado);
               }).length === 0 && (                <tr>

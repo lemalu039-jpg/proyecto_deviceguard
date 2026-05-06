@@ -2,6 +2,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { getHistorial, createObservacion } from '../services/api';
 import './css/HistorialDispositivo.css';
+import TableSkeleton from '../components/TableSkeleton';
 import { useLanguage } from '../context/LanguageContext.jsx';
 
 function HistorialDispositivo() {
@@ -59,15 +60,31 @@ function HistorialDispositivo() {
   const getBadgeStyle = (estado) => {
     const base = { display: 'inline-block', fontSize: '.75rem', fontWeight: 700, padding: '4px 12px', borderRadius: '20px' };
     switch (estado) {
-      case 'Listo para Entrega':       return { ...base, background: '#fcfbdc', color: '#dacd1c' };
-      case 'En Revision':      return { ...base, background: '#f3e8ff', color: '#7e22ce' };
-      case 'En Mantenimiento': return { ...base, background: '#ffedd5', color: '#c2410c' };
-      case 'Entregado':        return { ...base, background: '#f3fef2', color: '#15803d' };
-      default:                 return { ...base, background: 'var(--input-bg)', color: 'var(--text-muted)' };
+      case 'Listo para Entrega': return { ...base, background: 'rgba(34,197,94,0.15)',   color: '#22c55e' };
+      case 'En Revision':        return { ...base, background: 'rgba(245,158,11,0.15)',  color: '#f59e0b' };
+      case 'En Mantenimiento':   return { ...base, background: 'rgba(192,132,252,0.15)', color: '#c084fc' };
+      case 'Entregado':          return { ...base, background: 'rgba(56,189,248,0.15)',  color: '#38bdf8' };
+      default:                   return { ...base, background: 'var(--input-bg)', color: 'var(--text-muted)' };
     }
   };
 
-  if (loading) return <div className="historial-container"><p>{t('historial_cargando')}</p></div>;
+  if (loading) return (
+    <div className="historial-container">
+      <div className="historial-header">
+        <h1 className="historial-title">{t('historial_title')}</h1>
+      </div>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.85rem' }}>
+        <thead>
+          <tr style={{ background: 'var(--table-head)', borderBottom: '2px solid var(--border)' }}>
+            {[t('tecnico'), t('descripcion'), t('dash_col_estado'), t('fecha')].map((h, idx) => (
+              <th key={idx} style={{ padding: '.65rem 1rem', textAlign: 'left', fontSize: '.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '.04em' }}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <TableSkeleton rows={5} cols={4} />
+      </table>
+    </div>
+  );
   if (!data.dispositivo) return <div className="historial-container"><p>{t('historial_no_disp')}</p></div>;
 
   const { dispositivo, historial, mantenimientos } = data;

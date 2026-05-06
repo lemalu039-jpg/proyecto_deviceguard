@@ -5,6 +5,7 @@ import api from "../services/api";
 import usuariosIcon from "../assets/icons/reportes_usuario.svg";
 import dispositivosIcon from "../assets/icons/reportes_dispositivos.svg";
 import Pagination from "../components/Pagination";
+import TableSkeleton from "../components/TableSkeleton";
 import { useLanguage } from "../context/LanguageContext.jsx";
 
 const API = "http://localhost:5000/api/reportes";
@@ -310,7 +311,14 @@ function Reportes() {
 
         <div className="preview-table-wrapper">
           {loadingPreview ? (
-            <p className="preview-loading">{t('reportes_cargando')}</p>
+            <table className="preview-table">
+              <thead>
+                <tr>
+                  {columnas.map(col => <th key={col}>{col}</th>)}
+                </tr>
+              </thead>
+              <TableSkeleton rows={7} cols={columnas.length} />
+            </table>
           ) : previewDatos.length === 0 ? (
             <p className="preview-empty">{t('reportes_no_registros')}</p>
           ) : (

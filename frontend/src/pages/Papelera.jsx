@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getDispositivosPapelera, restaurarDispositivo, eliminarDefinitivoDispositivo } from "../services/api";
 import Pagination from "../components/Pagination";
+import TableSkeleton from "../components/TableSkeleton";
 import { useLanguage } from "../context/LanguageContext.jsx";
 import "./css/Papelera.css";
 
@@ -87,10 +88,10 @@ function Papelera() {
       padding: '2px 9px', borderRadius: '20px',
     };
     switch (estado) {
-      case 'Listo para Entrega': return { ...base, background: '#fcfbdc', color: '#dacd1c' };
-      case 'En Revision':        return { ...base, background: '#f3e8ff', color: '#7e22ce' };
-      case 'En Mantenimiento':   return { ...base, background: '#ffedd5', color: '#ea580c' };
-      case 'Entregado':          return { ...base, background: '#f3fef2', color: '#16a34a' };
+      case 'Listo para Entrega': return { ...base, background: 'rgba(34,197,94,0.15)',   color: '#22c55e' };
+      case 'En Revision':        return { ...base, background: 'rgba(245,158,11,0.15)',  color: '#f59e0b' };
+      case 'En Mantenimiento':   return { ...base, background: 'rgba(192,132,252,0.15)', color: '#c084fc' };
+      case 'Entregado':          return { ...base, background: 'rgba(56,189,248,0.15)',  color: '#38bdf8' };
       default:                   return { ...base, background: 'var(--input-bg)', color: 'var(--text-muted)' };
     }
   };
@@ -144,7 +145,21 @@ function Papelera() {
 
         <div className="papelera-table-wrap">
           {loading ? (
-            <p className="papelera-empty">Cargando...</p>
+            <table className="papelera-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Serial</th>
+                  <th>Marca</th>
+                  <th>Ubicación</th>
+                  <th>Estado</th>
+                  <th>Registrado por</th>
+                  <th>Fecha registro</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <TableSkeleton rows={7} cols={8} />
+            </table>
           ) : error ? (
             <p className="papelera-empty" style={{ color: '#dc2626' }}>
               ⚠ {error}
