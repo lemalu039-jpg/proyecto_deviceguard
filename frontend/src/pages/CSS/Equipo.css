@@ -98,9 +98,9 @@
   margin: 0.2rem 0 0.6rem;
 }
 
-.equipo-card-rol.admin      { background: #ede9fe; color: #6d28d9; }
-.equipo-card-rol.usuario    { background: #f0fdf4; color: #059669; }
-.equipo-card-rol.inactivo   { background: #fee2e2; color: #dc2626; }
+.equipo-card-rol.admin      { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+.equipo-card-rol.usuario    { background: rgba(34, 197, 94, 0.15);  color: #22c55e; }
+.equipo-card-rol.inactivo   { background: rgba(239, 68, 68, 0.15);  color: #f87171; }
 
 .equipo-card-msg-btn {
   display: flex;
@@ -208,9 +208,9 @@
   border-radius: 999px;
 }
 
-.equipo-badge.admin    { background: #ede9fe; color: #6d28d9; }
-.equipo-badge.usuario  { background: #f0fdf4; color: #059669; }
-.equipo-badge.inactivo { background: #fee2e2; color: #dc2626; }
+.equipo-badge.admin    { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+.equipo-badge.usuario  { background: rgba(34, 197, 94, 0.15);  color: #22c55e; }
+.equipo-badge.inactivo { background: rgba(239, 68, 68, 0.15);  color: #f87171; }
 
 .equipo-tabla-empty {
   text-align: center;
@@ -536,11 +536,11 @@
 .equipo-modal::-webkit-scrollbar { width: 4px; }
 .equipo-modal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-.equipo-card-rol.super-admin { background: #fef3c7; color: #92400e; }
-.equipo-card-rol.tecnico { background: #dbeafe; color: #1e40af; }
+.equipo-card-rol.super-admin { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
+.equipo-card-rol.tecnico     { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
 
-.equipo-badge.super-admin { background: #fef3c7; color: #92400e; }
-.equipo-badge.tecnico { background: #dbeafe; color: #1e40af; }
+.equipo-badge.super-admin { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
+.equipo-badge.tecnico     { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
 
 /* ── RESPONSIVE MOBILE ─────────────────────────────────── */
 

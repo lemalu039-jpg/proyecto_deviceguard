@@ -265,31 +265,26 @@
   border-radius: 20px;
   letter-spacing: .3px;
   white-space: nowrap;
-  background: #fcfbdc;
-  color: #dacd1c;
 }
 
-.badge-listo para-entrega {
- background: #fcfbdc;
-  color: #dacd1c;
+.badge-listo-entrega {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
 }
 
 .badge-revision {
-  background: #f3e8ff;
-  color: #7e22ce;
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
 }
-
 
 .badge-mantenimiento {
-  background: #ffedd5;
-  color: #c2410c;
+  background: rgba(192, 132, 252, 0.15);
+  color: #c084fc;
 }
 
-
-
 .badge-entregado {
-  background: #f3fef2;
-   color: #15803d;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
 }
 
 

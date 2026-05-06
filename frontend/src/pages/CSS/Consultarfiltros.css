@@ -120,8 +120,8 @@
 /* COLORES */
 .listo.para.entrega {
   display: inline-block;
-  background: #fcfbdc;
-  color: #dacd1c;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
   padding: 3px 10px;
   border-radius: 20px;
   font-size: .68rem;
@@ -129,9 +129,9 @@
 }
 
 .en.revision {
-   display: inline-block;
-  background: #f3e8ff;
-  color: #7e22ce;
+  display: inline-block;
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
   padding: 3px 10px;
   border-radius: 20px;
   font-size: .68rem;
@@ -140,8 +140,8 @@
 
 .en.mantenimiento {
   display: inline-block;
-  background: #ffedd5;
-  color: #c2410c;
+  background: rgba(192, 132, 252, 0.15);
+  color: #c084fc;
   padding: 3px 10px;
   border-radius: 20px;
   font-size: .68rem;
@@ -149,9 +149,9 @@
 }
 
 .entregado {
-   display: inline-block;
- background: #f3fef2;
-   color: #15803d;
+  display: inline-block;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
   padding: 3px 10px;
   border-radius: 20px;
   font-size: .68rem;

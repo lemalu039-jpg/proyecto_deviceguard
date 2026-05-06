@@ -1,12 +1,10 @@
 ﻿import React, { useEffect, useState } from "react";
 import { getDispositivos, updateDispositivo } from "../services/api";
 import axios from 'axios';
-import "./css/GestionMantenimiento.css"; // Reutilizamos estilos
+import "./css/GestionMantenimiento.css";
 import Pagination from "../components/Pagination";
+import TableSkeleton from "../components/TableSkeleton";
 import { useLanguage } from "../context/LanguageContext.jsx";
-
-// Importo axios para hacer getUsuarios temporal si no está en api.js, o lo hago manual
-// Espera, voy a importar getUsuarios desde api.js
 import { getUsuarios } from "../services/api";
 
 function AsignacionTareas() {
@@ -15,6 +13,7 @@ function AsignacionTareas() {
   const [dispositivosPorAsignar, setDispositivosPorAsignar] = useState([]);
   const [todasAsignaciones, setTodasAsignaciones] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
   const [tecnicosPage, setTecnicosPage] = useState(1);
@@ -31,26 +30,24 @@ function AsignacionTareas() {
   }, []);
 
   const loadData = async () => {
+    setLoadingData(true);
     try {
       const [usuRes, dispRes] = await Promise.all([
         getUsuarios(),
         getDispositivos()
       ]);
-
       const listaTecnicos = usuRes.data.filter(u => u.rol === 'tecnico');
       setTecnicos(listaTecnicos);
-
       const todosDisp = dispRes.data;
       setTodasAsignaciones(todosDisp);
-
-      // Dispositivos sin técnico asignado (En Revisión)
-      const pendientes = todosDisp.filter(d => 
+      const pendientes = todosDisp.filter(d =>
         d.estado === "En Revision" && !d.tecnico_id
       );
       setDispositivosPorAsignar(pendientes);
-
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoadingData(false);
     }
   };
 
@@ -168,7 +165,9 @@ function AsignacionTareas() {
             </thead>
 
             <tbody>
-              {dispositivosPorAsignar.length === 0 ? (
+              {loadingData ? (
+                <TableSkeleton rows={7} cols={5} />
+              ) : dispositivosPorAsignar.length === 0 ? (
                 <tr>
                   <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
                     {t('asignacion_sin_dispositivos')}

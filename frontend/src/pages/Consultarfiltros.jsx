@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import "./CSS/Consultarfiltros.css";
 import { getDispositivos, getDispositivosAsignados } from "../services/api";
 import Pagination from "../components/Pagination";
+import TableSkeleton from "../components/TableSkeleton";
 import { useLanguage } from "../context/LanguageContext.jsx";
 
 function ConsultarFiltros() {
   const { t } = useLanguage();
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filtros, setFiltros] = useState({ fecha: "", nombre: "", ubicacion: "", estado: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
@@ -17,13 +19,17 @@ function ConsultarFiltros() {
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
-    if (esTecnico) {
-      const res = await getDispositivosAsignados(usuario.id);
-      setData(res.data || []);
-    } else {
-      const res = await getDispositivos();
-      setData(res.data);
-    }
+    setLoading(true);
+    try {
+      if (esTecnico) {
+        const res = await getDispositivosAsignados(usuario.id);
+        setData(res.data || []);
+      } else {
+        const res = await getDispositivos();
+        setData(res.data);
+      }
+    } catch (e) { console.error(e); }
+    finally { setLoading(false); }
   };
 
   const handleChange = (e) => {
@@ -118,7 +124,9 @@ function ConsultarFiltros() {
           </thead>
 
           <tbody>
-            {dataFiltrada.length === 0 ? (
+            {loading ? (
+              <TableSkeleton rows={7} cols={esSuperAdmin ? 6 : 5} />
+            ) : dataFiltrada.length === 0 ? (
               <tr><td colSpan={esSuperAdmin ? 6 : 5}>{t('dash_no_dispositivos')}</td></tr>
             ) : (
               dataFiltrada.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((d) => (

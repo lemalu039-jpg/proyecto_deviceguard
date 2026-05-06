@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { getDispositivos, getDispositivosAsignados } from '../services/api';
 import './CSS/Estadisticas_responsive.css';
 import Pagination from '../components/Pagination';
+import TableSkeleton from '../components/TableSkeleton';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer
@@ -12,10 +13,10 @@ const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov'
 
 // ── 4 estados fijos siempre visibles ────────────────────────────────
 const ESTADOS_FIJOS = [
-  { key: 'Listo para Entrega', color: '#dacd1c', bg: '#fcfbdc' },
-  { key: 'En Revision',        color: '#7e22ce', bg: '#f3e8ff' },
-  { key: 'En Mantenimiento',   color: '#ea580c', bg: '#ffedd5' },
-  { key: 'Entregado',          color: '#16a34a', bg: '#f3fef2' },
+  { key: 'Listo para Entrega', color: '#22c55e', bg: 'rgba(34,197,94,0.15)'   },
+  { key: 'En Revision',        color: '#f59e0b', bg: 'rgba(245,158,11,0.15)'  },
+  { key: 'En Mantenimiento',   color: '#c084fc', bg: 'rgba(192,132,252,0.15)' },
+  { key: 'Entregado',          color: '#38bdf8', bg: 'rgba(56,189,248,0.15)'  },
 ];
 
 const COLOR_ESTADO = Object.fromEntries(ESTADOS_FIJOS.map(e => [e.key, e.color]));
@@ -212,8 +213,16 @@ function Estadisticas() {
   const getBadgeStyle = (estado) => ({
     display: 'inline-block', fontSize: '.65rem', fontWeight: 700,
     padding: '2px 9px', borderRadius: '20px',
-    background: BG_ESTADO[estado]    || '#f1f5f9',
-    color:      COLOR_ESTADO[estado] || '#64748b'
+    background:
+      estado === 'Listo para Entrega' ? 'rgba(34,197,94,0.15)'   :
+      estado === 'En Revision'        ? 'rgba(245,158,11,0.15)'  :
+      estado === 'En Mantenimiento'   ? 'rgba(192,132,252,0.15)' :
+      estado === 'Entregado'          ? 'rgba(56,189,248,0.15)'  : 'var(--input-bg)',
+    color:
+      estado === 'Listo para Entrega' ? '#22c55e' :
+      estado === 'En Revision'        ? '#f59e0b' :
+      estado === 'En Mantenimiento'   ? '#c084fc' :
+      estado === 'Entregado'          ? '#38bdf8' : 'var(--text-muted)',
   });
 
   const thStyle = {
@@ -510,37 +519,40 @@ function Estadisticas() {
                   </tr>
                 </thead>
                 <tbody>
-                  {dispositivosTabla
-                    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                    .map((d, i) => (
-                    <tr key={d.id} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
-                      <td style={tdStyle}>
-                        <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
-                        <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo || ''}</div>
-                      </td>
-                      <td style={{ ...tdStyle, fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial || 'N/A'}</td>
-                      <td style={tdStyle}>{d.marca || 'N/A'}</td>
-                      <td style={tdStyle}>{d.ubicacion || 'N/A'}</td>
-                      <td style={tdStyle}>
-                        {d.fecha_registro ? (
-                          <>
-                            <span>{new Date(d.fecha_registro).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
-                            <br />
-                            <span className="est-hora">
-                              {d.hora_registro || new Date(d.fecha_registro).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          </>
-                        ) : 'N/A'}
-                      </td>
-                      <td style={tdStyle}><span style={getBadgeStyle(d.estado)}>{d.estado}</span></td>
-                    </tr>
-                  ))}
-                  {dispositivosTabla.length === 0 && (
+                  {loading ? (
+                    <TableSkeleton rows={7} cols={6} />
+                  ) : dispositivosTabla.length === 0 ? (
                     <tr>
                       <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
                         {t('estadisticas_no_disp_filtros')}
                       </td>
                     </tr>
+                  ) : (
+                    dispositivosTabla
+                      .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                      .map((d, i) => (
+                        <tr key={d.id} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
+                          <td style={tdStyle}>
+                            <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
+                            <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo || ''}</div>
+                          </td>
+                          <td style={{ ...tdStyle, fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial || 'N/A'}</td>
+                          <td style={tdStyle}>{d.marca || 'N/A'}</td>
+                          <td style={tdStyle}>{d.ubicacion || 'N/A'}</td>
+                          <td style={tdStyle}>
+                            {d.fecha_registro ? (
+                              <>
+                                <span>{new Date(d.fecha_registro).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                                <br />
+                                <span className="est-hora">
+                                  {d.hora_registro || new Date(d.fecha_registro).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </>
+                            ) : 'N/A'}
+                          </td>
+                          <td style={tdStyle}><span style={getBadgeStyle(d.estado)}>{d.estado}</span></td>
+                        </tr>
+                      ))
                   )}
                 </tbody>
               </table>

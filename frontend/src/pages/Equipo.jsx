@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getUsuarios, createUsuario, updateUsuario, deleteUsuario, toggleUsuarioStatus } from "../services/api";
 import "./css/Equipo.css";
 import Pagination from "../components/Pagination";
+import TableSkeleton from "../components/TableSkeleton";
 import { useLanguage } from "../context/LanguageContext.jsx";
 
 const Icon = ({ d, size = 16 }) => (
@@ -21,6 +22,7 @@ const colorPorId = (id) => COLORES[id % COLORES.length];
 function Equipo() {
   const { t } = useLanguage();
   const [usuarios, setUsuarios] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [currentPageCards, setCurrentPageCards] = useState(1);
   const cardsPerPage = 8;
@@ -45,10 +47,12 @@ function Equipo() {
   useEffect(() => { cargarUsuarios(); }, []);
 
   const cargarUsuarios = async () => {
+    setLoadingData(true);
     try {
       const res = await getUsuarios();
       setUsuarios(res.data);
     } catch (e) { console.error(e); }
+    finally { setLoadingData(false); }
   };
 
   const handleFoto = (e) => {
@@ -237,7 +241,9 @@ function Equipo() {
               </tr>
             </thead>
             <tbody>
-              {(() => {
+              {loadingData ? (
+                <TableSkeleton rows={7} cols={5} hasAvatar={true} />
+              ) : (() => {
                 const filtrados = usuarios.filter(u =>
                   u.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
                   u.correo?.toLowerCase().includes(busqueda.toLowerCase())
