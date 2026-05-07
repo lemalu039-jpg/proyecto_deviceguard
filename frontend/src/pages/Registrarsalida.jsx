@@ -258,16 +258,15 @@ const handleSubmit = async (e) => {
                 <th>{t('dash_col_nombre')}</th>
                 <th>{t('dash_col_serial')}</th>
                 <th>{t('salida_col_fecha_ent')}</th>
-                <th>{t('salida_col_fecha_sal')}</th>
                 <th>{t('dash_col_estado')}</th>
                 {esSuperAdmin && <th>{t('dash_col_reg_por')}</th>}
               </tr>
             </thead>
             <tbody>
               {loadingData ? (
-                <TableSkeleton rows={7} cols={esSuperAdmin ? 6 : 5} />
+                <TableSkeleton rows={7} cols={esSuperAdmin ? 5 : 4} />
               ) : filteredSalidas.length === 0 ? (
-                <tr><td colSpan={esSuperAdmin ? 6 : 5} className="salida-empty">{t('salida_no_registros')}</td></tr>
+                <tr><td colSpan={esSuperAdmin ? 5 : 4} className="salida-empty">{t('salida_no_registros')}</td></tr>
               ) : (
                 filteredSalidas.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(s => (
                   <tr key={s.id}>
@@ -282,13 +281,6 @@ const handleSubmit = async (e) => {
                         : '-'}
                       <br />
                       <span className="salida-hora">{s.hora_registro || new Date(s.fecha_registro).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</span>
-                    </td>
-                    <td>
-                      {s.fecha_salida
-                        ? new Date(s.fecha_salida).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
-                        : '-'}
-                      <br />
-                      <span className="salida-hora">{s.hora_salida || '-'}</span>
                     </td>
                     <td><span className={getBadgeClass(s.estado)}>{s.estado}</span></td>
                     {esSuperAdmin && (
