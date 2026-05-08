@@ -59,6 +59,8 @@
   align-items: center;
   gap: 0.4rem;
   transition: box-shadow 0.15s;
+  /* Altura mínima uniforme para que todas las cards tengan la misma estructura */
+  min-height: 220px;
 }
 
 .equipo-card:hover { box-shadow: 0 6px 24px rgba(45,58,140,0.1); }
@@ -88,6 +90,11 @@
   color: var(--text-muted);
   text-align: center;
   word-break: break-all;
+  /* Ocupa el espacio disponible para empujar rol y botón al fondo */
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 0.2rem;
 }
 
 .equipo-card-rol {
@@ -95,7 +102,11 @@
   font-weight: 600;
   padding: 0.2rem 0.7rem;
   border-radius: 999px;
-  margin: 0.2rem 0 0.6rem;
+  margin: 0.2rem 0 0.4rem;
+  /* Altura fija para que no varíe entre cards */
+  min-height: 22px;
+  display: flex;
+  align-items: center;
 }
 
 .equipo-card-rol.admin      { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
@@ -114,7 +125,16 @@
   font-size: 0.8rem;
   cursor: pointer;
   transition: background 0.12s;
-  margin-top: 0.4rem;
+  margin-top: 0.2rem;
+  /* Ancho fijo para uniformidad */
+  width: 100%;
+  justify-content: center;
+}
+
+/* Espacio reservado cuando no hay botón de mensaje (usuario propio) */
+.equipo-card-msg-placeholder {
+  height: 36px;
+  width: 100%;
 }
 
 .equipo-card-msg-btn:hover { background: var(--input-bg); }

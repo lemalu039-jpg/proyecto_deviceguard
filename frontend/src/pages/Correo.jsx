@@ -28,13 +28,22 @@ function Correo() {
 
   const [vista, setVista] = useState(VISTAS.ENVIADOS);
   const [correos, setCorreos] = useState([]);
+  const [busquedaHistorial, setBusquedaHistorial] = useState("");
   const [contactos, setContactos] = useState([]);
   const [contactoActivo, setContactoActivo] = useState(null);
+  const contactoActivoRef = useRef(null);
   const [mensajes, setMensajes] = useState([]);
   const [nuevoMensaje, setNuevoMensaje] = useState("");
   const [toast, setToast] = useState(null);
   const chatEndRef = useRef(null);
   const pollingRef = useRef(null);
+  const contactoInicializado = useRef(false);
+
+  // Mantener ref sincronizada con el estado para usarla en el polling
+  const setContactoActivoSafe = (c) => {
+    contactoActivoRef.current = c;
+    setContactoActivo(c);
+  };
 
   useEffect(() => {
     cargarCorreos();
@@ -42,12 +51,14 @@ function Correo() {
     return () => clearInterval(pollingRef.current);
   }, [userId]);
 
-  // Si viene desde Equipo con un contacto preseleccionado
+  // Si viene desde Equipo con un contacto preseleccionado — solo una vez
   useEffect(() => {
+    if (contactoInicializado.current) return;
     if (location.state?.contacto && contactos.length > 0) {
       const c = contactos.find(x => x.id === location.state.contacto.id) || location.state.contacto;
-      setContactoActivo(c);
+      setContactoActivoSafe(c);
       setVista(VISTAS.CHAT);
+      contactoInicializado.current = true;
     }
   }, [contactos]);
 
@@ -59,7 +70,12 @@ function Correo() {
     clearInterval(pollingRef.current);
     if (contactoActivo && userId) {
       cargarConversacion(contactoActivo.id);
-      pollingRef.current = setInterval(() => cargarConversacion(contactoActivo.id), 4000);
+      // Usar ref en el intervalo para evitar stale closure
+      pollingRef.current = setInterval(() => {
+        if (contactoActivoRef.current) {
+          cargarConversacion(contactoActivoRef.current.id);
+        }
+      }, 4000);
     }
     return () => clearInterval(pollingRef.current);
   }, [contactoActivo]);
@@ -78,6 +94,14 @@ function Correo() {
     try {
       const res = await getMensajesContactos(userId);
       setContactos(res.data);
+      // Si hay un contacto activo, actualizarlo con los datos frescos del array
+      if (contactoActivoRef.current) {
+        const actualizado = res.data.find(c => c.id === contactoActivoRef.current.id);
+        if (actualizado) {
+          // Preservar nombre y correo pero actualizar badges
+          setContactoActivoSafe({ ...contactoActivoRef.current, ...actualizado });
+        }
+      }
     } catch (e) { console.error(e); }
   };
 
@@ -85,10 +109,15 @@ function Correo() {
     try {
       const res = await getConversacion(userId, contactId);
       setMensajes(res.data);
-      // Actualizar badge de no leídos
-      setContactos(prev =>
-        prev.map(c => c.id === contactId ? { ...c, no_leidos: 0 } : c)
-      );
+      // Limpiar badge solo en el array local sin reemplazar el objeto completo
+      // Usamos función de actualización para no crear dependencia de estado
+      setContactos(prev => {
+        const idx = prev.findIndex(c => c.id === contactId);
+        if (idx === -1 || prev[idx].no_leidos === 0) return prev; // sin cambio = sin re-render
+        const next = [...prev];
+        next[idx] = { ...next[idx], no_leidos: 0 };
+        return next;
+      });
     } catch (e) { console.error(e); }
   };
 
@@ -167,7 +196,10 @@ function Correo() {
               <button
                 key={c.id}
                 className={`cmail-contacto-item ${contactoActivo?.id === c.id ? "active" : ""}`}
-                onClick={() => setContactoActivo(c)}
+                onClick={() => {
+                  setContactoActivoSafe(c);
+                  contactoInicializado.current = true;
+                }}
               >
                 <div className="cmail-avatar">{iniciales(c.nombre)}</div>
                 <div className="cmail-contacto-info">
@@ -192,6 +224,23 @@ function Correo() {
               <span>{t('correo_historial')}</span>
               <span className="cmail-count-pill">{correos.length} {t('correo_registros')}</span>
             </div>
+
+            {/* Buscador historial */}
+            <div className="cmail-search-bar">
+              <Icon d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z" size={15} />
+              <input
+                type="text"
+                placeholder={t('correo_buscar_historial') || "Buscar por destinatario, asunto o mensaje…"}
+                value={busquedaHistorial}
+                onChange={e => setBusquedaHistorial(e.target.value)}
+              />
+              {busquedaHistorial && (
+                <button onClick={() => setBusquedaHistorial("")}>
+                  <Icon d="M18 6L6 18M6 6l12 12" size={13} />
+                </button>
+              )}
+            </div>
+
             <div className="cmail-table-wrap">
               <table className="cmail-table">
                 <thead>
@@ -204,15 +253,23 @@ function Correo() {
                   </tr>
                 </thead>
                 <tbody>
-                  {correos.length === 0 ? (
-                    <tr>
-                      <td colSpan="5" className="cmail-empty">
-                        <Icon d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" size={32} />
-                        <p>{t('correo_no_hay')}</p>
-                      </td>
-                    </tr>
-                  ) : (
-                    correos.map(c => (
+                  {(() => {
+                    const filtrados = correos.filter(c => {
+                      const q = busquedaHistorial.toLowerCase();
+                      return !q ||
+                        c.destinatario?.toLowerCase().includes(q) ||
+                        c.asunto?.toLowerCase().includes(q) ||
+                        c.mensaje?.toLowerCase().includes(q);
+                    });
+                    if (filtrados.length === 0) return (
+                      <tr>
+                        <td colSpan="5" className="cmail-empty">
+                          <Icon d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" size={32} />
+                          <p>{busquedaHistorial ? t('sin_resultados') || "Sin resultados" : t('correo_no_hay')}</p>
+                        </td>
+                      </tr>
+                    );
+                    return filtrados.map(c => (
                       <tr key={c.id}>
                         <td>
                           <div className="cmail-dest-cell">
@@ -225,8 +282,8 @@ function Correo() {
                         <td>{formatFecha(c.fecha_envio)}</td>
                         <td><span className="cmail-hora">{c.hora_envio}</span></td>
                       </tr>
-                    ))
-                  )}
+                    ));
+                  })()}
                 </tbody>
               </table>
             </div>
@@ -253,7 +310,8 @@ function Correo() {
                 <div className="cmail-chat-messages">
                   {mensajes.length === 0 && (
                     <div className="cmail-chat-empty">
-                      <p>{t('correo_no_mensajes')}</p>
+                      <Icon d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" size={36} />
+                      <p className="cmail-chat-empty-hint">{t('correo_no_mensajes')}</p>
                     </div>
                   )}
                   {mensajes.map(m => {

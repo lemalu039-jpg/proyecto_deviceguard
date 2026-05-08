@@ -103,3 +103,12 @@
 [data-theme='light'] aside img {
   --icon-filter: brightness(0) invert(0.4);
 }
+
+/* Uniformidad de iconos en el nav del sidebar */
+aside nav a img {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  object-fit: contain;
+}

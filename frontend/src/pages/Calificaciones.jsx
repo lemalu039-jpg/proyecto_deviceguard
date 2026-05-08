@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getCalificaciones } from "../services/api";
+import Pagination from "../components/Pagination";
 
 const Estrellas = ({ valor }) => (
   <span>
@@ -9,12 +10,15 @@ const Estrellas = ({ valor }) => (
   </span>
 );
 
+const ITEMS_POR_PAGINA = 8;
+
 function Calificaciones() {
   const [calificaciones, setCalificaciones] = useState([]);
   const [filtroTecnico, setFiltroTecnico] = useState("");
   const [filtroEstrellas, setFiltroEstrellas] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     getCalificaciones()
@@ -22,6 +26,9 @@ function Calificaciones() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  // Resetear página al cambiar filtros
+  useEffect(() => { setCurrentPage(1); }, [busqueda, filtroTecnico, filtroEstrellas]);
 
   const tecnicos = [...new Set(calificaciones.map(c => c.tecnico_nombre).filter(Boolean))];
 
@@ -34,6 +41,11 @@ function Calificaciones() {
       c.comentario?.toLowerCase().includes(busqueda.toLowerCase());
     return matchTecnico && matchEstrellas && matchBusqueda;
   });
+
+  // Paginación
+  const totalItems = filtradas.length;
+  const indexInicio = (currentPage - 1) * ITEMS_POR_PAGINA;
+  const paginadas = filtradas.slice(indexInicio, indexInicio + ITEMS_POR_PAGINA);
 
   const promedioEmpresa = calificaciones.length
     ? (calificaciones.reduce((a, c) => a + c.estrellas_empresa, 0) / calificaciones.length).toFixed(1)
@@ -116,42 +128,52 @@ function Calificaciones() {
       ) : filtradas.length === 0 ? (
         <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "2rem" }}>Sin calificaciones</p>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          {filtradas.map(c => (
-            <div key={c.id} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "12px", padding: "1rem 1.25rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.5rem" }}>
-                <div>
-                  <p style={{ margin: 0, fontWeight: 700, color: "var(--text-main)", fontSize: "0.9rem" }}>
-                    {c.dispositivo_nombre} <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>· {c.serial}</span>
-                  </p>
-                  <p style={{ margin: "2px 0 0", fontSize: "0.78rem", color: "var(--text-muted)" }}>
-                    Técnico: {c.tecnico_nombre || "No asignado"}
-                  </p>
-                </div>
-                <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-muted)" }}>
-                  {new Date(c.fecha).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" })}
-                </p>
-              </div>
-              <div style={{ display: "flex", gap: "1.5rem", margin: "0.6rem 0 0.4rem", flexWrap: "wrap" }}>
-                <div>
-                  <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-muted)" }}>Empresa</p>
-                  <Estrellas valor={c.estrellas_empresa} />
-                </div>
-                {c.estrellas_tecnico && (
+        <>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            {paginadas.map(c => (
+              <div key={c.id} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "12px", padding: "1rem 1.25rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.5rem" }}>
                   <div>
-                    <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-muted)" }}>Técnico</p>
-                    <Estrellas valor={c.estrellas_tecnico} />
+                    <p style={{ margin: 0, fontWeight: 700, color: "var(--text-main)", fontSize: "0.9rem" }}>
+                      {c.dispositivo_nombre} <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>· {c.serial}</span>
+                    </p>
+                    <p style={{ margin: "2px 0 0", fontSize: "0.78rem", color: "var(--text-muted)" }}>
+                      Técnico: {c.tecnico_nombre || "No asignado"}
+                    </p>
                   </div>
+                  <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-muted)" }}>
+                    {new Date(c.fecha).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" })}
+                  </p>
+                </div>
+                <div style={{ display: "flex", gap: "1.5rem", margin: "0.6rem 0 0.4rem", flexWrap: "wrap" }}>
+                  <div>
+                    <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-muted)" }}>Empresa</p>
+                    <Estrellas valor={c.estrellas_empresa} />
+                  </div>
+                  {c.estrellas_tecnico && (
+                    <div>
+                      <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-muted)" }}>Técnico</p>
+                      <Estrellas valor={c.estrellas_tecnico} />
+                    </div>
+                  )}
+                </div>
+                {c.comentario && (
+                  <p style={{ margin: "0.4rem 0 0", fontSize: "0.82rem", color: "var(--text-main)", fontStyle: "italic", borderTop: "1px solid var(--border)", paddingTop: "0.5rem" }}>
+                    "{c.comentario}"
+                  </p>
                 )}
               </div>
-              {c.comentario && (
-                <p style={{ margin: "0.4rem 0 0", fontSize: "0.82rem", color: "var(--text-main)", fontStyle: "italic", borderTop: "1px solid var(--border)", paddingTop: "0.5rem" }}>
-                  "{c.comentario}"
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+
+          {/* Paginación */}
+          <Pagination
+            totalItems={totalItems}
+            itemsPerPage={ITEMS_POR_PAGINA}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
+        </>
       )}
     </div>
   );

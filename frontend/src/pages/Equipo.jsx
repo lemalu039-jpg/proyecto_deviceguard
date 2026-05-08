@@ -181,11 +181,13 @@ function Equipo() {
               u.rol === "tecnico" ? t('tecnico') : 
               t('usuario_normal')}
             </span>
-            {u.id !== usuarioActual.id && (
+            {u.id !== usuarioActual.id ? (
               <button className="equipo-card-msg-btn" onClick={() => navigate("/correo", { state: { contacto: u } })}>
                 <Icon d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" size={14} />
                 {t('equipo_mensaje')}
               </button>
+            ) : (
+              <div className="equipo-card-msg-placeholder" />
             )}
           </div>
         ))}
