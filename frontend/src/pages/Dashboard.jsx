@@ -7,6 +7,99 @@ import Pagination from '../components/Pagination';
 import TableSkeleton from '../components/TableSkeleton';
 import { useLanguage } from '../context/LanguageContext.jsx';
 
+// Icono SVG según el tipo de dispositivo
+const IconoTipoDispositivo = ({ tipo = "" }) => {
+  const t = tipo.toLowerCase();
+
+  // Laptop / Portátil
+  if (t.includes("portátil") || t.includes("portatil") || t.includes("laptop") || t.includes("notebook")) {
+    return (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2"/>
+        <path d="M2 17h20M1 21h22"/>
+      </svg>
+    );
+  }
+  // Tablet
+  if (t.includes("tablet") || t.includes("ipad")) {
+    return (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="4" y="2" width="16" height="20" rx="2"/>
+        <circle cx="12" cy="18" r="1" fill="currentColor"/>
+      </svg>
+    );
+  }
+  // Impresora
+  if (t.includes("impresora") || t.includes("printer") || t.includes("impresión")) {
+    return (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="6 9 6 2 18 2 18 9"/>
+        <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+        <rect x="6" y="14" width="12" height="8"/>
+        <line x1="9" y1="18" x2="15" y2="18"/>
+      </svg>
+    );
+  }
+  // Monitor / Pantalla / Televisor
+  if (t.includes("monitor") || t.includes("pantalla") || t.includes("televisor") || t.includes("tv") || t.includes("display")) {
+    return (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2"/>
+        <path d="M8 21h8M12 17v4"/>
+      </svg>
+    );
+  }
+  // Proyector
+  if (t.includes("proyector") || t.includes("projector")) {
+    return (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="7" width="16" height="10" rx="2"/>
+        <circle cx="21" cy="12" r="1" fill="currentColor"/>
+        <line x1="18" y1="12" x2="20" y2="12"/>
+        <circle cx="9" cy="12" r="2"/>
+      </svg>
+    );
+  }
+  // PC / Computador / Torre / Desktop
+  if (t.includes("pc") || t.includes("computador") || t.includes("desktop") || t.includes("torre") || t.includes("all-in-one") || t.includes("allinone")) {
+    return (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="2" width="8" height="20" rx="2"/>
+        <rect x="14" y="2" width="8" height="6" rx="1"/>
+        <rect x="14" y="12" width="8" height="10" rx="1"/>
+        <circle cx="6" cy="18" r="1" fill="currentColor"/>
+      </svg>
+    );
+  }
+  // Teléfono / Celular / Smartphone
+  if (t.includes("teléfono") || t.includes("telefono") || t.includes("celular") || t.includes("smartphone") || t.includes("móvil") || t.includes("movil")) {
+    return (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2"/>
+        <circle cx="12" cy="18" r="1" fill="currentColor"/>
+      </svg>
+    );
+  }
+  // Escáner
+  if (t.includes("escáner") || t.includes("escaner") || t.includes("scanner")) {
+    return (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="6" width="20" height="12" rx="2"/>
+        <line x1="2" y1="12" x2="22" y2="12"/>
+        <line x1="6" y1="2" x2="6" y2="6"/>
+        <line x1="18" y1="2" x2="18" y2="6"/>
+      </svg>
+    );
+  }
+  // Icono genérico para cualquier otro tipo
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="3" width="20" height="14" rx="2"/>
+      <path d="M8 21h8M12 17v4"/>
+    </svg>
+  );
+};
+
 function Dashboard() {
   const { t } = useLanguage();
   useEffect(() => {
@@ -364,7 +457,12 @@ function Dashboard() {
                         alt={d.nombre}
                         onClick={() => setImagenActiva(`http://localhost:5000/uploads/${d.archivo}`)}
                         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block',cursor: 'pointer'}} />
-                        : <span style={{ fontSize: '.6rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>N/A</span>
+                        : <span style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            height: '100%', color: 'var(--text-muted)', opacity: 0.7
+                          }}>
+                            <IconoTipoDispositivo tipo={d.tipo} />
+                          </span>
                       }
                     </div>
                   </td>

@@ -1,5 +1,20 @@
 /* Login Responsive */
 
+/* Quitar sombra/outline en focus de inputs del login */
+.login-input:focus,
+.login-input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+[data-theme='dark'] .login-input:focus,
+[data-theme='dark'] .login-input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
 /* Mobile - Compactar mucho */
 @media (max-width: 768px) {
   .login-page {

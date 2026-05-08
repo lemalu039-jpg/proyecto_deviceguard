@@ -16,6 +16,7 @@ import equipo_ from "../assets/icons/equipo_.svg";
 import gestion_mantenimiento from "../assets/icons/gestion_mantenimiento.svg";
 import settings from "../assets/icons/settings.svg";
 import papelera_ from "../assets/icons/papelera_.svg";
+import logoDeviceGuard from "../assets/icons/logo-deviceguard.svg";
 
 function Sidebar({ usuario: usuarioProp, onLogout, onImpersonate }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -167,8 +168,10 @@ const usuariosFiltrados = usuarios
         src={item.icon}
         alt={item.label}
         style={{
-          width: "22px",
-          height: "22px",
+          width: "20px",
+          height: "20px",
+          minWidth: "20px",
+          minHeight: "20px",
           objectFit: "contain",
           flexShrink: 0,
           filter: isActive
@@ -202,9 +205,21 @@ const usuariosFiltrados = usuarios
         className={sidebarOpen ? "active" : ""}
       >
         <div style={{ padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--border)", background: "var(--bg-sidebar)" }}>
-  <h1 style={{ fontSize: "1.25rem", fontWeight: 800, margin: 0, letterSpacing: "-0.5px", background: "linear-gradient(135deg, #0492C2, #82EEFD)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-    DeviceGuard
-  </h1>
+  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+    <h1 style={{
+      fontSize: "1.25rem",
+      fontWeight: 800,
+      margin: 0,
+      letterSpacing: "-0.5px",
+      background: "linear-gradient(135deg, #0492C2, #82EEFD)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      backgroundClip: "text",
+      filter: "drop-shadow(0 0 8px rgba(4, 146, 194, 0.5))",
+    }}>
+      DeviceGuard
+    </h1>
+  </div>
   {esTecnico && (
   <div style={{ position: "relative" }}>
     <button
