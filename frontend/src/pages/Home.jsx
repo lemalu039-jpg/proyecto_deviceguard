@@ -98,19 +98,19 @@ function CalificacionForm() {
         <form onSubmit={buscar}>
           <p style={{ fontWeight: 600, marginBottom: '0.75rem', color: '#1a1a2e' }}>Ingresa el serial de tu dispositivo</p>
           {error && <div className="cal-error">{error}</div>}
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <input
-              value={serial}
-              onChange={e => setSerial(e.target.value)}
-              placeholder="Ej: SN-PRO-01098"
-              required
-              style={{ flex: 1, padding: '0.6rem 0.75rem', borderRadius: '8px', border: '1.5px solid #e2e2e2', fontSize: '0.85rem', outline: 'none' }}
-            />
-            <button type="submit" disabled={loading}
-              style={{ padding: '0.6rem 1.25rem', background: 'linear-gradient(135deg,#0492C2,#82EEFD)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontSize: '0.85rem' }}>
-              {loading ? '...' : 'Buscar'}
-            </button>
-          </div>
+          <div className="cal-form-group">
+  <input
+    value={serial}
+    onChange={e => setSerial(e.target.value)}
+    placeholder="Ej: SN-PRO-01098"
+    required
+    style={{ width: '100%', maxWidth: '320px', padding: '0.6rem 0.75rem', borderRadius: '8px', border: '1.5px solid #e2e2e2', fontSize: '0.85rem', outline: 'none' }}
+  />
+  <button type="submit" disabled={loading}
+    style={{  flex: '0 0 auto', padding: '0.6rem 1.25rem', background: 'linear-gradient(135deg,#0492C2,#82EEFD)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
+    {loading ? '...' : 'Buscar'}
+  </button>
+</div>
         </form>
       ) : (
         <form onSubmit={enviar}>
