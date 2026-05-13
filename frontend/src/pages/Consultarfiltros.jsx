@@ -125,7 +125,7 @@ function ConsultarFiltros() {
 
           <tbody>
             {loading ? (
-              <TableSkeleton rows={7} cols={esSuperAdmin ? 6 : 5} />
+              <TableSkeleton rows={7} cols={esSuperAdmin ? 6 : 5} noWrapper />
             ) : dataFiltrada.length === 0 ? (
               <tr><td colSpan={esSuperAdmin ? 6 : 5}>{t('dash_no_dispositivos')}</td></tr>
             ) : (

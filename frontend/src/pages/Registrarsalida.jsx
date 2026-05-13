@@ -264,7 +264,7 @@ const handleSubmit = async (e) => {
             </thead>
             <tbody>
               {loadingData ? (
-                <TableSkeleton rows={7} cols={esSuperAdmin ? 5 : 4} />
+                <TableSkeleton rows={7} cols={esSuperAdmin ? 5 : 4} noWrapper />
               ) : filteredSalidas.length === 0 ? (
                 <tr><td colSpan={esSuperAdmin ? 5 : 4} className="salida-empty">{t('salida_no_registros')}</td></tr>
               ) : (

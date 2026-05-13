@@ -411,7 +411,7 @@ function Dispositivos() {
             </thead>
             <tbody>
               {loadingData ? (
-                <TableSkeleton rows={7} cols={7} />
+                <TableSkeleton rows={7} cols={7} noWrapper />
               ) : (() => {
                 const filtrados = dispositivos.filter(d => {
                   const texto = `${d.nombre} ${d.serial} ${d.marca}`.toLowerCase();

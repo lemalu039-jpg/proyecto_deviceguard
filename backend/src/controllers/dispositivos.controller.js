@@ -26,7 +26,7 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        const usuario_id = req.headers['x-usuario-id'] || req.body.usuario_id || null;
+        const usuario_id = req.headers['x-usuario-id'] ? parseInt(req.headers['x-usuario-id']) : (req.body.usuario_id || null);
         const upload = require("../middlewares/upload");
         let data = { ...req.body, archivo: req.file ? req.file.filename : null, usuario_id };
 
@@ -85,13 +85,15 @@ exports.update = async (req, res) => {
                 }
             }
 
-            const tecnico_id = req.headers['x-usuario-id'] || null;
+            const tecnico_id = req.headers['x-usuario-id'] ? parseInt(req.headers['x-usuario-id']) : null;
 
             if (nuevoEstado === "En Mantenimiento") {
-                await pool.query(
-                    `INSERT INTO mantenimiento (dispositivo_id, descripcion, estado_mantenimiento, tecnico_id, fecha)
-                     VALUES (?, 'Inicio de mantenimiento', 'En Proceso', ?, NOW())`,
-                    [req.params.id, tecnico_id]
+                const costoInicial = parseFloat(req.body.costo_mantenimiento) || 0;
+                const [mntResult] = await pool.query(
+                    `INSERT INTO mantenimiento
+                       (dispositivo_id, descripcion, estado_mantenimiento, tecnico_id, fecha, costo, estado_pago, referencia_pago)
+                     VALUES (?, 'Inicio de mantenimiento', 'En Proceso', ?, NOW(), ?, 'Pendiente', ?)`,
+                    [req.params.id, tecnico_id, costoInicial, `MANT-${req.params.id}`]
                 );
                 // Limpiar fecha_salida al entrar a mantenimiento
                 await pool.query(

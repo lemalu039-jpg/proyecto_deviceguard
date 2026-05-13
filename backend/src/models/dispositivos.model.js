@@ -59,8 +59,8 @@ class DispositivoModel {
     const fields = [];
     const values = [];
 
-    // Campos que NO se mapean directamente (se manejan aparte)
-    const excluir = new Set(['estado', 'estado_id']);
+    // Campos que NO se mapean directamente (se manejan aparte o no existen en la tabla)
+    const excluir = new Set(['estado', 'estado_id', 'costo_mantenimiento']);
 
     // Si viene "estado" como texto, convertir a estado_id
     if (data.estado) {

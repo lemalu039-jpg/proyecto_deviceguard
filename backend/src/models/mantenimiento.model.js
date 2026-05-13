@@ -40,19 +40,32 @@ class MantenimientoModel {
   }
 
   static async create(data) {
-    const { dispositivo_id, descripcion, costo, estado_mantenimiento, tecnico_id } = data;
+    const {
+      dispositivo_id, descripcion, costo,
+      estado_mantenimiento, tecnico_id,
+      estado_pago, referencia_pago
+    } = data;
 
     const [result] = await pool.query(
-      `INSERT INTO mantenimiento (dispositivo_id, descripcion, costo, estado_mantenimiento, tecnico_id)
-       VALUES (?, ?, ?, ?, ?)`,
-      [dispositivo_id, descripcion, costo || 0, estado_mantenimiento || 'En Proceso', tecnico_id || null]
+      `INSERT INTO mantenimiento
+         (dispositivo_id, descripcion, costo, estado_mantenimiento, tecnico_id, estado_pago, referencia_pago)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        dispositivo_id,
+        descripcion,
+        costo || 0,
+        estado_mantenimiento || 'En Proceso',
+        tecnico_id || null,
+        estado_pago || null,
+        referencia_pago || null
+      ]
     );
 
     return result.insertId;
   }
 
   static async update(id, data) {
-    const { descripcion, costo, estado_mantenimiento, tecnico_id } = data;
+    const { descripcion, costo, estado_mantenimiento, tecnico_id, estado_pago, referencia_pago } = data;
 
     let query = 'UPDATE mantenimiento SET descripcion = ?, costo = ?, estado_mantenimiento = ?';
     const params = [descripcion, costo, estado_mantenimiento];
@@ -62,11 +75,32 @@ class MantenimientoModel {
       params.push(tecnico_id);
     }
 
+    if (estado_pago !== undefined) {
+      query += ', estado_pago = ?';
+      params.push(estado_pago);
+    }
+
+    if (referencia_pago !== undefined) {
+      query += ', referencia_pago = ?';
+      params.push(referencia_pago);
+    }
+
     query += ' WHERE id = ?';
     params.push(id);
 
     const [result] = await pool.query(query, params);
     return result.affectedRows;
+  }
+
+  // Buscar el registro de mantenimiento activo de un dispositivo
+  static async findActivoByDispositivo(dispositivo_id) {
+    const [rows] = await pool.query(
+      `SELECT * FROM mantenimiento
+       WHERE dispositivo_id = ? AND estado_mantenimiento = 'En Proceso'
+       ORDER BY id DESC LIMIT 1`,
+      [dispositivo_id]
+    );
+    return rows[0] || null;
   }
 
   static async delete(id) {

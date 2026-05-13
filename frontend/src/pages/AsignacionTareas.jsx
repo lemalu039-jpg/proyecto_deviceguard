@@ -186,7 +186,7 @@ function AsignacionTareas() {
       </thead>
       <tbody>
         {loadingData ? (
-          <TableSkeleton rows={7} cols={vistaFiltro === 'asignados' ? 6 : 5} />
+          <TableSkeleton rows={7} cols={vistaFiltro === 'asignados' ? 6 : 5} noWrapper />
         ) : vistaFiltro === 'sin_asignar' ? (
           dispositivosPorAsignar.filter(d => {
             const texto = `${d.nombre} ${d.serial} ${d.registrado_por || ''}`.toLowerCase();

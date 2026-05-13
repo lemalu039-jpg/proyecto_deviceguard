@@ -520,7 +520,7 @@ function Estadisticas() {
                 </thead>
                 <tbody>
                   {loading ? (
-                    <TableSkeleton rows={7} cols={6} />
+                    <TableSkeleton rows={7} cols={6} noWrapper />
                   ) : dispositivosTabla.length === 0 ? (
                     <tr>
                       <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>

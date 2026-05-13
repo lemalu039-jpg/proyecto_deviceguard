@@ -77,6 +77,7 @@ export const getMantenimiento = (id) => api.get(`/mantenimiento/${id}`);
 export const createMantenimiento = (data) => api.post('/mantenimiento', data);
 export const updateMantenimiento = (id, data) => api.put(`/mantenimiento/${id}`, data);
 export const deleteMantenimiento = (id) => api.delete(`/mantenimiento/${id}`);
+export const registrarCostoMantenimiento = (data) => api.post('/mantenimiento/costo', data);
 
 // Correos externos
 export const getCorreos = (usuario_id) => api.get('/correo', { params: usuario_id ? { usuario_id } : {} });
