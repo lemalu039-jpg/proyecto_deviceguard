@@ -1,5 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import { getDispositivos, updateDispositivo } from "../services/api";
+import api from "../services/api";
 import "./css/GestionMantenimiento.css";
 import Pagination from "../components/Pagination";
 import TableSkeleton from "../components/TableSkeleton";
@@ -24,10 +25,12 @@ function GestionMantenimiento() {
   const itemsPerPage = 7;
 
   // Modal de costo
-  const [modalCosto, setModalCosto] = useState(null); // { id, nombre, serial }
+  const [modalCosto, setModalCosto] = useState(null);
   const [costo, setCosto] = useState('');
   const [guardandoCosto, setGuardandoCosto] = useState(false);
   const [errorCosto, setErrorCosto] = useState('');
+  // Mapa de estado_pago por dispositivo_id
+  const [estadosPago, setEstadosPago] = useState({});
 
   useEffect(() => {
     loadData();
@@ -46,6 +49,21 @@ function GestionMantenimiento() {
         return true;
       });
       setDispositivos(filtrados);
+
+      // Cargar estado_pago del mantenimiento activo de cada dispositivo
+      const pagosMap = {};
+      await Promise.all(
+        filtrados.map(async (d) => {
+          try {
+            const r = await api.get(`/pagos/datos/${d.id}`);
+            pagosMap[d.id] = r.data.estado_pago || 'Pendiente';
+          } catch {
+            // Sin mantenimiento activo con costo → sin estado de pago
+            pagosMap[d.id] = null;
+          }
+        })
+      );
+      setEstadosPago(pagosMap);
     } catch (error) {
       console.error(error);
     } finally {
@@ -158,6 +176,7 @@ function GestionMantenimiento() {
               <th>{t('dash_col_serial')}</th>
               <th>{t('dash_col_reg_por')}</th>
               <th>{t('mant_col_estado_actual')}</th>
+              <th>Estado de pago</th>
               <th>{t('mant_col_cambiar_estado')}</th>
             </tr>
           </thead>
@@ -172,7 +191,7 @@ function GestionMantenimiento() {
                 return okBusqueda && okEstado;
               }).length === 0 ? (
               <tr>
-                <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
+                <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
                   {t('sin_resultados')}
                 </td>
               </tr>
@@ -199,6 +218,28 @@ function GestionMantenimiento() {
                       <span className={`mant-badge ${getBadgeClass(d.estado)}`}>
                         {d.estado}
                       </span>
+                    </td>
+                    <td>
+                      {(() => {
+                        const ep = estadosPago[d.id];
+                        if (!ep) return <span style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>—</span>;
+                        if (ep === 'Pagado') return (
+                          <span className="mant-badge mant-pago-badge-pagado">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ marginRight: 4 }}>
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Pagado
+                          </span>
+                        );
+                        return (
+                          <span className="mant-badge mant-pago-badge-pendiente">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 4 }}>
+                              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            Pendiente
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td>
                       <select

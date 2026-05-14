@@ -1,6 +1,6 @@
 # DeviceGuard — Documentación Técnica
 
-Sistema web para la gestión, seguimiento y mantenimiento de dispositivos electrónicos. Permite registrar equipos, controlar su ciclo de vida completo, gestionar usuarios por roles, generar reportes y mantener un historial de cambios.
+Sistema web para la gestión, seguimiento y mantenimiento de dispositivos electrónicos. Permite registrar equipos, controlar su ciclo de vida completo, gestionar usuarios por roles, generar reportes, mantener un historial de cambios y procesar pagos de mantenimiento mediante Wompi.
 
 ---
 
@@ -14,7 +14,10 @@ Sistema web para la gestión, seguimiento y mantenimiento de dispositivos electr
 6. [Frontend](#frontend)
 7. [Módulos del sistema](#módulos-del-sistema)
 8. [Componentes compartidos](#componentes-compartidos)
-9. [Configuración y arranque](#configuración-y-arranque)
+9. [Pagos con Wompi](#pagos-con-wompi)
+10. [Correos automáticos](#correos-automáticos)
+11. [Configuración y arranque](#configuración-y-arranque)
+12. [Notas de desarrollo](#notas-de-desarrollo)
 
 ---
 
@@ -28,10 +31,12 @@ proyecto_deviceguard/
 │   ├── migrate.js
 │   └── src/
 │       ├── controllers/
+│       │   ├── calificaciones.controller.js  ← nuevo
 │       │   ├── correo.controller.js
 │       │   ├── dispositivos.controller.js
 │       │   ├── historial.controller.js
 │       │   ├── mantenimiento.controller.js
+│       │   ├── pagos.controller.js           ← nuevo
 │       │   ├── prestamos.controller.js
 │       │   ├── reportes.controller.js
 │       │   └── usuarios.controller.js
@@ -43,10 +48,12 @@ proyecto_deviceguard/
 │       │   ├── reportes.model.js
 │       │   └── usuarios.model.js
 │       ├── routes/
+│       │   ├── calificaciones.routes.js      ← nuevo
 │       │   ├── correo.routes.js
 │       │   ├── dispositivos.routes.js
 │       │   ├── historial.routes.js
 │       │   ├── mantenimiento.routes.js
+│       │   ├── pagos.routes.js               ← nuevo
 │       │   ├── prestamos.routes.js
 │       │   ├── reportes.routes.js
 │       │   └── usuarios.routes.js
@@ -65,6 +72,7 @@ proyecto_deviceguard/
 │       │   ├── AjustesCuenta.jsx
 │       │   ├── AsignacionTareas.jsx
 │       │   ├── Calendario.jsx
+│       │   ├── Calificaciones.jsx            ← nuevo
 │       │   ├── CambiarContrasena.jsx
 │       │   ├── CambiarCorreo.jsx
 │       │   ├── Consultarfiltros.jsx
@@ -75,16 +83,19 @@ proyecto_deviceguard/
 │       │   ├── Estadisticas.jsx
 │       │   ├── GestionMantenimiento.jsx
 │       │   ├── HistorialDispositivo.jsx
+│       │   ├── Home.jsx
 │       │   ├── Login.jsx
-│       │   ├── Papelera.jsx          ← nuevo
+│       │   ├── Papelera.jsx
+│       │   ├── PagoMantenimiento.jsx         ← nuevo
 │       │   ├── Prestamos.jsx
 │       │   ├── Registrarsalida.jsx
 │       │   └── Reportes.jsx
 │       ├── components/
 │       │   ├── Breadcrumbs.jsx
 │       │   ├── Navbar.jsx
-│       │   ├── Pagination.jsx        ← componente compartido
-│       │   └── Sidebar.jsx
+│       │   ├── Pagination.jsx
+│       │   ├── Sidebar.jsx
+│       │   └── TableSkeleton.jsx
 │       ├── services/
 │       │   └── api.js
 │       ├── assets/
@@ -117,6 +128,7 @@ proyecto_deviceguard/
 | Backend | exceljs + pdfkit | — |
 | Backend | bcrypt | 6.x |
 | Base de datos | MySQL | 8+ |
+| Pagos | Wompi (widget JS) | — |
 
 ---
 
@@ -147,6 +159,8 @@ El sistema maneja cuatro roles con permisos y vistas distintas:
 | Equipo | ✓ | ✓ | — | — |
 | Gestión de Mantenimiento | ✓ | ✓ | ✓ | — |
 | **Papelera** | ✓ | ✓ | ✓ | — |
+| **Calificaciones** | ✓ | ✓ | ✓ | — |
+| **Pago de Mantenimiento** | — | — | — | ✓ |
 | Ajustes de Cuenta | ✓ | ✓ | ✓ | ✓ |
 
 ### Redirección post-login
@@ -173,11 +187,21 @@ El sistema maneja cuatro roles con permisos y vistas distintas:
 
 **dispositivos** — `nombre`, `tipo`, `serial`, `marca`, `ubicacion`, `archivo` (imagen), `descripcion`, `fecha_registro`, `hora_registro`, `estado_id` (FK → estados), `usuario_id` (FK → usuarios), `tecnico_id` (FK → usuarios), **`activo`** (TINYINT — borrado lógico).
 
-**mantenimiento** — `dispositivo_id`, `descripcion`, `costo`, `estado_mantenimiento`, `fecha`, `tecnico_id`.
+**mantenimiento** — `dispositivo_id`, `descripcion`, `costo`, `estado_mantenimiento`, `fecha`, `tecnico_id`, `estado_pago`, `referencia_pago`, `transaccion_id`, `fecha_pago`.
+
+> Las columnas `transaccion_id` y `fecha_pago` se agregaron para soportar el flujo de pagos con Wompi. Se actualizan cuando el usuario completa el pago o cuando Wompi notifica el resultado vía webhook.
+
+```sql
+ALTER TABLE mantenimiento
+  ADD COLUMN transaccion_id VARCHAR(100) NULL AFTER referencia_pago,
+  ADD COLUMN fecha_pago     DATETIME     NULL AFTER transaccion_id;
+```
 
 **correos** — historial de correos automáticos enviados por el sistema.
 
 **mensajes_internos** — mensajería interna entre usuarios del sistema.
+
+**calificaciones** — `dispositivo_id`, `tecnico_id`, `estrellas_empresa`, `estrellas_tecnico`, `comentario`, `fecha`. Registra la calificación del servicio por parte del usuario al recibir su dispositivo.
 
 ### Columna `activo` (borrado lógico)
 
@@ -195,14 +219,32 @@ Registro del dispositivo
         ↓
    En Revision (id=1)         ← estado inicial automático
         ↓
-  En Mantenimiento (id=2)     ← Gestión de Mantenimiento
+  En Mantenimiento (id=2)     ← Gestión de Mantenimiento (con costo registrado)
         ↓
-  Listo para Entrega (id=3)   ← Registrar Salida
+  Listo para Entrega (id=3)   ← Gestión de Mantenimiento / Calendario
         ↓
-    Entregado (id=4)           ← Gestión de Mantenimiento
+    Entregado (id=4)           ← Gestión de Mantenimiento / Calendario
 ```
 
 Las transiciones están validadas en el backend con el objeto `transicionesPermitidas` en el controlador de dispositivos. El frontend muestra opciones condicionalmente según el estado actual.
+
+### Flujo de pago de mantenimiento
+
+```
+Técnico registra costo al pasar a "En Mantenimiento"
+        ↓
+  estado_pago = 'Pendiente' en tabla mantenimiento
+        ↓
+  Usuario ve botón "Pagar $X" en su Dashboard
+        ↓
+  Usuario abre PagoMantenimiento.jsx → widget Wompi
+        ↓
+  Wompi aprueba → POST /api/pagos/confirmar
+        ↓
+  estado_pago = 'Pagado', transaccion_id y fecha_pago guardados
+        ↓
+  Técnico/Admin ven badge "Pagado" en Gestión de Mantenimiento
+```
 
 ---
 
@@ -235,6 +277,72 @@ PUT    /api/dispositivos/:id/restaurar      → restaurar desde papelera (admin,
 PUT    /api/dispositivos/:id                → actualizar
 DELETE /api/dispositivos/:id/permanente     → eliminar definitivamente (super_admin)
 DELETE /api/dispositivos/:id                → borrado lógico — activo=0 (admin, super_admin)
+```
+
+### API de mantenimiento — rutas
+
+```
+GET    /api/mantenimiento           → listar todos
+GET    /api/mantenimiento/:id       → obtener uno
+POST   /api/mantenimiento           → crear registro
+PUT    /api/mantenimiento/:id       → actualizar
+POST   /api/mantenimiento/costo     → registrar costo del mantenimiento activo
+DELETE /api/mantenimiento/:id       → eliminar
+```
+
+### API de pagos — rutas
+
+```
+GET    /api/pagos/datos/:dispositivoId  → datos del pago (monto, referencia, estado_pago, public_key)
+POST   /api/pagos/confirmar             → confirmar pago tras aprobación de Wompi
+POST   /api/pagos/webhook               → webhook público — Wompi notifica cambios de estado
+```
+
+### API de calificaciones — rutas
+
+```
+GET    /api/calificaciones                      → listar todas
+GET    /api/calificaciones/tecnico/:tecnicoId   → calificaciones de un técnico
+GET    /api/calificaciones/serial/:serial       → buscar dispositivo por serial (para el formulario público)
+POST   /api/calificaciones                      → crear calificación
+```
+
+### API de usuarios — rutas
+
+```
+POST   /api/usuarios/login          → autenticación
+POST   /api/usuarios/registro       → crear usuario
+GET    /api/usuarios                → listar todos
+GET    /api/usuarios/:id            → obtener uno
+PUT    /api/usuarios/:id            → editar
+PUT    /api/usuarios/:id/status     → activar/desactivar
+DELETE /api/usuarios/:id            → eliminar
+```
+
+### API de reportes — rutas
+
+```
+GET    /api/reportes/usuarios-excel        → exportar usuarios a .xlsx
+GET    /api/reportes/dispositivos-excel    → exportar dispositivos a .xlsx
+GET    /api/reportes/usuarios-pdf          → exportar usuarios a .pdf
+GET    /api/reportes/dispositivos-pdf      → exportar dispositivos a .pdf
+GET    /api/reportes/preview/usuarios      → vista previa paginada de usuarios
+GET    /api/reportes/preview/dispositivos  → vista previa paginada de dispositivos
+GET    /api/reportes/total                 → total de reportes generados
+```
+
+### Corrección de `tecnico_id` en headers
+
+Los headers HTTP siempre llegan como strings. Si el header `x-usuario-id` no viene, su valor es `undefined` (no `null`), lo que causaba un error de FK en MySQL al intentar insertar `"undefined"` en una columna `INT`. La corrección aplicada en todos los controladores:
+
+```js
+// ✓ Correcto — convierte a entero o null
+const tecnico_id = req.headers['x-usuario-id']
+  ? parseInt(req.headers['x-usuario-id'])
+  : null;
+
+// ✗ Incorrecto — puede pasar "undefined" como string a MySQL
+const tecnico_id = req.headers['x-usuario-id'] || null;
 ```
 
 ### Middleware de roles (`src/middlewares/auth.middleware.js`)
@@ -299,6 +407,28 @@ Todas las peticiones usan `axios.create()` con `baseURL: http://localhost:5000/a
 - Serial mostrado en negrilla (`fontWeight: 700, fontFamily: monospace`)
 - Columna "Registrado por" visible solo para `super_admin`
 - Click en fila navega al historial del dispositivo
+- **Columna "Pago"** *(nueva, solo para rol `usuario`)*:
+  - `—` si el dispositivo no tiene mantenimiento activo con costo
+  - Badge verde **Pagado** si el pago fue completado
+  - Botón **"Pagar $X"** si hay un pago pendiente — navega a `/pago/:dispositivoId`
+
+```jsx
+// Carga de estado de pago en el useEffect del Dashboard
+if (usuarioActual.rol === 'usuario' && dispositivos.length > 0) {
+  const pagosMap = {};
+  await Promise.all(
+    dispositivos.map(async (d) => {
+      try {
+        const res = await api.get(`/pagos/datos/${d.id}`);
+        pagosMap[d.id] = res.data; // { monto, referencia, estado_pago }
+      } catch {
+        pagosMap[d.id] = null;
+      }
+    })
+  );
+  setPagosDispositivos(pagosMap);
+}
+```
 
 ### Registro de Dispositivos
 
@@ -323,10 +453,32 @@ Todas las peticiones usan `axios.create()` con `baseURL: http://localhost:5000/a
 
 ### Gestión de Mantenimiento
 
-- Lista dispositivos en estado "En Revision" o "En Mantenimiento"
+- Lista dispositivos en estado "En Revision", "En Mantenimiento" o "Listo para Entrega"
 - Select de cambio de estado con opciones condicionales según estado actual
+- Al cambiar a "En Mantenimiento" se abre un **modal de registro de costo** antes de confirmar
+- El costo viaja en el mismo request del cambio de estado (`costo_mantenimiento` en el body)
 - Transiciones validadas en backend (`transicionesPermitidas`)
+- **Columna "Estado de pago"** *(nueva)*: muestra el estado del pago del mantenimiento activo
+  - `—` si el dispositivo no tiene mantenimiento activo con costo registrado
+  - Badge amarillo **Pendiente** si el usuario aún no ha pagado
+  - Badge verde **Pagado** si el pago fue completado
 - Columna "Registrado por" visible para `super_admin`
+
+```jsx
+// Carga del estado de pago por dispositivo
+const pagosMap = {};
+await Promise.all(
+  filtrados.map(async (d) => {
+    try {
+      const r = await api.get(`/pagos/datos/${d.id}`);
+      pagosMap[d.id] = r.data.estado_pago || 'Pendiente';
+    } catch {
+      pagosMap[d.id] = null; // sin mantenimiento activo con costo
+    }
+  })
+);
+setEstadosPago(pagosMap);
+```
 
 ### Asignación de Tareas *(nuevo)*
 
@@ -386,6 +538,35 @@ Todas las peticiones usan `axios.create()` con `baseURL: http://localhost:5000/a
 
 - Vista mensual de dispositivos registrados
 - Filtrado por `usuario_id` para el rol `usuario`
+- Filtrado por `tecnico_id` para el rol `tecnico` (solo sus dispositivos asignados)
+- Eventos en celdas del calendario con badge de color según estado
+- Panel lateral con eventos del día seleccionado y eventos del mes
+- Acciones desde el calendario: cambiar estado del dispositivo (con modal de confirmación)
+- Al pasar a "En Mantenimiento" desde el calendario, solicita el costo antes de confirmar
+- Eventos personalizados: técnicos y admins pueden agregar fechas estimadas de entrega
+
+### Calificaciones *(nuevo)*
+
+Módulo accesible desde la página pública (`Home.jsx`) sin necesidad de login. Permite a los usuarios calificar el servicio después de recibir su dispositivo.
+
+**Flujo:**
+1. El usuario ingresa el serial de su dispositivo en el formulario público
+2. El sistema busca el dispositivo y muestra nombre, marca y técnico asignado
+3. El usuario califica la empresa (1–5 estrellas) y opcionalmente al técnico
+4. Puede agregar un comentario libre
+5. La calificación se guarda en la tabla `calificaciones`
+
+**Vista interna** (`/calificaciones`): técnicos y admins ven todas las calificaciones recibidas con promedio de estrellas por técnico.
+
+```js
+// Endpoint de búsqueda por serial (público, sin autenticación)
+GET /api/calificaciones/serial/:serial
+// Devuelve: { id, nombre, marca, serial, tecnico_id, tecnico_nombre }
+
+// Crear calificación
+POST /api/calificaciones
+// Body: { dispositivo_id, tecnico_id, estrellas_empresa, estrellas_tecnico, comentario }
+```
 
 ### Historial de Dispositivo
 
@@ -399,7 +580,122 @@ Todas las peticiones usan `axios.create()` con `baseURL: http://localhost:5000/a
 
 ---
 
-## Componentes compartidos
+## Pagos con Wompi
+
+El sistema integra [Wompi](https://comercios.wompi.co) como pasarela de pagos para que los usuarios puedan pagar el costo del mantenimiento de sus dispositivos directamente desde la plataforma.
+
+### Flujo completo
+
+```
+1. Técnico registra costo al cambiar estado a "En Mantenimiento"
+   → INSERT en mantenimiento con costo, estado_pago='Pendiente', referencia_pago='MANT-{id}'
+
+2. Usuario ve botón "Pagar $X" en su Dashboard (columna Pago)
+   → GET /api/pagos/datos/:dispositivoId devuelve monto, referencia y public_key
+
+3. Usuario abre PagoMantenimiento.jsx
+   → Se carga el widget de Wompi con los datos del pago
+
+4. Usuario completa el pago en el widget de Wompi
+   → POST /api/pagos/confirmar con { referencia, transaccion_id, estado_wompi: 'APPROVED' }
+   → UPDATE mantenimiento SET estado_pago='Pagado', transaccion_id=..., fecha_pago=NOW()
+
+5. Wompi también notifica por webhook (respaldo)
+   → POST /api/pagos/webhook (ruta pública, sin autenticación)
+   → Mismo UPDATE si el usuario cerró el navegador antes de confirmar
+```
+
+### Endpoints de pagos
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/api/pagos/datos/:dispositivoId` | Devuelve monto, referencia, estado_pago y public_key de Wompi |
+| `POST` | `/api/pagos/confirmar` | Confirma el pago tras aprobación del widget |
+| `POST` | `/api/pagos/webhook` | Webhook público — Wompi notifica cambios de estado de transacción |
+
+### Respuesta de `GET /api/pagos/datos/:dispositivoId`
+
+```json
+{
+  "mantenimiento_id": 12,
+  "monto": 75000,
+  "referencia": "MANT-12",
+  "descripcion": "Mantenimiento - Laptop HP (SN-001)",
+  "public_key": "pub_test_XXXXXXXX",
+  "estado_pago": "Pendiente"
+}
+```
+
+Devuelve `404` si no hay mantenimiento activo, `400` si el costo es 0 o si ya fue pagado.
+
+### Modelo de mantenimiento — campos de pago
+
+```js
+// MantenimientoModel.update() soporta los campos nuevos:
+static async update(id, data) {
+  const {
+    descripcion, costo, estado_mantenimiento,
+    tecnico_id, estado_pago, referencia_pago,
+    transaccion_id,  // ← ID de transacción de Wompi
+    fecha_pago       // ← Fecha en que se completó el pago
+  } = data;
+  // ...
+}
+```
+
+### Variables de entorno requeridas
+
+```env
+WOMPI_PUBLIC_KEY=pub_test_XXXXXXXXXXXXXXXX   # llave pública (va al frontend vía API)
+WOMPI_PRIVATE_KEY=prv_test_XXXXXXXXXXXXXXXX  # llave privada (solo backend)
+```
+
+Obtener las llaves en [comercios.wompi.co](https://comercios.wompi.co) → Desarrolladores. Las llaves `pub_test_` / `prv_test_` son de sandbox (sin cobros reales). Para producción usar `pub_prod_` / `prv_prod_`.
+
+### Tarjetas de prueba (sandbox)
+
+| Número | Resultado |
+|---|---|
+| `4242 4242 4242 4242` | Pago aprobado (APPROVED) |
+| `4111 1111 1111 1111` | Pago rechazado (DECLINED) |
+
+Cualquier fecha futura y CVC de 3 dígitos son válidos en sandbox.
+
+---
+
+## Correos automáticos
+
+El servicio `email.service.js` envía correos HTML estilizados ante 4 eventos del ciclo de vida del dispositivo.
+
+### Eventos
+
+| Constante | Cuándo se dispara |
+|---|---|
+| `EVENTOS.REGISTRO` | Al crear un dispositivo nuevo |
+| `EVENTOS.INICIO_MANTENIMIENTO` | Al cambiar estado a "En Mantenimiento" |
+| `EVENTOS.FIN_MANTENIMIENTO` | Al cambiar estado a "Listo para Entrega" |
+| `EVENTOS.SALIDA` | Al cambiar estado a "Entregado" o registrar fecha de salida |
+
+### Flujo interno
+
+1. El controlador de dispositivos llama `enviarCorreo({ destinatario, usuario_id, evento, datos })`
+2. El servicio inserta el registro en la tabla `correos` de la BD (siempre, aunque el envío falle)
+3. Envía el correo HTML por Gmail usando nodemailer
+4. Los errores de envío se loguean pero no interrumpen la respuesta al cliente
+
+```js
+// Ejemplo de llamada desde el controlador
+enviarCorreo({
+  destinatario: usuario.correo,
+  usuario_id: uid,
+  evento: EVENTOS.INICIO_MANTENIMIENTO,
+  datos: { nombre: disp.nombre, serial: disp.serial }
+}).catch(e => console.error('Error correo:', e.message));
+```
+
+> El `transporter` de nodemailer se crea **dentro** de `enviarCorreo()` para leer `process.env` después de que dotenv ya cargó las variables. Si se crea en el módulo raíz, las variables aún no están disponibles al importar.
+
+---
 
 ### Pagination (`components/Pagination.jsx`)
 
@@ -488,9 +784,14 @@ DB_NAME=device_guard_db
 DB_PORT=3306
 EMAIL_USER=tu_correo@gmail.com
 EMAIL_PASS=contraseña_de_aplicacion_gmail
+
+# Wompi — llaves de prueba (sandbox). Reemplaza con las tuyas desde comercios.wompi.co
+WOMPI_PUBLIC_KEY=pub_test_XXXXXXXXXXXXXXXX
+WOMPI_PRIVATE_KEY=prv_test_XXXXXXXXXXXXXXXX
 ```
 
 > `EMAIL_PASS` debe ser una contraseña de aplicación de Gmail (no la contraseña normal de la cuenta).
+> `WOMPI_PUBLIC_KEY` y `WOMPI_PRIVATE_KEY` se obtienen en [comercios.wompi.co](https://comercios.wompi.co) → Desarrolladores → Llaves de API.
 
 ### Super admin inicial
 
@@ -556,3 +857,26 @@ El header `x-usuario-id` se agrega automáticamente en cada petición. El middle
 ### Borrado lógico
 
 El botón "Eliminar" en el módulo de Dispositivos **no borra el registro de la BD**. Ejecuta `UPDATE dispositivos SET activo = 0`, lo que mueve el dispositivo a la Papelera. Desde la Papelera se puede restaurar (`activo = 1`) o eliminar definitivamente (`DELETE FROM dispositivos`).
+
+### Reinicio del servidor tras cambios
+
+Node.js carga los módulos en memoria al arrancar. Si se modifica un archivo del backend, el servidor debe reiniciarse para que los cambios surtan efecto. Sin reinicio, el proceso sigue ejecutando el código viejo en caché aunque el archivo en disco esté actualizado.
+
+```bash
+# Verificar proceso en puerto 5000
+netstat -ano | findstr :5000
+
+# Terminar proceso (Windows)
+taskkill /PID <pid> /F
+
+# Reiniciar
+npm start
+```
+
+Para desarrollo, se recomienda usar `nodemon` para reinicio automático:
+
+```bash
+npm install -D nodemon
+# En package.json scripts: "dev": "nodemon server.js"
+npm run dev
+```
