@@ -24,7 +24,7 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        const tecnico_id = req.headers['x-usuario-id'];
+        const tecnico_id = req.headers['x-usuario-id'] ? parseInt(req.headers['x-usuario-id']) : null;
 
         const data = {
             ...req.body,
@@ -60,6 +60,42 @@ exports.update = async (req, res) => {
         } else {
             res.status(404).json({ error: 'Mantenimiento no encontrado' });
         }
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Registrar costo del mantenimiento activo de un dispositivo
+exports.registrarCosto = async (req, res) => {
+    try {
+        const { dispositivo_id, costo } = req.body;
+
+        if (!dispositivo_id || costo === undefined || costo === null) {
+            return res.status(400).json({ error: 'dispositivo_id y costo son requeridos' });
+        }
+
+        const costoNum = parseFloat(costo);
+        if (isNaN(costoNum) || costoNum < 0) {
+            return res.status(400).json({ error: 'El costo debe ser un número positivo' });
+        }
+
+        const mant = await MantenimientoModel.findActivoByDispositivo(dispositivo_id);
+        if (!mant) {
+            return res.status(404).json({ error: 'No se encontró un mantenimiento activo para este dispositivo' });
+        }
+
+        await MantenimientoModel.update(mant.id, {
+            descripcion:          mant.descripcion,
+            costo:                costoNum,
+            estado_mantenimiento: mant.estado_mantenimiento,
+            tecnico_id:           mant.tecnico_id,
+            estado_pago:          'Pendiente',
+            referencia_pago:      mant.referencia_pago || `MANT-${mant.id}`
+        });
+
+        const actualizado = await MantenimientoModel.findById(mant.id);
+        res.json({ message: 'Costo registrado exitosamente', mantenimiento: actualizado });
 
     } catch (error) {
         res.status(500).json({ error: error.message });

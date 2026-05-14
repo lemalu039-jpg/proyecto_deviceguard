@@ -436,7 +436,7 @@ function Dashboard() {
             </thead>
             <tbody>
               {loading ? (
-                <TableSkeleton rows={7} cols={7} />
+                <TableSkeleton rows={7} cols={7} noWrapper />
               ) : (() => {
                 const filtrados = dispositivos.filter(d => {
                   const texto = `${d.nombre} ${d.serial} ${d.ubicacion}`.toLowerCase();
@@ -448,18 +448,20 @@ function Dashboard() {
                   <td style={tdStyle}>
                     <div style={{
                       width: '42px', height: '42px', borderRadius: '8px',
-                      background: 'var(--input-bg)', border: '1px solid var(--border)',
-                      overflow: 'hidden', flexShrink: 0
+                      background: 'rgba(4, 146, 194, 0.1)',
+                      border: '1.5px solid rgba(130, 238, 253, 0.35)',
+                      overflow: 'hidden', flexShrink: 0,
+                      boxShadow: '0 0 0 1px rgba(130, 238, 253, 0.08)'
                     }}>
                       {d.archivo
                        ? <img 
                         src={`http://localhost:5000/uploads/${d.archivo}`} 
                         alt={d.nombre}
                         onClick={() => setImagenActiva(`http://localhost:5000/uploads/${d.archivo}`)}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block',cursor: 'pointer'}} />
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', cursor: 'pointer' }} />
                         : <span style={{
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            height: '100%', color: 'var(--text-muted)', opacity: 0.7
+                            height: '100%', color: '#82EEFD', opacity: 0.85
                           }}>
                             <IconoTipoDispositivo tipo={d.tipo} />
                           </span>

@@ -244,7 +244,7 @@ function Equipo() {
             </thead>
             <tbody>
               {loadingData ? (
-                <TableSkeleton rows={7} cols={5} hasAvatar={true} />
+                <TableSkeleton rows={7} cols={5} hasAvatar={true} noWrapper />
               ) : (() => {
                 const filtrados = usuarios.filter(u =>
                   u.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||

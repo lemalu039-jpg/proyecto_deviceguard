@@ -18,6 +18,8 @@ function Calendario() {
   const [eventoSalida, setEventoSalida] = useState(null);
   const [cargandoSalida, setCargandoSalida] = useState(false);
   const [mensajeSalida, setMensajeSalida] = useState('');
+  const [costoMantenimiento, setCostoMantenimiento] = useState('');
+  const [errorCosto, setErrorCosto] = useState('');
 
   const [paginaDia, setPaginaDia] = useState(0);
   const ITEMS_PIA = 5; // eventos por página en el sidebar del día
@@ -144,6 +146,8 @@ function Calendario() {
   const abrirModalSalida = (ev) => {
     setEventoSalida(ev);
     setMensajeSalida('');
+    setCostoMantenimiento('');
+    setErrorCosto('');
     setModalSalida(true);
   };
 
@@ -163,19 +167,33 @@ function Calendario() {
 
   const confirmarSalida = async () => {
     if (!eventoSalida) return;
+
+    const accion = obtenerTextoAccion(eventoSalida.estado);
+    const esMantenimiento = accion.nuevoEstado === 'En Mantenimiento';
+
+    // Validar costo si va a mantenimiento
+    if (esMantenimiento) {
+      const costoNum = parseFloat(costoMantenimiento);
+      if (!costoMantenimiento || isNaN(costoNum) || costoNum < 0) {
+        setErrorCosto('Ingresa un monto válido (mayor o igual a 0).');
+        return;
+      }
+    }
+
     setCargandoSalida(true);
     try {
       const ahora = new Date();
       const id = eventoSalida._dispOrig?.id || eventoSalida.id || eventoSalida.id_dispositivo;
-      const accion = obtenerTextoAccion(eventoSalida.estado);
 
-      // Solo guardar fecha_salida cuando el nuevo estado es "Listo para entrega" o "Entregado"
+      // Si es mantenimiento, el costo viaja en el mismo request
       const esSalida = accion.nuevoEstado === 'Listo para entrega' || accion.nuevoEstado === 'Entregado';
       await updateDispositivo(id, {
         estado: accion.nuevoEstado,
         fecha_salida: esSalida ? ahora.toISOString().split('T')[0] : null,
         hora_salida: esSalida ? ahora.toTimeString().slice(0, 5) : null,
+        ...(esMantenimiento && { costo_mantenimiento: parseFloat(costoMantenimiento) })
       });
+
       setMensajeSalida(t('cal_accion_registrada'));
       if (esTecnico) {
         const res = await getDispositivosAsignados(usuarioActual.id);
@@ -202,6 +220,8 @@ function Calendario() {
       setModalSalida(false);
       setEventoSalida(null);
       setMensajeSalida('');
+      setCostoMantenimiento('');
+      setErrorCosto('');
     } catch (error) {
       console.error('Error al registrar acción:', error);
       setMensajeSalida(t('cal_err_registrar_accion'));
@@ -478,7 +498,7 @@ function Calendario() {
       {/* modal salida */}
       {modalSalida && eventoSalida && (
         <div style={s.overlay} onClick={() => !cargandoSalida && setModalSalida(false)}>
-          <div style={{ ...s.modalBox, width: '380px' }} onClick={e => e.stopPropagation()}>
+          <div style={{ ...s.modalBox, width: eventoSalida && obtenerTextoAccion(eventoSalida.estado).nuevoEstado === 'En Mantenimiento' ? '440px' : '380px' }} onClick={e => e.stopPropagation()}>
             <div style={s.modalHeader}>
               <span style={{ color: '#fff', fontWeight: 700, fontSize: '.95rem' }}>{obtenerTextoAccion(eventoSalida.estado).modal}</span>
               <button onClick={() => !cargandoSalida && setModalSalida(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
@@ -506,6 +526,52 @@ function Calendario() {
               {mensajeSalida && (
                 <div style={{ fontSize: '.78rem', textAlign: 'center', marginBottom: '.75rem', color: mensajeSalida.includes('Error') ? '#dc2626' : '#15803d', fontWeight: 600 }}>
                   {mensajeSalida}
+                </div>
+              )}
+              {/* Sección de costo — solo cuando va a En Mantenimiento */}
+              {obtenerTextoAccion(eventoSalida.estado).nuevoEstado === 'En Mantenimiento' && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ background: 'var(--table-head)', border: '1px solid var(--border)', borderRadius: '10px', padding: '1rem', marginBottom: '.75rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.4rem' }}>
+                      <span style={{ fontSize: '.68rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Referencia de pago</span>
+                      <span style={{ fontSize: '.72rem', fontWeight: 700, background: 'rgba(4,146,194,0.15)', color: '#0492C2', padding: '2px 10px', borderRadius: '20px' }}>
+                        MANT-{eventoSalida._dispOrig?.id || eventoSalida.id || eventoSalida.id_dispositivo}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '.68rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Estado de pago</span>
+                      <span style={{ fontSize: '.72rem', fontWeight: 700, background: 'rgba(245,158,11,0.15)', color: '#f59e0b', padding: '2px 10px', borderRadius: '20px' }}>
+                        Pendiente
+                      </span>
+                    </div>
+                  </div>
+                  <label style={{ display: 'block', fontSize: '.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '.45rem' }}>
+                    Costo del mantenimiento <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', border: `1.5px solid ${errorCosto ? '#ef4444' : 'var(--border)'}`, borderRadius: '10px', background: 'var(--table-head)', overflow: 'hidden', transition: 'border-color .2s, box-shadow .2s', boxShadow: errorCosto ? '0 0 0 3px rgba(239,68,68,0.12)' : 'none' }}
+                    onFocus={() => {}} >
+                    <span style={{ padding: '0 .75rem', fontSize: '.95rem', fontWeight: 700, color: '#0492C2', background: 'rgba(4,146,194,0.08)', borderRight: '1.5px solid var(--border)', alignSelf: 'stretch', display: 'flex', alignItems: 'center' }}>$</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={costoMantenimiento}
+                      onChange={e => { setCostoMantenimiento(e.target.value); setErrorCosto(''); }}
+                      style={{ flex: 1, padding: '.6rem .7rem', border: 'none', background: 'transparent', color: 'var(--text-main)', fontSize: '1rem', fontWeight: 600, outline: 'none', fontFamily: 'inherit', minWidth: 0 }}
+                      autoFocus
+                    />
+                    <span style={{ padding: '0 .75rem', fontSize: '.72rem', fontWeight: 600, color: 'var(--text-muted)', background: 'rgba(4,146,194,0.05)', borderLeft: '1.5px solid var(--border)', alignSelf: 'stretch', display: 'flex', alignItems: 'center' }}>COP</span>
+                  </div>
+                  {errorCosto && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '.35rem', marginTop: '.45rem', fontSize: '.75rem', color: '#ef4444', fontWeight: 500 }}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                      {errorCosto}
+                    </div>
+                  )}
+                  <p style={{ fontSize: '.72rem', color: 'var(--text-muted)', lineHeight: 1.55, marginTop: '.6rem' }}>
+                    Este monto quedará como <strong style={{ color: 'var(--text-main)' }}>Pendiente de pago</strong>. El usuario podrá pagarlo cuando el dispositivo esté listo para entrega.
+                  </p>
                 </div>
               )}
               <div style={{ display: 'flex', gap: '.75rem' }}>
