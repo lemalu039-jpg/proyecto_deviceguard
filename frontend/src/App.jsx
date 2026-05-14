@@ -28,6 +28,7 @@ import AjustesCuenta from './pages/AjustesCuenta';
 import AsignacionTareas from './pages/AsignacionTareas';
 import Papelera from './pages/Papelera';
 import Calificaciones from './pages/Calificaciones';
+import PagoMantenimiento from './pages/PagoMantenimiento';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -113,6 +114,7 @@ function App() {
           <Route path="/ajustes-cuenta" element={<ProtectedRoute><AjustesCuenta onLogout={handleLogout} /></ProtectedRoute>} />
           <Route path="/papelera" element={<ProtectedRoute><Papelera /></ProtectedRoute>} />
           <Route path="/calificaciones" element={<ProtectedRoute><Calificaciones /></ProtectedRoute>} />
+          <Route path="/pago/:dispositivoId" element={<ProtectedRoute><PagoMantenimiento /></ProtectedRoute>} />
         </Routes>
         </Router>
       </ThemeProvider>
