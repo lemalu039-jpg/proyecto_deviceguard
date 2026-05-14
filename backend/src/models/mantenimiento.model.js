@@ -65,7 +65,7 @@ class MantenimientoModel {
   }
 
   static async update(id, data) {
-    const { descripcion, costo, estado_mantenimiento, tecnico_id, estado_pago, referencia_pago } = data;
+    const { descripcion, costo, estado_mantenimiento, tecnico_id, estado_pago, referencia_pago, transaccion_id, fecha_pago } = data;
 
     let query = 'UPDATE mantenimiento SET descripcion = ?, costo = ?, estado_mantenimiento = ?';
     const params = [descripcion, costo, estado_mantenimiento];
@@ -85,6 +85,16 @@ class MantenimientoModel {
       params.push(referencia_pago);
     }
 
+    if (transaccion_id !== undefined) {
+      query += ', transaccion_id = ?';
+      params.push(transaccion_id);
+    }
+
+    if (fecha_pago !== undefined) {
+      query += ', fecha_pago = ?';
+      params.push(fecha_pago);
+    }
+
     query += ' WHERE id = ?';
     params.push(id);
 
@@ -95,9 +105,13 @@ class MantenimientoModel {
   // Buscar el registro de mantenimiento activo de un dispositivo
   static async findActivoByDispositivo(dispositivo_id) {
     const [rows] = await pool.query(
-      `SELECT * FROM mantenimiento
-       WHERE dispositivo_id = ? AND estado_mantenimiento = 'En Proceso'
-       ORDER BY id DESC LIMIT 1`,
+      `SELECT m.*,
+              d.nombre AS dispositivo_nombre,
+              d.serial AS dispositivo_serial
+       FROM mantenimiento m
+       JOIN dispositivos d ON d.id = m.dispositivo_id
+       WHERE m.dispositivo_id = ? AND m.estado_mantenimiento = 'En Proceso'
+       ORDER BY m.id DESC LIMIT 1`,
       [dispositivo_id]
     );
     return rows[0] || null;
