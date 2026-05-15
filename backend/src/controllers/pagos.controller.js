@@ -10,14 +10,24 @@ const pool = require('../database/connection');
 exports.getDatosPago = async (req, res) => {
   try {
     const { dispositivoId } = req.params;
+    console.log(`[getDatosPago] Buscando mantenimiento para dispositivo ${dispositivoId}`);
 
     const mant = await MantenimientoModel.findActivoByDispositivo(dispositivoId);
 
     if (!mant) {
+      console.log(`[getDatosPago] ❌ No encontrado. Consultando todos los mantenimientos del dispositivo...`);
+      const todos = await (require('../database/connection')).query(
+        `SELECT * FROM mantenimiento WHERE dispositivo_id = ? ORDER BY id DESC`,
+        [dispositivoId]
+      );
+      console.log(`[getDatosPago] Mantenimientos encontrados:`, todos[0]);
+
       return res.status(404).json({
         error: 'No se encontró un mantenimiento activo para este dispositivo.'
       });
     }
+
+    console.log(`[getDatosPago] ✅ Mantenimiento encontrado:`, mant.id, `- Costo: ${mant.costo}, Estado Pago: ${mant.estado_pago}`);
 
     if (!mant.costo || parseFloat(mant.costo) <= 0) {
       return res.status(400).json({

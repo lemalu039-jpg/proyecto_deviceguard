@@ -67,24 +67,53 @@ exports.update = async (req, res) => {
 };
 
 // Registrar costo del mantenimiento activo de un dispositivo
+// Si no existe mantenimiento activo, lo crea automáticamente
 exports.registrarCosto = async (req, res) => {
     try {
         const { dispositivo_id, costo } = req.body;
+        const tecnico_id = req.headers['x-usuario-id'] ? parseInt(req.headers['x-usuario-id']) : null;
+
+        console.log(`[registrarCosto] Iniciando... dispositivo_id=${dispositivo_id}, costo=${costo}, tecnico_id=${tecnico_id}`);
 
         if (!dispositivo_id || costo === undefined || costo === null) {
+            console.log(`[registrarCosto] ❌ Falta dispositivo_id o costo`);
             return res.status(400).json({ error: 'dispositivo_id y costo son requeridos' });
         }
 
         const costoNum = parseFloat(costo);
         if (isNaN(costoNum) || costoNum < 0) {
+            console.log(`[registrarCosto] ❌ Costo inválido: ${costo}`);
             return res.status(400).json({ error: 'El costo debe ser un número positivo' });
         }
 
-        const mant = await MantenimientoModel.findActivoByDispositivo(dispositivo_id);
+        let mant = await MantenimientoModel.findActivoByDispositivo(dispositivo_id);
+        console.log(`[registrarCosto] Búsqueda de mantenimiento activo: ${mant ? `Encontrado (id=${mant.id})` : 'NO encontrado'}`);
+
+        // Si no existe mantenimiento activo, crear uno
         if (!mant) {
-            return res.status(404).json({ error: 'No se encontró un mantenimiento activo para este dispositivo' });
+            console.log(`[registrarCosto] 🔧 Creando nuevo mantenimiento...`);
+            const nuevoId = await MantenimientoModel.create({
+                dispositivo_id,
+                descripcion: 'Mantenimiento registrado en salida',
+                costo: costoNum,
+                estado_mantenimiento: 'En Proceso',
+                tecnico_id,
+                estado_pago: 'Pendiente',
+                referencia_pago: null
+            });
+
+            mant = await MantenimientoModel.findById(nuevoId);
+            console.log(`[registrarCosto] ✅ Mantenimiento CREADO: id=${nuevoId}, estado=${mant.estado_mantenimiento}, costo=${mant.costo}`);
+
+            return res.status(201).json({
+                message: 'Mantenimiento creado y costo registrado exitosamente',
+                mantenimiento: mant,
+                creado: true
+            });
         }
 
+        // Si existe, solo actualizar el costo
+        console.log(`[registrarCosto] 📝 Actualizando mantenimiento existente (id=${mant.id})...`);
         await MantenimientoModel.update(mant.id, {
             descripcion:          mant.descripcion,
             costo:                costoNum,
@@ -95,9 +124,16 @@ exports.registrarCosto = async (req, res) => {
         });
 
         const actualizado = await MantenimientoModel.findById(mant.id);
-        res.json({ message: 'Costo registrado exitosamente', mantenimiento: actualizado });
+        console.log(`[registrarCosto] ✅ Mantenimiento ACTUALIZADO: id=${mant.id}, costo=${actualizado.costo}`);
+
+        res.json({
+            message: 'Costo registrado exitosamente',
+            mantenimiento: actualizado,
+            creado: false
+        });
 
     } catch (error) {
+        console.error('[registrarCosto] ❌ ERROR:', error);
         res.status(500).json({ error: error.message });
     }
 };
