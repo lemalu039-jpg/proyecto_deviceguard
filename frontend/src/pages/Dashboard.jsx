@@ -11,7 +11,6 @@ import { useLanguage } from '../context/LanguageContext.jsx';
 const IconoTipoDispositivo = ({ tipo = "" }) => {
   const t = tipo.toLowerCase();
 
-  // Laptop / Portátil
   if (t.includes("portátil") || t.includes("portatil") || t.includes("laptop") || t.includes("notebook")) {
     return (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -20,7 +19,6 @@ const IconoTipoDispositivo = ({ tipo = "" }) => {
       </svg>
     );
   }
-  // Tablet
   if (t.includes("tablet") || t.includes("ipad")) {
     return (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -29,7 +27,6 @@ const IconoTipoDispositivo = ({ tipo = "" }) => {
       </svg>
     );
   }
-  // Impresora
   if (t.includes("impresora") || t.includes("printer") || t.includes("impresión")) {
     return (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -40,7 +37,6 @@ const IconoTipoDispositivo = ({ tipo = "" }) => {
       </svg>
     );
   }
-  // Monitor / Pantalla / Televisor
   if (t.includes("monitor") || t.includes("pantalla") || t.includes("televisor") || t.includes("tv") || t.includes("display")) {
     return (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -49,7 +45,6 @@ const IconoTipoDispositivo = ({ tipo = "" }) => {
       </svg>
     );
   }
-  // Proyector
   if (t.includes("proyector") || t.includes("projector")) {
     return (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -60,7 +55,6 @@ const IconoTipoDispositivo = ({ tipo = "" }) => {
       </svg>
     );
   }
-  // PC / Computador / Torre / Desktop
   if (t.includes("pc") || t.includes("computador") || t.includes("desktop") || t.includes("torre") || t.includes("all-in-one") || t.includes("allinone")) {
     return (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -71,7 +65,6 @@ const IconoTipoDispositivo = ({ tipo = "" }) => {
       </svg>
     );
   }
-  // Teléfono / Celular / Smartphone
   if (t.includes("teléfono") || t.includes("telefono") || t.includes("celular") || t.includes("smartphone") || t.includes("móvil") || t.includes("movil")) {
     return (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -80,7 +73,6 @@ const IconoTipoDispositivo = ({ tipo = "" }) => {
       </svg>
     );
   }
-  // Escáner
   if (t.includes("escáner") || t.includes("escaner") || t.includes("scanner")) {
     return (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -91,7 +83,6 @@ const IconoTipoDispositivo = ({ tipo = "" }) => {
       </svg>
     );
   }
-  // Icono genérico para cualquier otro tipo
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <rect x="2" y="3" width="20" height="14" rx="2"/>
@@ -103,13 +94,14 @@ const IconoTipoDispositivo = ({ tipo = "" }) => {
 function Dashboard() {
   const { t } = useLanguage();
   useEffect(() => {
-  const generador = estadosDispositivo();
-  console.log(generador.next().value);
-  console.log(generador.next().value);
-  console.log(generador.next().value);
-  console.log(generador.next().value);
-  console.log(generador.next().value);
-}, []);
+    const generador = estadosDispositivo();
+    console.log(generador.next().value);
+    console.log(generador.next().value);
+    console.log(generador.next().value);
+    console.log(generador.next().value);
+    console.log(generador.next().value);
+  }, []);
+
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalDispositivos: 0,
@@ -167,17 +159,22 @@ function Dashboard() {
         if (usuarioActual.rol === 'usuario' && dispositivos.length > 0) {
           const pagosMap = {};
           await Promise.all(
-            dispositivos.map(async (d) => {
-              try {
-                const res = await api.get(`/pagos/datos/${d.id}`, {
-                  headers: { 'x-usuario-id': usuarioActual.id }
-                });
-                pagosMap[d.id] = res.data; // { monto, referencia, estado_pago }
-              } catch {
-                pagosMap[d.id] = null;
-              }
-            })
-          );
+  dispositivos.map(async (d) => {
+    try {
+      const res = await api.get(`/pagos/datos/${d.id}`, {
+        headers: { 'x-usuario-id': usuarioActual.id }
+      });
+      pagosMap[d.id] = res.data;
+    } catch (err) {
+      const msg = err.response?.data?.error || '';
+      if (msg.includes('no ha registrado')) {
+        pagosMap[d.id] = { sinMonto: true };
+      } else {
+        pagosMap[d.id] = null;
+      }
+    }
+  })
+);
           setPagosDispositivos(pagosMap);
         }
       } catch (error) {
@@ -232,7 +229,6 @@ function Dashboard() {
     verticalAlign: 'middle'
   };
 
-  
   const IconoTotal = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0492C2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
@@ -256,11 +252,9 @@ function Dashboard() {
   );
   const IconoEntregado = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      {/* Caja */}
       <path d="M20 7l-8-4-8 4v10l8 4 8-4V7z"/>
       <polyline points="4 7 12 11 20 7"/>
       <line x1="12" y1="11" x2="12" y2="21"/>
-      {/* Check superpuesto, desplazado a la derecha */}
       <polyline points="15 12 17 14 21 10" strokeWidth="2.2"/>
     </svg>
   );
@@ -328,7 +322,6 @@ function Dashboard() {
     },
   ];
 
-
   const cardW = 'calc(25% - 0.75rem)';
 
   const renderCard = (card, i) => (
@@ -341,20 +334,15 @@ function Dashboard() {
       overflow: 'hidden',
       flex: `0 1 ${cardW}`
     }}>
-      {/* Barra de acento izquierda */}
       <div style={{
         position: 'absolute', top: 0, left: 0,
         width: '4px', height: '100%',
         background: card.accentColor,
         borderRadius: '12px 0 0 12px'
       }} />
-
-      {/* Label arriba */}
       <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '.8rem', margin: '0 0 .4rem 0' }}>
         {card.label}
       </p>
-
-      {/* Número + icono en el mismo row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.65rem' }}>
         <h2 style={{ fontSize: '2rem', fontWeight: 700, margin: 0, color: card.textColor }}>
           {card.value}
@@ -367,8 +355,6 @@ function Dashboard() {
           {card.icono}
         </div>
       </div>
-
-      {/* Badge / subtítulo */}
       <div>
         {card.badge ? (
           <span style={{
@@ -388,6 +374,78 @@ function Dashboard() {
     </div>
   );
 
+  // ── Celda de pago para rol "usuario" ─────────────────────────────────────
+  // Reglas:
+  //  1. Solo muestra algo si el dispositivo está en "Listo para Entrega"
+  //  2. Si ya está pagado → badge verde deshabilitado
+  //  3. Si hay monto pendiente → botón "Pagar $X"
+  //  4. Si no hay monto aún (técnico no lo registró) → "—"
+  const renderCeldaPago = (d) => {
+    // Solo relevante cuando el dispositivo está listo para entrega
+    if (d.estado !== 'Listo para Entrega') {
+      return <td style={tdStyle}>—</td>;
+    }
+
+    const pago = pagosDispositivos[d.id];
+
+    // Sin datos de pago (sin monto registrado aún)
+    if (!pago || !pago.monto) {
+      return (
+        <td style={tdStyle}>
+          <span style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>—</span>
+        </td>
+      );
+    }
+
+    // Ya pagado → badge verde, sin acción
+    if (pago.estado_pago === 'Pagado') {
+      return (
+        <td style={tdStyle}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            background: 'rgba(34,197,94,.12)', color: '#16a34a',
+            fontSize: '.68rem', fontWeight: 700,
+            padding: '3px 10px', borderRadius: 20,
+            cursor: 'default',
+          }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Pagado
+          </span>
+        </td>
+      );
+    }
+
+    // Pendiente → botón activo que lleva a la vista de pago
+    return (
+      <td style={tdStyle}>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/pago/${d.id}`);
+          }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            background: 'linear-gradient(135deg, #0492C2, #0369a1)',
+            color: '#fff', border: 'none', borderRadius: 8,
+            fontSize: '.72rem', fontWeight: 600,
+            padding: '5px 12px', cursor: 'pointer',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <rect x="1" y="4" width="22" height="16" rx="2"/>
+            <line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+          Pagar {Number(pago.monto).toLocaleString('es-CO', {
+            style: 'currency', currency: 'COP', minimumFractionDigits: 0
+          })}
+        </button>
+      </td>
+    );
+  };
+
   return (
     <div>
       <h1 style={{ marginBottom: '1.5rem', fontWeight: 700, fontSize: '1.6rem', color: 'var(--text-main)' }}>{t('dash_inicio')}</h1>
@@ -396,18 +454,11 @@ function Dashboard() {
         <p>{t('cargando_info')}</p>
       ) : (
         <div style={{ marginBottom: '2rem' }}>
-
-          <div style={{
-          display: 'flex',
-          gap: '1rem',
-          flexWrap: 'nowrap',
-         overflowX: 'auto'   
-          }}>
-          {cards
-            .filter(card => !(card.label === 'Total reportes' && JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'usuario'))
-            .map((card, i) => renderCard(card, i))}
-         </div>
-
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'nowrap', overflowX: 'auto' }}>
+            {cards
+              .filter(card => !(card.label === 'Total reportes' && JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'usuario'))
+              .map((card, i) => renderCard(card, i))}
+          </div>
         </div>
       )}
 
@@ -465,107 +516,63 @@ function Dashboard() {
                   const okBusqueda = !filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase());
                   const okEstado = !filtroEstado || d.estado === filtroEstado;
                   return okBusqueda && okEstado;
-                });                return filtrados.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((d, i) => (
-                <tr key={d.id} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
-                  <td style={tdStyle}>
-                    <div style={{
-                      width: '42px', height: '42px', borderRadius: '8px',
-                      background: 'rgba(4, 146, 194, 0.1)',
-                      border: '1.5px solid rgba(130, 238, 253, 0.35)',
-                      overflow: 'hidden', flexShrink: 0,
-                      boxShadow: '0 0 0 1px rgba(130, 238, 253, 0.08)'
-                    }}>
-                      {d.archivo
-                       ? <img 
-                        src={`http://localhost:5000/uploads/${d.archivo}`} 
-                        alt={d.nombre}
-                        onClick={() => setImagenActiva(`http://localhost:5000/uploads/${d.archivo}`)}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', cursor: 'pointer' }} />
-                        : <span style={{
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            height: '100%', color: '#82EEFD', opacity: 0.85
-                          }}>
-                            <IconoTipoDispositivo tipo={d.tipo} />
-                          </span>
-                      }
-                    </div>
-                  </td>
-                  <td onClick={() => navigate(`/historial/${d.id}`)} style={{...tdStyle, cursor: 'pointer'}} className="hover-link">
-                    <div style={{ fontWeight: 600, color: 'var(--primary)', fontSize: '.82rem', textDecoration: 'underline dotted' }}>{d.nombre}</div>
-                    <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo}</div>
-                  </td>
-                  <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace', cursor: 'pointer' }} className="hover-link">{d.serial}</td>
-                  <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">{d.ubicacion || 'N/A'}</td>
-                  <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">
-                    {formatFecha(d.fecha_registro)}
-                    {d.hora_registro && (
-                      <div style={{ fontSize: '.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                        {d.hora_registro}
+                });
+                return filtrados.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((d, i) => (
+                  <tr key={d.id} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
+                    <td style={tdStyle}>
+                      <div style={{
+                        width: '42px', height: '42px', borderRadius: '8px',
+                        background: 'rgba(4, 146, 194, 0.1)',
+                        border: '1.5px solid rgba(130, 238, 253, 0.35)',
+                        overflow: 'hidden', flexShrink: 0,
+                        boxShadow: '0 0 0 1px rgba(130, 238, 253, 0.08)'
+                      }}>
+                        {d.archivo
+                         ? <img
+                            src={`http://localhost:5000/uploads/${d.archivo}`}
+                            alt={d.nombre}
+                            onClick={() => setImagenActiva(`http://localhost:5000/uploads/${d.archivo}`)}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', cursor: 'pointer' }} />
+                          : <span style={{
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              height: '100%', color: '#82EEFD', opacity: 0.85
+                            }}>
+                              <IconoTipoDispositivo tipo={d.tipo} />
+                            </span>
+                        }
                       </div>
-                    )}
-                  </td>
-                  <td style={tdStyle}>
-                    <span style={getBadgeStyle(d.estado)}>{d.estado}</span>
-                  </td>
-                  {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='super_admin' && (
-                    <td style={{ ...tdStyle, fontSize: '.78rem', color: 'var(--text-muted)' }}>
-                      {d.registrado_por || '—'}
                     </td>
-                  )}
-                  {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='usuario' && (() => {
-                    const pago = pagosDispositivos[d.id];
-                    if (!pago) return <td style={tdStyle}>—</td>;
-                    if (pago.estado_pago === 'Pagado') {
-                      return (
-                        <td style={tdStyle}>
-                          <span style={{
-                            display: 'inline-flex', alignItems: 'center', gap: 4,
-                            background: 'rgba(34,197,94,.12)', color: '#16a34a',
-                            fontSize: '.68rem', fontWeight: 700,
-                            padding: '3px 10px', borderRadius: 20,
-                          }}>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                              <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                            Pagado
-                          </span>
-                        </td>
-                      );
-                    }
-                    return (
-                      <td style={tdStyle}>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/pago/${d.id}`);
-                          }}
-                          style={{
-                            display: 'inline-flex', alignItems: 'center', gap: 5,
-                            background: 'linear-gradient(135deg, #0492C2, #0369a1)',
-                            color: '#fff', border: 'none', borderRadius: 8,
-                            fontSize: '.72rem', fontWeight: 600,
-                            padding: '5px 12px', cursor: 'pointer',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <rect x="1" y="4" width="22" height="16" rx="2"/>
-                            <line x1="1" y1="10" x2="23" y2="10"/>
-                          </svg>
-                          Pagar {Number(pago.monto).toLocaleString('es-CO', {
-                            style: 'currency', currency: 'COP', minimumFractionDigits: 0
-                          })}
-                        </button>
+                    <td onClick={() => navigate(`/historial/${d.id}`)} style={{...tdStyle, cursor: 'pointer'}} className="hover-link">
+                      <div style={{ fontWeight: 600, color: 'var(--primary)', fontSize: '.82rem', textDecoration: 'underline dotted' }}>{d.nombre}</div>
+                      <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo}</div>
+                    </td>
+                    <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace', cursor: 'pointer' }} className="hover-link">{d.serial}</td>
+                    <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">{d.ubicacion || 'N/A'}</td>
+                    <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">
+                      {formatFecha(d.fecha_registro)}
+                      {d.hora_registro && (
+                        <div style={{ fontSize: '.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          {d.hora_registro}
+                        </div>
+                      )}
+                    </td>
+                    <td style={tdStyle}>
+                      <span style={getBadgeStyle(d.estado)}>{d.estado}</span>
+                    </td>
+                    {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='super_admin' && (
+                      <td style={{ ...tdStyle, fontSize: '.78rem', color: 'var(--text-muted)' }}>
+                        {d.registrado_por || '—'}
                       </td>
-                    );
-                  })()}
-                </tr>
+                    )}
+                    {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='usuario' && renderCeldaPago(d)}
+                  </tr>
                 ));
               })()}
               {!loading && dispositivos.filter(d => {
                 const texto = `${d.nombre} ${d.serial} ${d.ubicacion}`.toLowerCase();
                 return (!filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase())) && (!filtroEstado || d.estado === filtroEstado);
-              }).length === 0 && (                <tr>
+              }).length === 0 && (
+                <tr>
                   <td colSpan="6" style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-muted)', fontSize: '.82rem' }}>
                     {t('dash_no_dispositivos')}
                   </td>
@@ -582,16 +589,17 @@ function Dashboard() {
         currentPage={currentPage}
         onPageChange={setCurrentPage}
       />
+
       {imagenActiva && (
-  <div 
-    onClick={() => setImagenActiva(null)}
-    style={{position: 'fixed',top: 0,left: 0,width: '100%',height: '100%',background: 'rgba(0,0,0,0.85)',display: 'flex',alignItems: 'center',justifyContent: 'center',zIndex: 9999,backdropFilter: 'blur(6px)'}}>
-    <img 
-      src={imagenActiva}
-      alt="preview"
-      style={{maxWidth: '90%',maxHeight: '90%',borderRadius: '12px',boxShadow: '0 30px 80px rgba(0,0,0,0.7)'}}/>
-  </div>
-)}
+        <div
+          onClick={() => setImagenActiva(null)}
+          style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, backdropFilter: 'blur(6px)' }}>
+          <img
+            src={imagenActiva}
+            alt="preview"
+            style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: '12px', boxShadow: '0 30px 80px rgba(0,0,0,0.7)' }}/>
+        </div>
+      )}
     </div>
   );
 }

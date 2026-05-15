@@ -3,7 +3,8 @@ import { Modal } from 'bootstrap';
 import {
   getDispositivos,
   getDispositivoBySerial,
-  updateDispositivo
+  updateDispositivo,
+  registrarCostoMantenimiento
 } from "../services/api";
 import "./css/Registrarsalida.css";
 import Pagination from "../components/Pagination";
@@ -15,16 +16,24 @@ function SalidaDispositivos() {
   const [salidas, setSalidas] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
   const [form, setForm] = useState({
-    serial: "", fecha: new Date().toISOString().split("T")[0],
-    hora: new Date().toTimeString().slice(0, 5), estado: ""
+    serial: "",
+    fecha: new Date().toISOString().split("T")[0],
+    hora: new Date().toTimeString().slice(0, 5),
+    estado: ""
   });
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
-  const esSuperAdmin = (JSON.parse(localStorage.getItem('usuario')||'{}')).rol === 'super_admin';
+  const esSuperAdmin = (JSON.parse(localStorage.getItem('usuario') || '{}')).rol === 'super_admin';
   const [filtroBusqueda, setFiltroBusqueda] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
+
+  // ── Estado para el costo en la modal ──────────────────────────────────────
+  const [costo, setCosto] = useState('');
+  const [errorCosto, setErrorCosto] = useState('');
+  // Dispositivo encontrado por serial (para mostrar info y nombre en modal)
+  const [dispositivoEncontrado, setDispositivoEncontrado] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -59,6 +68,9 @@ function SalidaDispositivos() {
       hora: new Date().toTimeString().slice(0, 5),
       estado: ""
     });
+    setCosto('');
+    setErrorCosto('');
+    setDispositivoEncontrado(null);
     const modal = new Modal(document.getElementById('salidaModal'));
     modal.show();
   };
@@ -76,50 +88,72 @@ function SalidaDispositivos() {
       const dispositivo = res.data;
       if (dispositivo) {
         setForm(prev => ({ ...prev, estado: dispositivo.estado }));
+        setDispositivoEncontrado(dispositivo);
       }
     } catch (err) {
       console.error(err);
+      setDispositivoEncontrado(null);
     }
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const res = await getDispositivoBySerial(form.serial);
-    const dispositivo = res.data;
-
-    if (!dispositivo) {
-      alert(t('salida_disp_no_existe'));
+    // Validar costo antes de proceder
+    const costoNum = parseFloat(costo);
+    if (!costo || isNaN(costoNum) || costoNum < 0) {
+      setErrorCosto('Ingresa un monto válido (mayor o igual a 0).');
       return;
     }
 
-    if (dispositivo.estado !== "En Mantenimiento") {
-      alert(t('salida_solo_mantenimiento'));
-      return;
+    setLoading(true);
+    try {
+      const res = await getDispositivoBySerial(form.serial);
+      const dispositivo = res.data;
+
+      if (!dispositivo) {
+        alert(t('salida_disp_no_existe'));
+        return;
+      }
+
+      if (dispositivo.estado !== "En Mantenimiento") {
+        alert(t('salida_solo_mantenimiento'));
+        return;
+      }
+
+      const ahora = new Date();
+      const fecha = ahora.toISOString().split("T")[0];
+      const hora  = ahora.toTimeString().slice(0, 5);
+
+      // 1. Cambiar estado del dispositivo a "Listo para Entrega"
+      await updateDispositivo(dispositivo.id, {
+        estado: "Listo para Entrega",
+        fecha_salida: fecha,
+        hora_salida: hora
+      });
+
+      // 2. Registrar el costo en el mantenimiento activo del dispositivo
+      try {
+        await registrarCostoMantenimiento({
+          dispositivo_id: dispositivo.id,
+          costo: costoNum
+        });
+      } catch (err) {
+        console.error('Error registrando costo:', err);
+        // No fallar aquí — el dispositivo ya cambió de estado
+        alert(t('error_registrar_costo') || 'Error registrando costo (continúa el flujo)');
+      }
+
+      cerrarModal();
+      loadData();
+
+    } catch (err) {
+      console.error(err);
+      alert(t('salida_err_registrar'));
+    } finally {
+      setLoading(false);
     }
-
-    const ahora = new Date();
-    const fecha = ahora.toISOString().split("T")[0];
-    const hora  = ahora.toTimeString().slice(0, 5);
-
-    await updateDispositivo(dispositivo.id, {
-      estado: "Listo para Entrega",
-      fecha_salida: fecha,
-      hora_salida: hora,
-    });
-
-    cerrarModal();
-    loadData();
-
-  } catch (err) {
-    console.error(err);
-    alert(t('salida_err_registrar'));
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleDelete = async (id) => {
     if (window.confirm(t('salida_confirm_finalizar'))) {
@@ -141,6 +175,9 @@ const handleSubmit = async (e) => {
       hora: s.hora_salida || new Date().toTimeString().slice(0, 5),
       estado: s.estado || ""
     });
+    setCosto('');
+    setErrorCosto('');
+    setDispositivoEncontrado(s);
     setEditandoId(s.id);
     const modal = new Modal(document.getElementById('salidaModal'));
     modal.show();
@@ -148,11 +185,11 @@ const handleSubmit = async (e) => {
 
   const getBadgeClass = (estado) => {
     switch (estado) {
-      case 'Listo para Entrega':       return 'badge-listo-entrega';
-      case 'En Revision':      return 'badge-revision';
-      case 'En Mantenimiento': return 'badge-mantenimiento';
-      case 'Entregado':     return 'badge-entregado';
-      default:                 return 'badge-inactivo';
+      case 'Listo para Entrega': return 'badge-listo-entrega';
+      case 'En Revision':        return 'badge-revision';
+      case 'En Mantenimiento':   return 'badge-mantenimiento';
+      case 'Entregado':          return 'badge-entregado';
+      default:                   return 'badge-inactivo';
     }
   };
 
@@ -178,6 +215,7 @@ const handleSubmit = async (e) => {
         </div>
       </div>
 
+      {/* ── MODAL ── */}
       <div className="modal fade" id="salidaModal" tabIndex="-1" aria-labelledby="salidaModalLabel" aria-hidden="true">
         <div className="modal-dialog modal-md modal-dialog-centered">
           <div className="modal-content">
@@ -193,6 +231,7 @@ const handleSubmit = async (e) => {
               <form onSubmit={handleSubmit} id="salida-form">
                 <div className="row g-3">
 
+                  {/* Serial */}
                   <div className="col-12">
                     <label className="salida-modal-label">{t('salida_modal_serial')}</label>
                     <input
@@ -206,14 +245,91 @@ const handleSubmit = async (e) => {
                       className="salida-modal-input"
                       disabled={editandoId != null}
                     />
-
                   </div>
+
+                  {/* Info del dispositivo encontrado */}
+                  {dispositivoEncontrado && (
+                    <div className="col-12">
+                      <div style={{
+                        background: 'var(--table-head)',
+                        border: '1px solid var(--border)',
+                        borderRadius: '10px',
+                        padding: '.75rem 1rem',
+                        fontSize: '.78rem',
+                        color: 'var(--text-main)',
+                      }}>
+                        <div style={{ fontWeight: 700, marginBottom: '.35rem' }}>{dispositivoEncontrado.nombre}</div>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '.72rem' }}>
+                          {dispositivoEncontrado.tipo} · {dispositivoEncontrado.serial}
+                        </div>
+                        <div style={{ marginTop: '.4rem' }}>
+                          <span style={{
+                            fontSize: '.68rem', fontWeight: 700,
+                            padding: '2px 9px', borderRadius: '20px',
+                            background: 'rgba(192,132,252,0.15)', color: '#c084fc'
+                          }}>
+                            {dispositivoEncontrado.estado}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── Campo de costo — ahora en esta modal, no en GestionMantenimiento ── */}
                   <div className="col-12">
-  <label className="salida-modal-label">{t('salida_modal_info')}</label>
-  <p className="salida-info-text">
-    {t('salida_modal_info_desc')}
-  </p>
-</div>
+                    <label className="salida-modal-label">
+                      Costo del mantenimiento <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <div style={{
+                      display: 'flex', alignItems: 'center',
+                      border: `1.5px solid ${errorCosto ? '#ef4444' : 'var(--border)'}`,
+                      borderRadius: '10px',
+                      background: 'var(--input-bg)',
+                      overflow: 'hidden',
+                      transition: 'border-color .2s',
+                    }}>
+                      <span style={{
+                        padding: '0 .75rem', fontSize: '.95rem', fontWeight: 700,
+                        color: '#0492C2', background: 'rgba(4,146,194,0.08)',
+                        borderRight: '1.5px solid var(--border)',
+                        alignSelf: 'stretch', display: 'flex', alignItems: 'center'
+                      }}>$</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={costo}
+                        onChange={e => { setCosto(e.target.value); setErrorCosto(''); }}
+                        className="salida-modal-input"
+                        style={{ border: 'none', borderRadius: 0, flex: 1, background: 'transparent' }}
+                      />
+                      <span style={{
+                        padding: '0 .75rem', fontSize: '.72rem', fontWeight: 600,
+                        color: 'var(--text-muted)', background: 'rgba(4,146,194,0.05)',
+                        borderLeft: '1.5px solid var(--border)',
+                        alignSelf: 'stretch', display: 'flex', alignItems: 'center'
+                      }}>COP</span>
+                    </div>
+                    {errorCosto && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '.35rem', marginTop: '.4rem', fontSize: '.75rem', color: '#ef4444', fontWeight: 500 }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                        {errorCosto}
+                      </div>
+                    )}
+                    <p style={{ fontSize: '.72rem', color: 'var(--text-muted)', marginTop: '.5rem', lineHeight: 1.5 }}>
+                      Este monto quedará como <strong>Pendiente de pago</strong>. El usuario podrá pagarlo desde su panel cuando el dispositivo esté listo para entrega.
+                    </p>
+                  </div>
+
+                  <div className="col-12">
+                    <label className="salida-modal-label">{t('salida_modal_info')}</label>
+                    <p className="salida-info-text">
+                      {t('salida_modal_info_desc')}
+                    </p>
+                  </div>
 
                 </div>
               </form>
@@ -232,6 +348,7 @@ const handleSubmit = async (e) => {
         </div>
       </div>
 
+      {/* ── TABLA ── */}
       <div className="salida-card">
         <div className="salida-card-title">
           <div className="salida-card-dot"></div>
@@ -294,7 +411,7 @@ const handleSubmit = async (e) => {
             </tbody>
           </table>
         </div>
-        
+
         <Pagination
           totalItems={filteredSalidas.length}
           itemsPerPage={itemsPerPage}

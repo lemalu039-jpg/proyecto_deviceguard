@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getDispositivos, getDispositivosAsignados, updateDispositivo, deleteDispositivo } from '../services/api';
+import { getDispositivos, getDispositivosAsignados, updateDispositivo, deleteDispositivo, registrarCostoMantenimiento } from '../services/api';
 import './CSS/Calendario_responsive.css';
 import { useLanguage } from '../context/LanguageContext.jsx';
 
@@ -22,9 +22,8 @@ function Calendario() {
   const [errorCosto, setErrorCosto] = useState('');
 
   const [paginaDia, setPaginaDia] = useState(0);
-  const ITEMS_PIA = 5; // eventos por página en el sidebar del día
+  const ITEMS_PIA = 5;
 
-  // Reset página al cambiar día seleccionado
   useEffect(() => { setPaginaDia(0); }, [diaSeleccionado]);
 
   const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
@@ -134,12 +133,12 @@ function Calendario() {
 
   const colorEvento = (estado) => {
     switch (estado) {
-      case 'Disponible':        return { bg: '#dcfce7', color: '#15803d' };
-      case 'En Revision':       return { bg: '#f3e8ff', color: '#7e22ce' };
-      case 'En Mantenimiento':  return { bg: '#ffedd5', color: '#c2410c' };
-      case 'Dado de Baja':      return { bg: '#fef2f2', color: '#991b1b' };
-      case 'Listo para entrega':return { bg: '#fefce8', color: '#854d0e' };
-      default:                  return { bg: '#f1f5f9', color: '#64748b' };
+      case 'Disponible':         return { bg: '#dcfce7', color: '#15803d' };
+      case 'En Revision':        return { bg: '#f3e8ff', color: '#7e22ce' };
+      case 'En Mantenimiento':   return { bg: '#ffedd5', color: '#c2410c' };
+      case 'Dado de Baja':       return { bg: '#fef2f2', color: '#991b1b' };
+      case 'Listo para entrega': return { bg: '#fefce8', color: '#854d0e' };
+      default:                   return { bg: '#f1f5f9', color: '#64748b' };
     }
   };
 
@@ -160,7 +159,8 @@ function Calendario() {
       return { boton: t('cal_registrar_mantenimiento'), modal: t('cal_modal_registrar_mantenimiento'), nuevoEstado: 'En Mantenimiento' };
     }
     if (est === 'en mantenimiento' || est === 'en_mantenimiento' || est === 'mantenimiento') {
-      return { boton: t('cal_registrar_salida'), modal: t('cal_modal_registrar_salida'), nuevoEstado: 'Listo para entrega' };
+      // ← Ahora pasa a "Listo para Entrega" en vez de "Listo para entrega" (mayúscula consistente)
+      return { boton: t('cal_registrar_salida'), modal: t('cal_modal_registrar_salida'), nuevoEstado: 'Listo para Entrega' };
     }
     return { boton: t('cal_registrar_salida'), modal: t('cal_modal_registrar_salida'), nuevoEstado: 'Entregado' };
   };
@@ -169,10 +169,10 @@ function Calendario() {
     if (!eventoSalida) return;
 
     const accion = obtenerTextoAccion(eventoSalida.estado);
-    const esMantenimiento = accion.nuevoEstado === 'En Mantenimiento';
 
-    // Validar costo si va a mantenimiento
-    if (esMantenimiento) {
+    // ── Pedir costo cuando va a "Listo para Entrega" (antes era "En Mantenimiento") ──
+    const esListoParaEntrega = accion.nuevoEstado === 'Listo para Entrega';
+    if (esListoParaEntrega) {
       const costoNum = parseFloat(costoMantenimiento);
       if (!costoMantenimiento || isNaN(costoNum) || costoNum < 0) {
         setErrorCosto('Ingresa un monto válido (mayor o igual a 0).');
@@ -185,16 +185,30 @@ function Calendario() {
       const ahora = new Date();
       const id = eventoSalida._dispOrig?.id || eventoSalida.id || eventoSalida.id_dispositivo;
 
-      // Si es mantenimiento, el costo viaja en el mismo request
-      const esSalida = accion.nuevoEstado === 'Listo para entrega' || accion.nuevoEstado === 'Entregado';
+      const esSalida = accion.nuevoEstado === 'Listo para Entrega' || accion.nuevoEstado === 'Entregado';
+
+      // 1. Actualizar estado del dispositivo (SIN costo)
       await updateDispositivo(id, {
         estado: accion.nuevoEstado,
         fecha_salida: esSalida ? ahora.toISOString().split('T')[0] : null,
-        hora_salida: esSalida ? ahora.toTimeString().slice(0, 5) : null,
-        ...(esMantenimiento && { costo_mantenimiento: parseFloat(costoMantenimiento) })
+        hora_salida:  esSalida ? ahora.toTimeString().slice(0, 5) : null,
       });
 
+      // 2. Si es "Listo para Entrega", registrar el costo
+      if (esListoParaEntrega) {
+        try {
+          await registrarCostoMantenimiento({
+            dispositivo_id: id,
+            costo: parseFloat(costoMantenimiento)
+          });
+        } catch (err) {
+          console.error('Error registrando costo:', err);
+          // No fallar aquí — el dispositivo ya cambió de estado
+        }
+      }
+
       setMensajeSalida(t('cal_accion_registrada'));
+
       if (esTecnico) {
         const res = await getDispositivosAsignados(usuarioActual.id);
         setDispositivos((res.data || []).filter(d => d.estado !== 'Entregado'));
@@ -238,7 +252,13 @@ function Calendario() {
     setModalDetalle(true);
   };
 
-  // ── Celdas: solo las necesarias (35 o 42) ──
+  const eliminarEvento = (ev) => {
+    if (!ev.id_evento) return;
+    const actualizados = eventosCustom.filter(e => e.id_evento !== ev.id_evento);
+    setEventosCustom(actualizados);
+    localStorage.setItem(storageKey, JSON.stringify(actualizados));
+  };
+
   const celdas = [];
   for (let i = primerDia - 1; i >= 0; i--) celdas.push({ dia: diasEnMesAnterior - i, actual: false });
   for (let i = 1; i <= diasEnMes; i++) celdas.push({ dia: i, actual: true });
@@ -257,7 +277,6 @@ function Calendario() {
     calCard: { background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' },
     calHeader: { display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', background: 'var(--table-head)', borderBottom: '1px solid var(--border)' },
     dow: { padding: '.5rem 0', textAlign: 'center', fontSize: '.68rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' },
-    // ── CLAVE: filas fijas según el mes ──
     calGrid: { display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gridTemplateRows: `repeat(${numFilas}, 70px)` },
     sideCard: { background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)', padding: '1rem', marginBottom: '1rem' },
     sideTitle: { display: 'flex', alignItems: 'center', gap: '6px', fontSize: '.83rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '.75rem' },
@@ -309,8 +328,7 @@ function Calendario() {
                   onClick={() => celda.actual && setDiaSeleccionado(celda.dia === diaSeleccionado ? null : celda.dia)}
                   className="calendario-day-cell"
                   style={{
-                    overflow: 'hidden',
-                    padding: '.3rem .4rem',
+                    overflow: 'hidden', padding: '.3rem .4rem',
                     borderRight: '1px solid var(--border)', borderBottom: '1px solid var(--border)',
                     cursor: celda.actual ? 'pointer' : 'default',
                     background: sel ? 'var(--hover)' : today ? 'rgba(4,146,194,.08)' : celda.actual ? 'transparent' : 'var(--bg-main)',
@@ -382,18 +400,14 @@ function Calendario() {
                     })}
                     {totalPaginas > 1 && (
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '.5rem', paddingTop: '.5rem', borderTop: '1px solid var(--border)' }}>
-                        <button
-                          onClick={() => setPaginaDia(p => Math.max(0, p - 1))}
-                          disabled={paginaDia === 0}
+                        <button onClick={() => setPaginaDia(p => Math.max(0, p - 1))} disabled={paginaDia === 0}
                           style={{ padding: '3px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-muted)', fontSize: '.72rem', cursor: paginaDia === 0 ? 'not-allowed' : 'pointer', opacity: paginaDia === 0 ? 0.4 : 1 }}>
                           ‹ Ant
                         </button>
                         <span style={{ fontSize: '.7rem', color: 'var(--text-muted)' }}>
                           {paginaDia + 1} / {totalPaginas} · {lista.length} eventos
                         </span>
-                        <button
-                          onClick={() => setPaginaDia(p => Math.min(totalPaginas - 1, p + 1))}
-                          disabled={paginaDia >= totalPaginas - 1}
+                        <button onClick={() => setPaginaDia(p => Math.min(totalPaginas - 1, p + 1))} disabled={paginaDia >= totalPaginas - 1}
                           style={{ padding: '3px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-muted)', fontSize: '.72rem', cursor: paginaDia >= totalPaginas - 1 ? 'not-allowed' : 'pointer', opacity: paginaDia >= totalPaginas - 1 ? 0.4 : 1 }}>
                           Sig ›
                         </button>
@@ -436,11 +450,10 @@ function Calendario() {
             )}
           </div>
 
-
         </div>
       </div>
 
-      {/* modal agregar evento */}
+      {/* ── Modal agregar evento ── */}
       {modalAbierto && (
         <div style={s.overlay} onClick={() => setModalAbierto(false)}>
           <div style={s.modalBox} onClick={e => e.stopPropagation()}>
@@ -495,17 +508,24 @@ function Calendario() {
         </div>
       )}
 
-      {/* modal salida */}
+      {/* ── Modal salida ── */}
       {modalSalida && eventoSalida && (
         <div style={s.overlay} onClick={() => !cargandoSalida && setModalSalida(false)}>
-          <div style={{ ...s.modalBox, width: eventoSalida && obtenerTextoAccion(eventoSalida.estado).nuevoEstado === 'En Mantenimiento' ? '440px' : '380px' }} onClick={e => e.stopPropagation()}>
+          <div
+            style={{
+              ...s.modalBox,
+              // ← Más ancho cuando pide costo (ahora es "Listo para Entrega", no "En Mantenimiento")
+              width: obtenerTextoAccion(eventoSalida.estado).nuevoEstado === 'Listo para Entrega' ? '440px' : '380px'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
             <div style={s.modalHeader}>
               <span style={{ color: '#fff', fontWeight: 700, fontSize: '.95rem' }}>{obtenerTextoAccion(eventoSalida.estado).modal}</span>
               <button onClick={() => !cargandoSalida && setModalSalida(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
             </div>
             <div style={s.modalBody}>
               <p style={{ fontSize: '.82rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                {t('cal_confirmar_accion')} <strong>{t('dash_' + obtenerTextoAccion(eventoSalida.estado).nuevoEstado.toLowerCase().replace(/ /g, '_')) || obtenerTextoAccion(eventoSalida.estado).nuevoEstado}</strong>.
+                {t('cal_confirmar_accion')} <strong>{obtenerTextoAccion(eventoSalida.estado).nuevoEstado}</strong>.
               </p>
               <div style={{ background: 'var(--table-head)', border: '1px solid var(--border)', borderRadius: '10px', padding: '1rem', marginBottom: '1rem' }}>
                 <div style={{ fontSize: '.88rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '.5rem' }}>{eventoSalida.nombre}</div>
@@ -528,8 +548,9 @@ function Calendario() {
                   {mensajeSalida}
                 </div>
               )}
-              {/* Sección de costo — solo cuando va a En Mantenimiento */}
-              {obtenerTextoAccion(eventoSalida.estado).nuevoEstado === 'En Mantenimiento' && (
+
+              {/* ── Sección de costo: ahora solo cuando va a "Listo para Entrega" ── */}
+              {obtenerTextoAccion(eventoSalida.estado).nuevoEstado === 'Listo para Entrega' && (
                 <div style={{ marginBottom: '1rem' }}>
                   <div style={{ background: 'var(--table-head)', border: '1px solid var(--border)', borderRadius: '10px', padding: '1rem', marginBottom: '.75rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.4rem' }}>
@@ -548,8 +569,7 @@ function Calendario() {
                   <label style={{ display: 'block', fontSize: '.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '.45rem' }}>
                     Costo del mantenimiento <span style={{ color: '#ef4444' }}>*</span>
                   </label>
-                  <div style={{ display: 'flex', alignItems: 'center', border: `1.5px solid ${errorCosto ? '#ef4444' : 'var(--border)'}`, borderRadius: '10px', background: 'var(--table-head)', overflow: 'hidden', transition: 'border-color .2s, box-shadow .2s', boxShadow: errorCosto ? '0 0 0 3px rgba(239,68,68,0.12)' : 'none' }}
-                    onFocus={() => {}} >
+                  <div style={{ display: 'flex', alignItems: 'center', border: `1.5px solid ${errorCosto ? '#ef4444' : 'var(--border)'}`, borderRadius: '10px', background: 'var(--table-head)', overflow: 'hidden', transition: 'border-color .2s, box-shadow .2s', boxShadow: errorCosto ? '0 0 0 3px rgba(239,68,68,0.12)' : 'none' }}>
                     <span style={{ padding: '0 .75rem', fontSize: '.95rem', fontWeight: 700, color: '#0492C2', background: 'rgba(4,146,194,0.08)', borderRight: '1.5px solid var(--border)', alignSelf: 'stretch', display: 'flex', alignItems: 'center' }}>$</span>
                     <input
                       type="number"
@@ -565,15 +585,18 @@ function Calendario() {
                   </div>
                   {errorCosto && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '.35rem', marginTop: '.45rem', fontSize: '.75rem', color: '#ef4444', fontWeight: 500 }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                      </svg>
                       {errorCosto}
                     </div>
                   )}
                   <p style={{ fontSize: '.72rem', color: 'var(--text-muted)', lineHeight: 1.55, marginTop: '.6rem' }}>
-                    Este monto quedará como <strong style={{ color: 'var(--text-main)' }}>Pendiente de pago</strong>. El usuario podrá pagarlo cuando el dispositivo esté listo para entrega.
+                    Este monto quedará como <strong style={{ color: 'var(--text-main)' }}>Pendiente de pago</strong>. El usuario podrá pagarlo desde su panel.
                   </p>
                 </div>
               )}
+
               <div style={{ display: 'flex', gap: '.75rem' }}>
                 <button onClick={() => setModalSalida(false)} disabled={cargandoSalida}
                   style={{ flex: 1, padding: '.65rem', background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-main)', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
@@ -589,7 +612,7 @@ function Calendario() {
         </div>
       )}
 
-      {/* modal detalle equipo */}
+      {/* ── Modal detalle equipo ── */}
       {modalDetalle && equipoDetalle && (
         <div style={s.overlay} onClick={() => setModalDetalle(false)}>
           <div style={{ ...s.modalBox, width: '420px' }} onClick={e => e.stopPropagation()}>
