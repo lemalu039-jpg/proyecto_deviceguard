@@ -44,19 +44,47 @@ exports.enviarCorreo = async (req, res) => {
 exports.obtenerCorreos = async (req, res) => {
   try {
     const usuario_id = req.query.usuario_id;
+    // El header x-usuario-id siempre viene gracias al interceptor de Axios
+    const solicitante_id = req.headers['x-usuario-id'] ? parseInt(req.headers['x-usuario-id']) : null;
+
+    // Obtener el rol del solicitante
+    let rol = null;
+    if (solicitante_id) {
+      const [[u]] = await db.query('SELECT rol FROM usuarios WHERE id = ? LIMIT 1', [solicitante_id]);
+      rol = u?.rol || null;
+    }
+
     let rows;
-    if (usuario_id) {
+
+    if (rol === 'tecnico') {
+      // Técnico: solo correos de usuarios cuyos dispositivos tiene asignados
       [rows] = await db.query(
-        "SELECT * FROM correos WHERE usuario_id = ? ORDER BY id DESC",
-        [usuario_id]
+        `SELECT c.*
+         FROM correos c
+         WHERE c.usuario_id IN (
+           SELECT DISTINCT d.usuario_id
+           FROM dispositivos d
+           WHERE d.tecnico_id = ? AND d.activo = 1 AND d.usuario_id IS NOT NULL
+         )
+         ORDER BY c.id DESC`,
+        [solicitante_id]
+      );
+    } else if (rol === 'usuario' || usuario_id) {
+      // Usuario: solo sus propios correos
+      const uid = usuario_id || solicitante_id;
+      [rows] = await db.query(
+        'SELECT * FROM correos WHERE usuario_id = ? ORDER BY id DESC',
+        [uid]
       );
     } else {
-      [rows] = await db.query("SELECT * FROM correos ORDER BY id DESC");
+      // Admin / super_admin: todos los correos
+      [rows] = await db.query('SELECT * FROM correos ORDER BY id DESC');
     }
+
     res.json(rows);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error al obtener correos" });
+    res.status(500).json({ error: 'Error al obtener correos' });
   }
 };
 
@@ -103,19 +131,44 @@ exports.obtenerConversacion = async (req, res) => {
 exports.obtenerContactos = async (req, res) => {
   try {
     const { userId } = req.params;
-    // Usuarios con quienes se ha tenido conversación + no leídos
-    const [rows] = await db.query(
-      `SELECT u.id, u.nombre, u.correo,
-        (SELECT COUNT(*) FROM mensajes_internos m
-         WHERE m.remitente_id = u.id AND m.destinatario_id = ? AND m.leido = 0) AS no_leidos
-       FROM usuarios u
-       WHERE u.id != ?
-       ORDER BY u.nombre ASC`,
-      [userId, userId]
-    );
+
+    // Obtener el rol del solicitante
+    const [[u]] = await db.query('SELECT rol FROM usuarios WHERE id = ? LIMIT 1', [userId]);
+    const rol = u?.rol || null;
+
+    let rows;
+
+    if (rol === 'tecnico') {
+      // Técnico: solo los usuarios dueños de dispositivos que tiene asignados
+      [rows] = await db.query(
+        `SELECT u.id, u.nombre, u.correo,
+           (SELECT COUNT(*) FROM mensajes_internos m
+            WHERE m.remitente_id = u.id AND m.destinatario_id = ? AND m.leido = 0) AS no_leidos
+         FROM usuarios u
+         WHERE u.id IN (
+           SELECT DISTINCT d.usuario_id
+           FROM dispositivos d
+           WHERE d.tecnico_id = ? AND d.activo = 1 AND d.usuario_id IS NOT NULL
+         )
+         ORDER BY u.nombre ASC`,
+        [userId, userId]
+      );
+    } else {
+      // Admin / super_admin / usuario: todos los demás usuarios
+      [rows] = await db.query(
+        `SELECT u.id, u.nombre, u.correo,
+           (SELECT COUNT(*) FROM mensajes_internos m
+            WHERE m.remitente_id = u.id AND m.destinatario_id = ? AND m.leido = 0) AS no_leidos
+         FROM usuarios u
+         WHERE u.id != ?
+         ORDER BY u.nombre ASC`,
+        [userId, userId]
+      );
+    }
+
     res.json(rows);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error al obtener contactos" });
+    res.status(500).json({ error: 'Error al obtener contactos' });
   }
 };

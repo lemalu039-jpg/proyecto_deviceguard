@@ -31,12 +31,12 @@ proyecto_deviceguard/
 │   ├── migrate.js
 │   └── src/
 │       ├── controllers/
-│       │   ├── calificaciones.controller.js  ← nuevo
+│       │   ├── calificaciones.controller.js  
 │       │   ├── correo.controller.js
 │       │   ├── dispositivos.controller.js
 │       │   ├── historial.controller.js
 │       │   ├── mantenimiento.controller.js
-│       │   ├── pagos.controller.js           ← nuevo
+│       │   ├── pagos.controller.js           
 │       │   ├── prestamos.controller.js
 │       │   ├── reportes.controller.js
 │       │   └── usuarios.controller.js
@@ -48,12 +48,12 @@ proyecto_deviceguard/
 │       │   ├── reportes.model.js
 │       │   └── usuarios.model.js
 │       ├── routes/
-│       │   ├── calificaciones.routes.js      ← nuevo
+│       │   ├── calificaciones.routes.js      
 │       │   ├── correo.routes.js
 │       │   ├── dispositivos.routes.js
 │       │   ├── historial.routes.js
 │       │   ├── mantenimiento.routes.js
-│       │   ├── pagos.routes.js               ← nuevo
+│       │   ├── pagos.routes.js               
 │       │   ├── prestamos.routes.js
 │       │   ├── reportes.routes.js
 │       │   └── usuarios.routes.js
@@ -72,7 +72,7 @@ proyecto_deviceguard/
 │       │   ├── AjustesCuenta.jsx
 │       │   ├── AsignacionTareas.jsx
 │       │   ├── Calendario.jsx
-│       │   ├── Calificaciones.jsx            ← nuevo
+│       │   ├── Calificaciones.jsx            
 │       │   ├── CambiarContrasena.jsx
 │       │   ├── CambiarCorreo.jsx
 │       │   ├── Consultarfiltros.jsx
@@ -86,7 +86,7 @@ proyecto_deviceguard/
 │       │   ├── Home.jsx
 │       │   ├── Login.jsx
 │       │   ├── Papelera.jsx
-│       │   ├── PagoMantenimiento.jsx         ← nuevo
+│       │   ├── PagoMantenimiento.jsx         
 │       │   ├── Prestamos.jsx
 │       │   ├── Registrarsalida.jsx
 │       │   └── Reportes.jsx
@@ -507,6 +507,193 @@ setEstadosPago(pagosMap);
 - Historial de correos automáticos del sistema
 - Mensajería interna entre usuarios con polling cada 4 segundos
 - Modo oscuro completamente compatible (sin franjas blancas): todos los colores usan variables CSS (`--border`, `--bg-main`, `--bg-card`)
+
+---
+
+## Mensajería interna
+
+El módulo de Correo (`/correo`) tiene dos vistas independientes dentro de la misma página: el historial de correos automáticos y el chat de mensajería interna entre usuarios del sistema.
+
+### Tabla en base de datos
+
+```sql
+CREATE TABLE mensajes_internos (
+  id              INT AUTO_INCREMENT PRIMARY KEY,
+  remitente_id    INT NOT NULL,
+  destinatario_id INT NOT NULL,
+  mensaje         TEXT NOT NULL,
+  leido           TINYINT(1) DEFAULT 0,
+  created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (remitente_id)    REFERENCES usuarios(id),
+  FOREIGN KEY (destinatario_id) REFERENCES usuarios(id)
+);
+```
+
+La columna `leido` es clave: permite mostrar badges de mensajes no leídos en la lista de contactos y limpiarlos automáticamente al abrir la conversación.
+
+### Endpoints de mensajería
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `POST` | `/api/correo/mensajes` | Enviar un mensaje interno |
+| `GET` | `/api/correo/mensajes/contactos/:userId` | Lista de todos los usuarios con conteo de no leídos |
+| `GET` | `/api/correo/mensajes/conversacion/:userId/:contactId` | Mensajes entre dos usuarios (marca como leídos) |
+
+### Cómo funciona el backend
+
+**Enviar mensaje** — inserta directamente en `mensajes_internos`:
+
+```js
+exports.enviarMensaje = async (req, res) => {
+  const { remitente_id, destinatario_id, mensaje } = req.body;
+  await db.query(
+    "INSERT INTO mensajes_internos (remitente_id, destinatario_id, mensaje) VALUES (?, ?, ?)",
+    [remitente_id, destinatario_id, mensaje]
+  );
+};
+```
+
+**Obtener conversación** — trae todos los mensajes entre dos usuarios en orden cronológico y marca como leídos los recibidos:
+
+```js
+exports.obtenerConversacion = async (req, res) => {
+  const { userId, contactId } = req.params;
+  const [rows] = await db.query(
+    `SELECT m.*, u.nombre AS remitente_nombre
+     FROM mensajes_internos m
+     JOIN usuarios u ON u.id = m.remitente_id
+     WHERE (m.remitente_id = ? AND m.destinatario_id = ?)
+        OR (m.remitente_id = ? AND m.destinatario_id = ?)
+     ORDER BY m.created_at ASC`,
+    [userId, contactId, contactId, userId]
+  );
+  // Marcar como leídos los mensajes recibidos por userId
+  await db.query(
+    "UPDATE mensajes_internos SET leido = 1 WHERE destinatario_id = ? AND remitente_id = ? AND leido = 0",
+    [userId, contactId]
+  );
+  res.json(rows);
+};
+```
+
+**Obtener contactos** — devuelve todos los usuarios del sistema (excepto el propio) con el conteo de mensajes no leídos de cada uno:
+
+```js
+exports.obtenerContactos = async (req, res) => {
+  const { userId } = req.params;
+  const [rows] = await db.query(
+    `SELECT u.id, u.nombre, u.correo,
+       (SELECT COUNT(*) FROM mensajes_internos m
+        WHERE m.remitente_id = u.id AND m.destinatario_id = ? AND m.leido = 0) AS no_leidos
+     FROM usuarios u
+     WHERE u.id != ?
+     ORDER BY u.nombre ASC`,
+    [userId, userId]
+  );
+  res.json(rows);
+};
+```
+
+### Cómo funciona el frontend
+
+El componente `Correo.jsx` maneja dos vistas con la constante `VISTAS`:
+
+```js
+const VISTAS = { ENVIADOS: "enviados", CHAT: "chat" };
+const [vista, setVista] = useState(VISTAS.ENVIADOS);
+```
+
+**Polling cada 4 segundos** — en lugar de WebSockets, el chat usa `setInterval` para consultar mensajes nuevos. El intervalo se limpia y recrea cada vez que cambia el contacto activo:
+
+```js
+useEffect(() => {
+  clearInterval(pollingRef.current);
+  if (contactoActivo && userId) {
+    cargarConversacion(contactoActivo.id);
+    pollingRef.current = setInterval(() => {
+      if (contactoActivoRef.current) {
+        cargarConversacion(contactoActivoRef.current.id);
+      }
+    }, 4000);
+  }
+  return () => clearInterval(pollingRef.current);
+}, [contactoActivo]);
+```
+
+> Se usa `contactoActivoRef` (un `useRef`) dentro del intervalo para evitar el problema de *stale closure* — si se usara el estado directamente, el intervalo capturaría el valor inicial de `contactoActivo` y nunca lo actualizaría.
+
+**Limpieza de badges sin re-render innecesario** — al abrir una conversación, el badge de no leídos se limpia localmente en el array de contactos sin hacer una nueva petición al servidor:
+
+```js
+setContactos(prev => {
+  const idx = prev.findIndex(c => c.id === contactId);
+  if (idx === -1 || prev[idx].no_leidos === 0) return prev; // sin cambio = sin re-render
+  const next = [...prev];
+  next[idx] = { ...next[idx], no_leidos: 0 };
+  return next;
+});
+```
+
+**Scroll automático al último mensaje** — usando una referencia al final del contenedor de mensajes:
+
+```js
+const chatEndRef = useRef(null);
+useEffect(() => {
+  chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+}, [mensajes]);
+
+// En el JSX, al final de la lista de mensajes:
+<div ref={chatEndRef} />
+```
+
+**Contacto preseleccionado desde Equipo** — el módulo de Equipo puede navegar al chat con un contacto ya seleccionado usando `location.state`:
+
+```js
+// En Equipo.jsx al hacer click en "Mensaje":
+navigate('/correo', { state: { contacto: { id: usuario.id, nombre: usuario.nombre } } });
+
+// En Correo.jsx, se detecta al montar:
+useEffect(() => {
+  if (contactoInicializado.current) return;
+  if (location.state?.contacto && contactos.length > 0) {
+    const c = contactos.find(x => x.id === location.state.contacto.id) || location.state.contacto;
+    setContactoActivoSafe(c);
+    setVista(VISTAS.CHAT);
+    contactoInicializado.current = true; // evita que se ejecute más de una vez
+  }
+}, [contactos]);
+```
+
+### Estructura visual del módulo
+
+```
+┌─────────────────────────────────────────────────────┐
+│  SIDEBAR                │  PANEL PRINCIPAL           │
+│  ─────────────────────  │  ─────────────────────     │
+│  📧 Mi Correo           │                            │
+│                         │  Vista ENVIADOS:           │
+│  NOTIFICACIONES         │  Tabla con historial de    │
+│  ✉ Enviados  [12]       │  correos automáticos       │
+│                         │  (destinatario, asunto,    │
+│  MENSAJERÍA             │   mensaje, fecha, hora)    │
+│  💬 Mensajes  [3]       │                            │
+│                         │  Vista CHAT:               │
+│  USUARIOS               │  Burbujas de mensajes      │
+│  👤 Ana García  [2]     │  con scroll automático     │
+│  👤 Carlos López        │  e input para responder    │
+│  👤 María Torres        │                            │
+└─────────────────────────────────────────────────────┘
+```
+
+### Diferencia entre correos automáticos y mensajería interna
+
+| | Correos automáticos | Mensajería interna |
+|---|---|---|
+| **Origen** | Sistema (eventos de dispositivos) | Usuarios del sistema |
+| **Destino** | Correo electrónico externo (Gmail) | Dentro de la plataforma |
+| **Tabla BD** | `correos` | `mensajes_internos` |
+| **Tecnología** | Nodemailer + Gmail SMTP | Polling HTTP cada 4s |
+| **Vista** | Historial de enviados (solo lectura) | Chat bidireccional en tiempo casi real |
 
 ### Reportes
 
