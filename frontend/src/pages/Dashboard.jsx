@@ -6,6 +6,8 @@ import { estadosDispositivo } from "../ejemplo/generador2";
 import Pagination from '../components/Pagination';
 import TableSkeleton from '../components/TableSkeleton';
 import { useLanguage } from '../context/LanguageContext.jsx';
+// ── CAMBIO 1: importar el modal en lugar de navegar a otra página ──────────────
+import PagoMantenimientoModal from './PagoMantenimiento';
 
 // Icono SVG según el tipo de dispositivo
 const IconoTipoDispositivo = ({ tipo = "" }) => {
@@ -122,6 +124,9 @@ function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
 
+  // ── CAMBIO 2: estado para controlar qué modal de pago está abierto ──────────
+  const [pagoModalId, setPagoModalId] = useState(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -159,22 +164,22 @@ function Dashboard() {
         if (usuarioActual.rol === 'usuario' && dispositivos.length > 0) {
           const pagosMap = {};
           await Promise.all(
-  dispositivos.map(async (d) => {
-    try {
-      const res = await api.get(`/pagos/datos/${d.id}`, {
-        headers: { 'x-usuario-id': usuarioActual.id }
-      });
-      pagosMap[d.id] = res.data;
-    } catch (err) {
-      const msg = err.response?.data?.error || '';
-      if (msg.includes('no ha registrado')) {
-        pagosMap[d.id] = { sinMonto: true };
-      } else {
-        pagosMap[d.id] = null;
-      }
-    }
-  })
-);
+            dispositivos.map(async (d) => {
+              try {
+                const res = await api.get(`/pagos/datos/${d.id}`, {
+                  headers: { 'x-usuario-id': usuarioActual.id }
+                });
+                pagosMap[d.id] = res.data;
+              } catch (err) {
+                const msg = err.response?.data?.error || '';
+                if (msg.includes('no ha registrado')) {
+                  pagosMap[d.id] = { sinMonto: true };
+                } else {
+                  pagosMap[d.id] = null;
+                }
+              }
+            })
+          );
           setPagosDispositivos(pagosMap);
         }
       } catch (error) {
@@ -374,21 +379,14 @@ function Dashboard() {
     </div>
   );
 
-  // ── Celda de pago para rol "usuario" ─────────────────────────────────────
-  // Reglas:
-  //  1. Solo muestra algo si el dispositivo está en "Listo para Entrega"
-  //  2. Si ya está pagado → badge verde deshabilitado
-  //  3. Si hay monto pendiente → botón "Pagar $X"
-  //  4. Si no hay monto aún (técnico no lo registró) → "—"
+  // ── Celda de pago para rol "usuario" ──────────────────────────────────────
   const renderCeldaPago = (d) => {
-    // Solo relevante cuando el dispositivo está listo para entrega
     if (d.estado !== 'Listo para Entrega') {
       return <td style={tdStyle}>—</td>;
     }
 
     const pago = pagosDispositivos[d.id];
 
-    // Sin datos de pago (sin monto registrado aún)
     if (!pago || !pago.monto) {
       return (
         <td style={tdStyle}>
@@ -397,7 +395,6 @@ function Dashboard() {
       );
     }
 
-    // Ya pagado → badge verde, sin acción
     if (pago.estado_pago === 'Pagado') {
       return (
         <td style={tdStyle}>
@@ -417,13 +414,13 @@ function Dashboard() {
       );
     }
 
-    // Pendiente → botón activo que lleva a la vista de pago
+    // ── CAMBIO 3: abrir modal en lugar de navegar ──────────────────────────
     return (
       <td style={tdStyle}>
         <button
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/pago/${d.id}`);
+            setPagoModalId(d.id);   // ← abre el modal
           }}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
@@ -444,6 +441,14 @@ function Dashboard() {
         </button>
       </td>
     );
+  };
+
+  // ── CAMBIO 4: callback que actualiza la celda localmente tras pagar ────────
+  const handlePagado = (dispositivoId) => {
+    setPagosDispositivos(prev => ({
+      ...prev,
+      [dispositivoId]: { ...prev[dispositivoId], estado_pago: 'Pagado' }
+    }));
   };
 
   return (
@@ -590,6 +595,7 @@ function Dashboard() {
         onPageChange={setCurrentPage}
       />
 
+      {/* Lightbox de imagen */}
       {imagenActiva && (
         <div
           onClick={() => setImagenActiva(null)}
@@ -600,6 +606,13 @@ function Dashboard() {
             style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: '12px', boxShadow: '0 30px 80px rgba(0,0,0,0.7)' }}/>
         </div>
       )}
+
+      {/* ── CAMBIO 5: modal de pago — se renderiza aquí, sin cambiar de ruta ── */}
+      <PagoMantenimientoModal
+        dispositivoId={pagoModalId}
+        onClose={() => setPagoModalId(null)}
+        onPagado={handlePagado}
+      />
     </div>
   );
 }
