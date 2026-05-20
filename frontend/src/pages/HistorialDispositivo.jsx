@@ -6,7 +6,7 @@ import TableSkeleton from '../components/TableSkeleton';
 import { useLanguage } from '../context/LanguageContext.jsx';
 
 function HistorialDispositivo() {
-  const { t } = useLanguage();
+  const { t, translateEstado } = useLanguage();
   const { id } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState({ dispositivo: null, historial: [], mantenimientos: [] });
@@ -76,7 +76,7 @@ function HistorialDispositivo() {
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.85rem' }}>
         <thead>
           <tr style={{ background: 'var(--table-head)', borderBottom: '2px solid var(--border)' }}>
-            {[t('tecnico'), t('descripcion'), t('dash_col_estado'), t('fecha')].map((h, idx) => (
+            {[t('tecnico_col'), t('descripcion'), t('dash_col_estado'), t('fecha')].map((h, idx) => (
               <th key={idx} style={{ padding: '.65rem 1rem', textAlign: 'left', fontSize: '.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '.04em' }}>{h}</th>
             ))}
           </tr>
@@ -115,7 +115,7 @@ function HistorialDispositivo() {
         <div className="info-item">
           <span className="info-label">{t('mant_col_estado_actual')}</span>
           <div style={{ marginTop: '5px' }}>
-            <span style={getBadgeStyle(dispositivo.estado)}>{dispositivo.estado}</span>
+            <span style={getBadgeStyle(dispositivo.estado)}>{translateEstado(dispositivo.estado)}</span>
           </div>
         </div>
       </div>
@@ -129,7 +129,7 @@ function HistorialDispositivo() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.85rem' }}>
               <thead>
                 <tr style={{ background: 'var(--table-head)', borderBottom: '2px solid var(--border)' }}>
-                  {[t('tecnico'), t('descripcion'), t('dash_col_estado'), t('fecha')].map((h, idx) => (
+                  {[t('tecnico_col'), t('descripcion'), t('dash_col_estado'), t('fecha')].map((h, idx) => (
                     <th key={idx} style={{ padding: '.65rem 1rem', textAlign: 'left', fontSize: '.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '.04em' }}>{h}</th>
                   ))}
                 </tr>
@@ -144,7 +144,11 @@ function HistorialDispositivo() {
                         fontSize: '.72rem', fontWeight: 700, padding: '2px 10px', borderRadius: '20px',
                         background: m.estado_mantenimiento === 'Completado' ? '#f0fdf4' : m.estado_mantenimiento === 'Cancelado' ? '#fef2f2' : '#fff7ed',
                         color: m.estado_mantenimiento === 'Completado' ? '#15803d' : m.estado_mantenimiento === 'Cancelado' ? '#dc2626' : '#c2410c'
-                      }}>{m.estado_mantenimiento}</span>
+                      }}>
+                        {m.estado_mantenimiento === 'Completado' ? t('mant_completado_label') :
+                         m.estado_mantenimiento === 'Cancelado' ? t('mant_cancelado_label') :
+                         t('mant_en_proceso_label')}
+                      </span>
                     </td>
                     <td style={{ padding: '.65rem 1rem', color: 'var(--text-muted)', fontSize: '.8rem' }}>
                       {m.fecha ? new Date(m.fecha).toLocaleString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}

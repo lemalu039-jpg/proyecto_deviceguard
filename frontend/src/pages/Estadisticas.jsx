@@ -23,30 +23,7 @@ const COLOR_ESTADO = Object.fromEntries(ESTADOS_FIJOS.map(e => [e.key, e.color])
 const BG_ESTADO    = Object.fromEntries(ESTADOS_FIJOS.map(e => [e.key, e.bg]));
 
 function Estadisticas() {
-  const { t } = useLanguage();
-
-  const translateTipo = (tipo) => {
-    const map = {
-      'Portatil': t('tipo_Portatil'),
-      'Computadora': t('tipo_Computadora'),
-      'Tablet': t('tipo_Tablet'),
-      'Pantalla': t('tipo_Pantalla'),
-      'Proyector': t('tipo_Proyector'),
-      'Impresora': t('tipo_Impresora'),
-    };
-    return map[tipo] || tipo;
-  };
-
-  const translateEstado = (estado) => {
-    const map = {
-      'En Revision': t('estado_En_Revision'),
-      'En Mantenimiento': t('estado_En_Mantenimiento'),
-      'Listo para Entrega': t('estado_Listo_para_Entrega'),
-      'Entregado': t('estado_Entregado'),
-      'Disponible': t('estado_Disponible'),
-    };
-    return map[estado] || estado;
-  };
+  const { t, translateTipo, translateEstado, translateUbicacion } = useLanguage();
 
   const filtrosLinea = [
     { labelKey: 'dash_todos_estados', value: 'todos' },
@@ -324,7 +301,7 @@ function Estadisticas() {
                 onChange={e => setFiltroEstado(e.target.value)}
                 disabled={estadosDisponibles.length === 0}>
                 <option value="todos">{t('dash_todos_estados')}</option>
-                {ESTADOS_FIJOS.map(e => <option key={e.key} value={e.key}>{e.key}</option>)}
+                {ESTADOS_FIJOS.map(e => <option key={e.key} value={e.key}>{translateEstado(e.key)}</option>)}
               </select>
             </div>
 
@@ -337,7 +314,7 @@ function Estadisticas() {
                 onChange={e => setFiltroTipo(e.target.value)}
                 disabled={tiposDisponibles.length === 0}>
                 <option value="todos">{t('estadisticas_todos_tipos')}</option>
-                {tiposDisponibles.map(t => <option key={t} value={t}>{t}</option>)}
+                {tiposDisponibles.map(t => <option key={t} value={t}>{translateTipo(t)}</option>)}
               </select>
             </div>
 
@@ -355,12 +332,12 @@ function Estadisticas() {
               )}
               {filtroEstado !== 'todos' && (
                 <span style={{ fontSize: '.72rem', fontWeight: 700, background: BG_ESTADO[filtroEstado] || '#f1f5f9', color: COLOR_ESTADO[filtroEstado] || '#64748b', padding: '3px 10px', borderRadius: '20px' }}>
-                  {filtroEstado}
+                  {translateEstado(filtroEstado)}
                 </span>
               )}
               {filtroTipo !== 'todos' && (
                 <span style={{ fontSize: '.72rem', fontWeight: 700, background: 'var(--table-head)', color: 'var(--text-muted)', padding: '3px 10px', borderRadius: '20px' }}>
-                  {filtroTipo}
+                  {translateTipo(filtroTipo)}
                 </span>
               )}
               {hayFiltros && (
@@ -410,7 +387,7 @@ function Estadisticas() {
                   {donutData.map((seg, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '.6rem', opacity: seg.count === 0 ? 0.4 : 1 }}>
                       <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: seg.color, flexShrink: 0 }}></div>
-                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)', flex: 1 }}>{seg.label}</span>
+                      <span style={{ fontSize: '.75rem', color: 'var(--text-muted)', flex: 1 }}>{translateEstado(seg.label)}</span>
                       <span style={{ fontSize: '.75rem', fontWeight: 700, color: seg.color }}>{seg.pct}%</span>
                     </div>
                   ))}
@@ -425,7 +402,7 @@ function Estadisticas() {
                 const count = conteoPorEstado[e.key];
                 return (
                   <div key={e.key} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '.9rem', opacity: count === 0 ? 0.4 : 1 }}>
-                    <div style={{ fontSize: '.74rem', color: 'var(--text-muted)', width: '140px', flexShrink: 0, fontWeight: 500 }}>{e.key}</div>
+                    <div style={{ fontSize: '.74rem', color: 'var(--text-muted)', width: '140px', flexShrink: 0, fontWeight: 500 }}>{translateEstado(e.key)}</div>
                     <div style={{ flex: 1, height: '12px', background: 'var(--input-bg)', borderRadius: '6px', overflow: 'hidden' }}>
                       <div style={{ height: '100%', borderRadius: '6px', background: e.color, width: `${pct(count)}%`, transition: 'width .5s ease' }}></div>
                     </div>
@@ -485,7 +462,7 @@ function Estadisticas() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '.75rem' }} className="estadisticas-tipos-grid">
                 {conteoPorTipo.map(([tipo, count]) => (
                   <div key={tipo} style={{ background: 'var(--table-head)', border: '1px solid var(--border)', borderRadius: '10px', padding: '.85rem', textAlign: 'center' }}>
-                    <div style={{ fontSize: '.72rem', color: 'var(--text-muted)', marginBottom: '.3rem', fontWeight: 500 }}>{tipo}</div>
+                    <div style={{ fontSize: '.72rem', color: 'var(--text-muted)', marginBottom: '.3rem', fontWeight: 500 }}>{translateTipo(tipo)}</div>
                     <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)' }}>{count}</div>
                     <div style={{ marginTop: '.4rem', height: '4px', background: 'var(--border)', borderRadius: '2px', overflow: 'hidden' }}>
                       <div style={{ height: '100%', borderRadius: '2px', background: 'linear-gradient(135deg, #0492C2, #82EEFD)', width: `${Math.round((count / maxTipo) * 100)}%` }}></div>
@@ -515,7 +492,7 @@ function Estadisticas() {
                 style={{ padding: '.38rem .7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '.78rem', cursor: 'pointer', outline: 'none', flexShrink: 0 }}
               >
                 <option value="todos">{t('dash_todos_estados')}</option>
-                {ESTADOS_FIJOS.map(e => <option key={e.key} value={e.key}>{e.key}</option>)}
+                {ESTADOS_FIJOS.map(e => <option key={e.key} value={e.key}>{translateEstado(e.key)}</option>)}
               </select>
               {(filtroBusqueda || filtroTablaEstado !== 'todos') && (
                 <button
@@ -561,7 +538,7 @@ function Estadisticas() {
                           </td>
                           <td style={{ ...tdStyle, fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial || 'N/A'}</td>
                           <td style={tdStyle}>{d.marca || 'N/A'}</td>
-                          <td style={tdStyle}>{d.ubicacion || 'N/A'}</td>
+                          <td style={tdStyle}>{translateUbicacion(d.ubicacion) || 'N/A'}</td>
                           <td style={tdStyle}>
                             {d.fecha_registro ? (
                               <>

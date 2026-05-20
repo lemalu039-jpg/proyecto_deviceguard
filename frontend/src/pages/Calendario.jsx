@@ -554,20 +554,20 @@ function Calendario() {
                 <div style={{ marginBottom: '1rem' }}>
                   <div style={{ background: 'var(--table-head)', border: '1px solid var(--border)', borderRadius: '10px', padding: '1rem', marginBottom: '.75rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.4rem' }}>
-                      <span style={{ fontSize: '.68rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Referencia de pago</span>
+                      <span style={{ fontSize: '.68rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>{t('cal_pago_referencia')}</span>
                       <span style={{ fontSize: '.72rem', fontWeight: 700, background: 'rgba(4,146,194,0.15)', color: '#0492C2', padding: '2px 10px', borderRadius: '20px' }}>
                         MANT-{eventoSalida._dispOrig?.id || eventoSalida.id || eventoSalida.id_dispositivo}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '.68rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Estado de pago</span>
+                      <span style={{ fontSize: '.68rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>{t('cal_pago_estado')}</span>
                       <span style={{ fontSize: '.72rem', fontWeight: 700, background: 'rgba(245,158,11,0.15)', color: '#f59e0b', padding: '2px 10px', borderRadius: '20px' }}>
-                        Pendiente
+                        {t('cal_pago_pendiente')}
                       </span>
                     </div>
                   </div>
                   <label style={{ display: 'block', fontSize: '.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '.45rem' }}>
-                    Costo del mantenimiento <span style={{ color: '#ef4444' }}>*</span>
+                    {t('cal_pago_costo_label')} <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <div style={{ display: 'flex', alignItems: 'center', border: `1.5px solid ${errorCosto ? '#ef4444' : 'var(--border)'}`, borderRadius: '10px', background: 'var(--table-head)', overflow: 'hidden', transition: 'border-color .2s, box-shadow .2s', boxShadow: errorCosto ? '0 0 0 3px rgba(239,68,68,0.12)' : 'none' }}>
                     <span style={{ padding: '0 .75rem', fontSize: '.95rem', fontWeight: 700, color: '#0492C2', background: 'rgba(4,146,194,0.08)', borderRight: '1.5px solid var(--border)', alignSelf: 'stretch', display: 'flex', alignItems: 'center' }}>$</span>
@@ -592,7 +592,7 @@ function Calendario() {
                     </div>
                   )}
                   <p style={{ fontSize: '.72rem', color: 'var(--text-muted)', lineHeight: 1.55, marginTop: '.6rem' }}>
-                    Este monto quedará como <strong style={{ color: 'var(--text-main)' }}>Pendiente de pago</strong>. El usuario podrá pagarlo desde su panel.
+                    {t('cal_pago_costo_hint')}
                   </p>
                 </div>
               )}

@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import api from '../services/api';
+import { useLanguage } from '../context/LanguageContext.jsx';
 
 // ─── Carga el script oficial de Wompi una sola vez en el DOM ─────────────────
 const WOMPI_SCRIPT = 'https://checkout.wompi.co/widget.js';
@@ -33,6 +34,7 @@ function useWompiScript() {
 //   onPagado       — (opcional) callback tras pago exitoso para refrescar la tabla
 export default function PagoMantenimientoModal({ dispositivoId, onClose, onPagado }) {
   const wompiLoaded   = useWompiScript();
+  const { t } = useLanguage();
   const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
 
   const [datosPago, setDatosPago] = useState(null);
@@ -185,10 +187,10 @@ export default function PagoMantenimientoModal({ dispositivoId, onClose, onPagad
               </svg>
             </div>
             <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px' }}>
-              Pago de mantenimiento
+              {t('pago_titulo')}
             </h2>
             <p style={{ fontSize: '.78rem', color: 'var(--text-muted)', margin: 0 }}>
-              DeviceGuard · Servicio técnico
+              {t('pago_subtitulo')}
             </p>
           </div>
 
@@ -196,7 +198,7 @@ export default function PagoMantenimientoModal({ dispositivoId, onClose, onPagad
           {estado === 'cargando' && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem 0', gap: 12 }}>
               <div style={s.spinner} />
-              <p style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>Cargando información del pago...</p>
+              <p style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>{t('pago_cargando')}</p>
             </div>
           )}
 
@@ -214,17 +216,17 @@ export default function PagoMantenimientoModal({ dispositivoId, onClose, onPagad
               {/* Detalle del cobro */}
               <div style={s.detalleBox}>
                 <div style={s.fila}>
-                  <span style={s.label}>Dispositivo</span>
+                  <span style={s.label}>{t('pago_dispositivo')}</span>
                   <span style={s.valor}>{datosPago.descripcion}</span>
                 </div>
                 <div style={s.fila}>
-                  <span style={s.label}>Referencia</span>
+                  <span style={s.label}>{t('pago_referencia')}</span>
                   <span style={{ ...s.valor, fontFamily: 'monospace', fontSize: '.78rem' }}>
                     {datosPago.referencia}
                   </span>
                 </div>
                 <div style={{ ...s.fila, borderBottom: 'none', paddingBottom: 0 }}>
-                  <span style={s.label}>Total a pagar</span>
+                  <span style={s.label}>{t('pago_total')}</span>
                   <span style={s.monto}>
                     {Number(datosPago.monto).toLocaleString('es-CO', {
                       style: 'currency', currency: 'COP', minimumFractionDigits: 0
@@ -258,14 +260,14 @@ export default function PagoMantenimientoModal({ dispositivoId, onClose, onPagad
                         <rect x="1" y="4" width="22" height="16" rx="2"/>
                         <line x1="1" y1="10" x2="23" y2="10"/>
                       </svg>
-                      Pagar ahora
+                      {t('pago_btn')}
                     </>
                 }
               </button>
 
               {/* Medios de pago */}
               <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                <span style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>Paga con:</span>
+                <span style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>{t('pago_con')}</span>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', marginTop: 6 }}>
                   {['Visa', 'Mastercard', 'PSE', 'Nequi', 'Bancolombia'].map(m => (
                     <span key={m} style={s.medioBadge}>{m}</span>
@@ -273,10 +275,7 @@ export default function PagoMantenimientoModal({ dispositivoId, onClose, onPagad
                 </div>
               </div>
 
-              <p style={s.seguro}>
-                🔒 Pago procesado por <strong>Wompi</strong>.
-                DeviceGuard no almacena datos de tarjetas.
-              </p>
+              <p style={s.seguro}>{t('pago_seguro')}</p>
             </>
           )}
 
@@ -291,13 +290,13 @@ export default function PagoMantenimientoModal({ dispositivoId, onClose, onPagad
                 margin: '0 auto 1rem',
               }}>✓</div>
               <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 8px' }}>
-                ¡Pago exitoso!
+                {t('pago_exitoso')}
               </h3>
               <p style={{ fontSize: '.84rem', color: 'var(--text-muted)', margin: '0 0 1.5rem' }}>
                 {mensaje}
               </p>
               <button style={{ ...s.btn, background: '#16a34a' }} onClick={cerrar}>
-                Cerrar
+                {t('pago_cerrar')}
               </button>
             </div>
           )}

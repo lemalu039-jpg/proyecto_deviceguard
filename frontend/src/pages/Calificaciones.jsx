@@ -14,7 +14,7 @@ const Estrellas = ({ valor }) => (
 const ITEMS_POR_PAGINA = 8;
 
 function Calificaciones() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [calificaciones, setCalificaciones] = useState([]);
   const [filtroTecnico, setFiltroTecnico] = useState("");
   const [filtroEstrellas, setFiltroEstrellas] = useState("");
@@ -140,21 +140,21 @@ function Calificaciones() {
                       {c.dispositivo_nombre} <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>· {c.serial}</span>
                     </p>
                     <p style={{ margin: "2px 0 0", fontSize: "0.78rem", color: "var(--text-muted)" }}>
-                      Técnico: {c.tecnico_nombre || "No asignado"}
+                      {t('calificaciones_tecnico')} {c.tecnico_nombre || t('calificaciones_no_asignado')}
                     </p>
                   </div>
                   <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-muted)" }}>
-                    {new Date(c.fecha).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" })}
+                    {new Date(c.fecha).toLocaleDateString(language === "es" ? "es-CO" : "en-US", { day: "2-digit", month: "short", year: "numeric" })}
                   </p>
                 </div>
                 <div style={{ display: "flex", gap: "1.5rem", margin: "0.6rem 0 0.4rem", flexWrap: "wrap" }}>
                   <div>
-                    <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-muted)" }}>Empresa</p>
+                    <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-muted)" }}>{t('calificaciones_empresa')}</p>
                     <Estrellas valor={c.estrellas_empresa} />
                   </div>
                   {c.estrellas_tecnico && (
                     <div>
-                      <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-muted)" }}>Técnico</p>
+                      <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-muted)" }}>{t('tecnico')}</p>
                       <Estrellas valor={c.estrellas_tecnico} />
                     </div>
                   )}

@@ -265,6 +265,7 @@ const translations = {
     dash_col_nombre: "Nombre",
     dash_col_ubicacion: "Ubicación",
     dash_col_serial: "Serial",
+    dash_col_marca: "Marca",
     dash_col_fecha_reg: "Fecha registro",
     dash_col_estado: "Estado",
     dash_col_reg_por: "Registrado por",
@@ -286,10 +287,31 @@ const translations = {
     correo_escribe_mensaje: "Escribe un mensaje...",
     correo_mensaje_enviado: "Mensaje enviado",
     correo_error_enviar: "Error al enviar mensaje",
-    
-    // Generales extras
-    fecha: "Fecha",
+    correo_buscar_historial: "Buscar por destinatario, asunto o mensaje…",
+    cal_compromiso: "Compromiso",
+    cal_pago_referencia: "Referencia de pago",
+    cal_pago_estado: "Estado de pago",
+    cal_pago_pendiente: "Pendiente",
+    cal_pago_costo_label: "Costo del mantenimiento",
+    cal_pago_costo_hint: "Este monto quedará como Pendiente de pago. El usuario podrá pagarlo desde su panel.",
+    pago_titulo: "Pago de mantenimiento",
+    pago_subtitulo: "DeviceGuard · Servicio técnico",
+    pago_cargando: "Cargando información del pago...",
+    pago_dispositivo: "Dispositivo",
+    pago_referencia: "Referencia",
+    pago_total: "Total a pagar",
+    pago_btn: "Pagar ahora",
+    pago_abriendo: "Abriendo pasarela...",
+    pago_con: "Paga con:",
+    pago_seguro: "Pago procesado por Wompi. DeviceGuard no almacena datos de tarjetas.",
+    pago_exitoso: "¡Pago exitoso!",
+    pago_cerrar: "Cerrar",
     hora: "Hora",
+    fecha: "Fecha",
+    tecnico_col: "Técnico",
+    mant_completado_label: "Completado",
+    mant_en_proceso_label: "En Proceso",
+    mant_cancelado_label: "Cancelado",
     sin_resultados: "No hay resultados",
 
     // Equipo complementos
@@ -638,6 +660,42 @@ const translations = {
     papelera_buscar_ph: "Buscar por nombre, serial, marca...",
     papelera_limpiar: "Limpiar",
     papelera_registros: "registros",
+
+    // Ubicaciones
+    loc_Recepcion_Tecnica: "Recepción Técnica",
+    loc_Zona_de_Entrega: "Zona de Entrega",
+    loc_Almacen_General: "Almacén General",
+    loc_Sala_de_Pruebas: "Sala de Pruebas",
+    loc_Bodega_de_Repuestos: "Bodega de Repuestos",
+    loc_Taller_Principal: "Taller Principal",
+    loc_Area_de_Diagnostico: "Área de Diagnóstico",
+    loc_Laboratorio_Electronico: "Laboratorio Electrónico",
+    loc_Area_de_Ensamble: "Área de Ensamble",
+    loc_Area_de_Limpieza: "Área de Limpieza",
+
+    // Papelera adicional
+    papelera_restaurar: "Restaurar",
+    papelera_eliminar: "Eliminar",
+    papelera_vacia: "La papelera está vacía",
+    papelera_sin_resultados: "Sin resultados para la búsqueda",
+    papelera_confirm_restaurar: "¿Restaurar dispositivo?",
+    papelera_confirm_restaurar_desc: "El dispositivo volverá a estar disponible en el sistema.",
+    papelera_confirm_eliminar: "¿Eliminar permanentemente dispositivo?",
+    papelera_confirm_eliminar_desc: "Esta acción no se puede deshacer.",
+    papelera_si_restaurar: "Sí, restaurar",
+    papelera_si_eliminar: "Sí, eliminar",
+    papelera_cancelar: "Cancelar",
+    papelera_restaurado_exito: "restaurado correctamente",
+    papelera_restaurado_error: "Error al restaurar el dispositivo",
+    papelera_eliminado_exito: "eliminado permanentemente",
+    papelera_eliminado_error: "Error al eliminar el dispositivo",
+
+    // Sidebar adicional
+    sidebar_notificaciones: "Notificaciones",
+    sidebar_nueva_calificacion: "Nueva calificación",
+    sidebar_tu_calificacion: "Tu calificación",
+    sidebar_entendido: "✓ Entendido",
+    sidebar_sin_notificaciones: "Sin notificaciones",
   },
   en: {
     // Account settings
@@ -903,6 +961,7 @@ const translations = {
     dash_col_nombre: "Name",
     dash_col_ubicacion: "Location",
     dash_col_serial: "Serial",
+    dash_col_marca: "Brand",
     dash_col_fecha_reg: "Registration date",
     dash_col_estado: "Status",
     dash_col_reg_por: "Registered by",
@@ -924,10 +983,31 @@ const translations = {
     correo_escribe_mensaje: "Type a message...",
     correo_mensaje_enviado: "Message sent",
     correo_error_enviar: "Error sending message",
-    
-    // Generales extras
-    fecha: "Date",
+    correo_buscar_historial: "Search by recipient, subject or message…",
+    cal_compromiso: "Commitment",
+    cal_pago_referencia: "Payment Reference",
+    cal_pago_estado: "Payment Status",
+    cal_pago_pendiente: "Pending",
+    cal_pago_costo_label: "Maintenance Cost",
+    cal_pago_costo_hint: "This amount will remain as Pending payment. The user can pay it from their dashboard.",
+    pago_titulo: "Maintenance Payment",
+    pago_subtitulo: "DeviceGuard · Technical Service",
+    pago_cargando: "Loading payment information...",
+    pago_dispositivo: "Device",
+    pago_referencia: "Reference",
+    pago_total: "Total to pay",
+    pago_btn: "Pay now",
+    pago_abriendo: "Opening gateway...",
+    pago_con: "Pay with:",
+    pago_seguro: "Payment processed by Wompi. DeviceGuard does not store card data.",
+    pago_exitoso: "Payment successful!",
+    pago_cerrar: "Close",
     hora: "Time",
+    fecha: "Date",
+    tecnico_col: "Technician",
+    mant_completado_label: "Completed",
+    mant_en_proceso_label: "In Process",
+    mant_cancelado_label: "Cancelled",
     sin_resultados: "No results found",
 
     // Equipo complementos
@@ -1274,6 +1354,42 @@ const translations = {
     papelera_buscar_ph: "Search by name, serial, brand...",
     papelera_limpiar: "Clear",
     papelera_registros: "records",
+
+    // Ubicaciones
+    loc_Recepcion_Tecnica: "Technical Reception",
+    loc_Zona_de_Entrega: "Delivery Zone",
+    loc_Almacen_General: "General Warehouse",
+    loc_Sala_de_Pruebas: "Testing Room",
+    loc_Bodega_de_Repuestos: "Spare Parts Warehouse",
+    loc_Taller_Principal: "Main Workshop",
+    loc_Area_de_Diagnostico: "Diagnostic Area",
+    loc_Laboratorio_Electronico: "Electronics Lab",
+    loc_Area_de_Ensamble: "Assembly Area",
+    loc_Area_de_Limpieza: "Cleaning Area",
+
+    // Trash additional
+    papelera_restaurar: "Restore",
+    papelera_eliminar: "Delete",
+    papelera_vacia: "The trash is empty",
+    papelera_sin_resultados: "No search results",
+    papelera_confirm_restaurar: "Restore device?",
+    papelera_confirm_restaurar_desc: "The device will be available in the system again.",
+    papelera_confirm_eliminar: "Permanently delete device?",
+    papelera_confirm_eliminar_desc: "This action cannot be undone.",
+    papelera_si_restaurar: "Yes, restore",
+    papelera_si_eliminar: "Yes, delete",
+    papelera_cancelar: "Cancel",
+    papelera_restaurado_exito: "restored successfully",
+    papelera_restaurado_error: "Error restoring device",
+    papelera_eliminado_exito: "permanently deleted",
+    papelera_eliminado_error: "Error deleting device",
+
+    // Sidebar additional
+    sidebar_notificaciones: "Notifications",
+    sidebar_nueva_calificacion: "New rating",
+    sidebar_tu_calificacion: "Your rating",
+    sidebar_entendido: "✓ Understood",
+    sidebar_sin_notificaciones: "No notifications",
   }
 };
 
@@ -1302,6 +1418,51 @@ export const LanguageProvider = ({ children }) => {
     localStorage.setItem('language', newLanguage);
   };
 
+  const translateTipo = (tipo) => {
+    if (!tipo) return '';
+    const clean = tipo.trim();
+    const map = {
+      'Portatil': t('tipo_Portatil'),
+      'Computadora': t('tipo_Computadora'),
+      'Tablet': t('tipo_Tablet'),
+      'Pantalla': t('tipo_Pantalla'),
+      'Proyector': t('tipo_Proyector'),
+      'Impresora': t('tipo_Impresora'),
+    };
+    return map[clean] || clean;
+  };
+
+  const translateEstado = (estado) => {
+    if (!estado) return '';
+    const clean = estado.trim();
+    const map = {
+      'En Revision': t('estado_En_Revision'),
+      'En Mantenimiento': t('estado_En_Mantenimiento'),
+      'Listo para Entrega': t('estado_Listo_para_Entrega'),
+      'Entregado': t('estado_Entregado'),
+      'Disponible': t('estado_Disponible'),
+    };
+    return map[clean] || clean;
+  };
+
+  const translateUbicacion = (ubicacion) => {
+    if (!ubicacion) return '';
+    const clean = ubicacion.trim();
+    const map = {
+      'Recepción Técnica': t('loc_Recepcion_Tecnica'),
+      'Zona de Entrega': t('loc_Zona_de_Entrega'),
+      'Almacén General': t('loc_Almacen_General'),
+      'Sala de Pruebas': t('loc_Sala_de_Pruebas'),
+      'Bodega de Repuestos': t('loc_Bodega_de_Repuestos'),
+      'Taller Principal': t('loc_Taller_Principal'),
+      'Área de Diagnóstico': t('loc_Area_de_Diagnostico'),
+      'Laboratorio Electrónico': t('loc_Laboratorio_Electronico'),
+      'Área de Ensamble': t('loc_Area_de_Ensamble'),
+      'Área de Limpieza': t('loc_Area_de_Limpieza'),
+    };
+    return map[clean] || clean;
+  };
+
   useEffect(() => {
     const savedLanguage = localStorage.getItem('language');
     if (savedLanguage) {
@@ -1310,7 +1471,7 @@ export const LanguageProvider = ({ children }) => {
   }, []);
 
   return (
-    <LanguageContext.Provider value={{ language, changeLanguage, t }}>
+    <LanguageContext.Provider value={{ language, changeLanguage, t, translateTipo, translateEstado, translateUbicacion }}>
       {children}
     </LanguageContext.Provider>
   );
