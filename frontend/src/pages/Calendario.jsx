@@ -4,7 +4,7 @@ import './CSS/Calendario_responsive.css';
 import { useLanguage } from '../context/LanguageContext.jsx';
 
 function Calendario() {
-  const { t } = useLanguage();
+  const { t, translateEstado, translateUbicacion } = useLanguage();
   const [dispositivos, setDispositivos] = useState([]);
   const [fecha, setFecha] = useState(new Date());
   const [diaSeleccionado, setDiaSeleccionado] = useState(null);
@@ -384,9 +384,9 @@ function Calendario() {
                               onClick={() => abrirDetalle(ev)}>
                               {ev.nombre}
                             </div>
-                            <div style={{ fontSize: '.69rem', color: 'var(--text-muted)', marginTop: '1px' }}>{ev.tipo} · {ev.ubicacion || 'Sin ubicación'}</div>
+                            <div style={{ fontSize: '.69rem', color: 'var(--text-muted)', marginTop: '1px' }}>{ev.tipo} · {ev.ubicacion ? translateUbicacion(ev.ubicacion) : t('cal_sin_ubicacion')}</div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '5px' }}>
-                              <span style={{ fontSize: '.62rem', fontWeight: 700, padding: '1px 7px', borderRadius: '20px', background: col.bg, color: col.color }}>{ev.estado}</span>
+                              <span style={{ fontSize: '.62rem', fontWeight: 700, padding: '1px 7px', borderRadius: '20px', background: col.bg, color: col.color }}>{translateEstado(ev.estado)}</span>
                               {!esUsuario && ev.estado !== 'Entregado' && (
                                 <button style={s.btnSalida} onClick={() => abrirModalSalida(ev)}>{obtenerTextoAccion(ev.estado).boton}</button>
                               )}
@@ -442,7 +442,7 @@ function Calendario() {
                           <button style={{ fontSize: '.5rem', padding: '2px 5px', background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }} onClick={() => eliminarEvento(ev)}>✕</button>
                         )}
                       </div>
-                      <span style={{ fontSize: '.6rem', fontWeight: 700, padding: '1px 7px', borderRadius: '20px', background: col.bg, color: col.color, display: 'inline-block', marginTop: '3px' }}>{ev.estado}</span>
+                      <span style={{ fontSize: '.6rem', fontWeight: 700, padding: '1px 7px', borderRadius: '20px', background: col.bg, color: col.color, display: 'inline-block', marginTop: '3px' }}>{translateEstado(ev.estado)}</span>
                     </div>
                   </div>
                 );
