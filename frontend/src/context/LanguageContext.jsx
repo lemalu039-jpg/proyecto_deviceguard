@@ -160,6 +160,7 @@ const translations = {
     advertencia: "Advertencia",
 
     // Home
+    home_calificar: 'Calificar',
     home_inicio: "Inicio",
     home_modulos: "Módulos",
     home_nosotros: "Nosotros",
@@ -312,6 +313,22 @@ const translations = {
     mant_completado_label: "Completado",
     mant_en_proceso_label: "En Proceso",
     mant_cancelado_label: "Cancelado",
+    pag_anterior: "Anterior",
+    pag_siguiente: "Siguiente",
+    cal_sec_titulo: "¿Recibiste tu dispositivo?",
+    cal_sec_titulo2: "Cuéntanos tu experiencia",
+    cal_sec_sub: "Ingresa el serial de tu dispositivo y califica nuestro servicio",
+    cal_form_ingresa_serial: "Ingresa el serial de tu dispositivo",
+    cal_form_califica_empresa: "Por favor califica la empresa",
+    cal_form_califica_servicio: "¿Cómo calificarías nuestro servicio?",
+    cal_form_califica_tecnico: "¿Cómo calificarías al técnico",
+    cal_form_comentario: "Comentario (opcional)",
+    cal_form_comentario_ph: "Cuéntanos tu experiencia...",
+    cal_form_volver: "Volver",
+    cal_form_enviando: "Enviando...",
+    cal_form_enviar: "Enviar calificación",
+    cal_form_gracias: "¡Gracias por tu calificación!",
+    cal_form_gracias_sub: "Tu opinión nos ayuda a mejorar el servicio.",
     sin_resultados: "No hay resultados",
 
     // Equipo complementos
@@ -856,6 +873,7 @@ const translations = {
     advertencia: "Warning",
 
     // Home
+    home_calificar: 'Rate Us',
     home_inicio: "Home",
     home_modulos: "Modules",
     home_nosotros: "About Us",
@@ -1008,6 +1026,22 @@ const translations = {
     mant_completado_label: "Completed",
     mant_en_proceso_label: "In Process",
     mant_cancelado_label: "Cancelled",
+    pag_anterior: "Previous",
+    pag_siguiente: "Next",
+    cal_sec_titulo: "Did you receive your device?",
+    cal_sec_titulo2: "Tell us your experience",
+    cal_sec_sub: "Enter your device serial and rate our service",
+    cal_form_ingresa_serial: "Enter your device serial",
+    cal_form_califica_empresa: "Please rate the company",
+    cal_form_califica_servicio: "How would you rate our service?",
+    cal_form_califica_tecnico: "How would you rate technician",
+    cal_form_comentario: "Comment (optional)",
+    cal_form_comentario_ph: "Tell us your experience...",
+    cal_form_volver: "Back",
+    cal_form_enviando: "Sending...",
+    cal_form_enviar: "Submit rating",
+    cal_form_gracias: "Thank you for your rating!",
+    cal_form_gracias_sub: "Your feedback helps us improve our service.",
     sin_resultados: "No results found",
 
     // Equipo complementos
