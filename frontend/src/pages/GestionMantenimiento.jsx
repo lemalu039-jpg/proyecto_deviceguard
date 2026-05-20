@@ -16,6 +16,30 @@ const Icon = ({ d, size = 16 }) => (
 
 function GestionMantenimiento() {
   const { t } = useLanguage();
+
+  const translateTipo = (tipo) => {
+    const map = {
+      'Portatil': t('tipo_Portatil'),
+      'Computadora': t('tipo_Computadora'),
+      'Tablet': t('tipo_Tablet'),
+      'Pantalla': t('tipo_Pantalla'),
+      'Proyector': t('tipo_Proyector'),
+      'Impresora': t('tipo_Impresora'),
+    };
+    return map[tipo] || tipo;
+  };
+
+  const translateEstado = (estado) => {
+    const map = {
+      'En Revision': t('estado_En_Revision'),
+      'En Mantenimiento': t('estado_En_Mantenimiento'),
+      'Listo para Entrega': t('estado_Listo_para_Entrega'),
+      'Entregado': t('estado_Entregado'),
+      'Disponible': t('estado_Disponible'),
+    };
+    return map[estado] || estado;
+  };
+
   const [dispositivos, setDispositivos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
@@ -117,7 +141,7 @@ function GestionMantenimiento() {
   const confirmarCosto = async () => {
     const costoNum = parseFloat(costo);
     if (!costo || isNaN(costoNum) || costoNum < 0) {
-      setErrorCosto('Ingresa un monto válido (mayor o igual a 0).');
+      setErrorCosto(t('salida_modal_monto_invalido'));
       return;
     }
     setGuardandoCosto(true);
@@ -236,7 +260,7 @@ function GestionMantenimiento() {
                     <tr key={d.id}>
                       <td>
                         <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
-                        <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo || ''}</div>
+                        <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{translateTipo(d.tipo) || ''}</div>
                       </td>
                       <td style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial}</td>
                       <td style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
@@ -244,7 +268,7 @@ function GestionMantenimiento() {
                       </td>
                       <td>
                         <span className={`mant-badge ${getBadgeClass(d.estado)}`}>
-                          {d.estado}
+                          {translateEstado(d.estado)}
                         </span>
                       </td>
                       <td>

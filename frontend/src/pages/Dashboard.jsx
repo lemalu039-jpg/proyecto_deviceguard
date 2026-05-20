@@ -95,6 +95,30 @@ const IconoTipoDispositivo = ({ tipo = "" }) => {
 
 function Dashboard() {
   const { t } = useLanguage();
+
+  const translateTipo = (tipo) => {
+    const map = {
+      'Portatil': t('tipo_Portatil'),
+      'Computadora': t('tipo_Computadora'),
+      'Tablet': t('tipo_Tablet'),
+      'Pantalla': t('tipo_Pantalla'),
+      'Proyector': t('tipo_Proyector'),
+      'Impresora': t('tipo_Impresora'),
+    };
+    return map[tipo] || tipo;
+  };
+
+  const translateEstado = (estado) => {
+    const map = {
+      'En Revision': t('estado_En_Revision'),
+      'En Mantenimiento': t('estado_En_Mantenimiento'),
+      'Listo para Entrega': t('estado_Listo_para_Entrega'),
+      'Entregado': t('estado_Entregado'),
+      'Disponible': t('estado_Disponible'),
+    };
+    return map[estado] || estado;
+  };
+
   useEffect(() => {
     const generador = estadosDispositivo();
     console.log(generador.next().value);
@@ -549,7 +573,7 @@ function Dashboard() {
                     </td>
                     <td onClick={() => navigate(`/historial/${d.id}`)} style={{...tdStyle, cursor: 'pointer'}} className="hover-link">
                       <div style={{ fontWeight: 600, color: 'var(--primary)', fontSize: '.82rem', textDecoration: 'underline dotted' }}>{d.nombre}</div>
-                      <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo}</div>
+                      <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{translateTipo(d.tipo)}</div>
                     </td>
                     <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace', cursor: 'pointer' }} className="hover-link">{d.serial}</td>
                     <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">{d.ubicacion || 'N/A'}</td>
@@ -562,7 +586,7 @@ function Dashboard() {
                       )}
                     </td>
                     <td style={tdStyle}>
-                      <span style={getBadgeStyle(d.estado)}>{d.estado}</span>
+                      <span style={getBadgeStyle(d.estado)}>{translateEstado(d.estado)}</span>
                     </td>
                     {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='super_admin' && (
                       <td style={{ ...tdStyle, fontSize: '.78rem', color: 'var(--text-muted)' }}>

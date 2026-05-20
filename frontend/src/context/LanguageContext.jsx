@@ -595,6 +595,49 @@ const translations = {
     sidebar_iniciar_mant: "✓ Iniciar mantenimiento",
     sidebar_tecnicos: "Técnicos",
     sidebar_usuarios: "Usuarios",
+
+    // Tipos de dispositivo
+    tipo_Portatil: "Portátil",
+    tipo_Computadora: "Computadora",
+    tipo_Tablet: "Tablet",
+    tipo_Pantalla: "Pantalla",
+    tipo_Proyector: "Proyector",
+    tipo_Impresora: "Impresora",
+
+    // Estados de dispositivo
+    estado_En_Revision: "En Revisión",
+    estado_En_Mantenimiento: "En Mantenimiento",
+    estado_Listo_para_Entrega: "Listo para Entrega",
+    estado_Entregado: "Entregado",
+    estado_Disponible: "Disponible",
+
+    // Textos del modal de salida
+    salida_modal_costo_label: "Costo del mantenimiento",
+    salida_modal_monto_invalido: "Ingresa un monto válido (mayor o igual a 0).",
+    salida_modal_costo_hint: "Este monto quedará como Pendiente de pago. El usuario podrá pagarlo desde su panel cuando el dispositivo esté listo para entrega.",
+
+    // Calificaciones
+    calificaciones_titulo: "Calificaciones",
+    calificaciones_subtitulo: "Reseñas de clientes sobre el servicio",
+    calificaciones_total_resenas: "Total reseñas",
+    calificaciones_promedio_empresa: "Promedio empresa",
+    calificaciones_promedio_tecnicos: "Promedio técnicos",
+    calificaciones_buscar_ph: "Buscar por serial, dispositivo o comentario...",
+    calificaciones_todos_tecnicos: "Todos los técnicos",
+    calificaciones_todas_estrellas: "Todas las estrellas",
+    calificaciones_cargando: "Cargando...",
+    calificaciones_sin_resultados: "Sin calificaciones",
+    calificaciones_tecnico: "Técnico:",
+    calificaciones_no_asignado: "No asignado",
+    calificaciones_empresa: "Empresa",
+
+    // Papelera
+    papelera_titulo: "Papelera",
+    papelera_subtitulo: "Dispositivos eliminados — pueden restaurarse o eliminarse permanentemente",
+    papelera_dispositivos_eliminados: "Dispositivos eliminados",
+    papelera_buscar_ph: "Buscar por nombre, serial, marca...",
+    papelera_limpiar: "Limpiar",
+    papelera_registros: "registros",
   },
   en: {
     // Account settings
@@ -1188,6 +1231,49 @@ const translations = {
     sidebar_iniciar_mant: "✓ Start maintenance",
     sidebar_tecnicos: "Technicians",
     sidebar_usuarios: "Users",
+
+    // Device types
+    tipo_Portatil: "Laptop",
+    tipo_Computadora: "Desktop",
+    tipo_Tablet: "Tablet",
+    tipo_Pantalla: "Monitor",
+    tipo_Proyector: "Projector",
+    tipo_Impresora: "Printer",
+
+    // Device statuses
+    estado_En_Revision: "Under Review",
+    estado_En_Mantenimiento: "In Maintenance",
+    estado_Listo_para_Entrega: "Ready for Delivery",
+    estado_Entregado: "Delivered",
+    estado_Disponible: "Available",
+
+    // Exit modal texts
+    salida_modal_costo_label: "Maintenance cost",
+    salida_modal_monto_invalido: "Enter a valid amount (greater than or equal to 0).",
+    salida_modal_costo_hint: "This amount will remain as Pending payment. The user can pay it from their dashboard when the device is ready for delivery.",
+
+    // Ratings
+    calificaciones_titulo: "Ratings",
+    calificaciones_subtitulo: "Customer reviews about the service",
+    calificaciones_total_resenas: "Total reviews",
+    calificaciones_promedio_empresa: "Company average",
+    calificaciones_promedio_tecnicos: "Technicians average",
+    calificaciones_buscar_ph: "Search by serial, device or comment...",
+    calificaciones_todos_tecnicos: "All technicians",
+    calificaciones_todas_estrellas: "All stars",
+    calificaciones_cargando: "Loading...",
+    calificaciones_sin_resultados: "No ratings",
+    calificaciones_tecnico: "Technician:",
+    calificaciones_no_asignado: "Not assigned",
+    calificaciones_empresa: "Company",
+
+    // Trash
+    papelera_titulo: "Trash",
+    papelera_subtitulo: "Deleted devices — can be restored or permanently deleted",
+    papelera_dispositivos_eliminados: "Deleted devices",
+    papelera_buscar_ph: "Search by name, serial, brand...",
+    papelera_limpiar: "Clear",
+    papelera_registros: "records",
   }
 };
 

@@ -7,6 +7,30 @@ import { useLanguage } from "../context/LanguageContext.jsx";
 
 function ConsultarFiltros() {
   const { t } = useLanguage();
+
+  const translateTipo = (tipo) => {
+    const map = {
+      'Portatil': t('tipo_Portatil'),
+      'Computadora': t('tipo_Computadora'),
+      'Tablet': t('tipo_Tablet'),
+      'Pantalla': t('tipo_Pantalla'),
+      'Proyector': t('tipo_Proyector'),
+      'Impresora': t('tipo_Impresora'),
+    };
+    return map[tipo] || tipo;
+  };
+
+  const translateEstado = (estado) => {
+    const map = {
+      'En Revision': t('estado_En_Revision'),
+      'En Mantenimiento': t('estado_En_Mantenimiento'),
+      'Listo para Entrega': t('estado_Listo_para_Entrega'),
+      'Entregado': t('estado_Entregado'),
+      'Disponible': t('estado_Disponible'),
+    };
+    return map[estado] || estado;
+  };
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtros, setFiltros] = useState({ fecha: "", nombre: "", ubicacion: "", estado: "" });
@@ -133,7 +157,7 @@ function ConsultarFiltros() {
                 <tr key={d.id}>
                   <td>
                     <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
-                    <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo || ''}</div>
+                    <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{translateTipo(d.tipo) || ''}</div>
                   </td>
                   <td style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial}</td>
                   <td>{d.ubicacion}</td>
@@ -145,7 +169,7 @@ function ConsultarFiltros() {
                     <span className="hora">{d.hora_registro || new Date(d.fecha_registro).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</span>
                   </td>
                   <td>
-                    <span className={` ${d.estado.toLowerCase()}`}>{d.estado}</span>
+                    <span className={` ${d.estado.toLowerCase()}`}>{translateEstado(d.estado)}</span>
                   </td>
                   {esSuperAdmin && (
                     <td style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
