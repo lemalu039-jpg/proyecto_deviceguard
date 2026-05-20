@@ -25,6 +25,29 @@ const BG_ESTADO    = Object.fromEntries(ESTADOS_FIJOS.map(e => [e.key, e.bg]));
 function Estadisticas() {
   const { t } = useLanguage();
 
+  const translateTipo = (tipo) => {
+    const map = {
+      'Portatil': t('tipo_Portatil'),
+      'Computadora': t('tipo_Computadora'),
+      'Tablet': t('tipo_Tablet'),
+      'Pantalla': t('tipo_Pantalla'),
+      'Proyector': t('tipo_Proyector'),
+      'Impresora': t('tipo_Impresora'),
+    };
+    return map[tipo] || tipo;
+  };
+
+  const translateEstado = (estado) => {
+    const map = {
+      'En Revision': t('estado_En_Revision'),
+      'En Mantenimiento': t('estado_En_Mantenimiento'),
+      'Listo para Entrega': t('estado_Listo_para_Entrega'),
+      'Entregado': t('estado_Entregado'),
+      'Disponible': t('estado_Disponible'),
+    };
+    return map[estado] || estado;
+  };
+
   const filtrosLinea = [
     { labelKey: 'dash_todos_estados', value: 'todos' },
     { labelKey: 'dash_listo_entrega', value: 'Listo para Entrega' },
@@ -534,7 +557,7 @@ function Estadisticas() {
                         <tr key={d.id} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--table-stripe)' }}>
                           <td style={tdStyle}>
                             <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
-                            <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{d.tipo || ''}</div>
+                            <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{translateTipo(d.tipo) || ''}</div>
                           </td>
                           <td style={{ ...tdStyle, fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial || 'N/A'}</td>
                           <td style={tdStyle}>{d.marca || 'N/A'}</td>
@@ -550,7 +573,7 @@ function Estadisticas() {
                               </>
                             ) : 'N/A'}
                           </td>
-                          <td style={tdStyle}><span style={getBadgeStyle(d.estado)}>{d.estado}</span></td>
+                          <td style={tdStyle}><span style={getBadgeStyle(d.estado)}>{translateEstado(d.estado)}</span></td>
                         </tr>
                       ))
                   )}

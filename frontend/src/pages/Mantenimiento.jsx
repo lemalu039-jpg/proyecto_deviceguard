@@ -4,6 +4,18 @@ import { useLanguage } from '../context/LanguageContext.jsx';
 
 function Mantenimiento() {
   const { t } = useLanguage();
+
+  const translateEstado = (estado) => {
+    const map = {
+      'En Revision': t('estado_En_Revision'),
+      'En Mantenimiento': t('estado_En_Mantenimiento'),
+      'Listo para Entrega': t('estado_Listo_para_Entrega'),
+      'Entregado': t('estado_Entregado'),
+      'Disponible': t('estado_Disponible'),
+    };
+    return map[estado] || estado;
+  };
+
   const [mantenimientos, setMantenimientos] = useState([]);
   const [dispositivos, setDispositivos] = useState([]);
   
@@ -77,7 +89,7 @@ function Mantenimiento() {
             <select name="dispositivo_id" value={form.dispositivo_id} onChange={handleChange} className="form-control" required disabled={editingId != null}>
               <option value="">{t('mant_selecciona_disp')}</option>
               {dispositivos.map(d => (
-                <option key={d.id} value={d.id}>{d.nombre} ({d.serial}) - {d.estado}</option>
+                <option key={d.id} value={d.id}>{d.nombre} ({d.serial}) - {translateEstado(d.estado)}</option>
               ))}
             </select>
           </div>

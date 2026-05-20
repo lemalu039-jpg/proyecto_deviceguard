@@ -15,6 +15,30 @@ const Icon = ({ d, size = 14 }) => (
 
 function Dispositivos() {
   const { t } = useLanguage();
+
+  const translateTipo = (tipo) => {
+    const map = {
+      'Portatil': t('tipo_Portatil'),
+      'Computadora': t('tipo_Computadora'),
+      'Tablet': t('tipo_Tablet'),
+      'Pantalla': t('tipo_Pantalla'),
+      'Proyector': t('tipo_Proyector'),
+      'Impresora': t('tipo_Impresora'),
+    };
+    return map[tipo] || tipo;
+  };
+
+  const translateEstado = (estado) => {
+    const map = {
+      'En Revision': t('estado_En_Revision'),
+      'En Mantenimiento': t('estado_En_Mantenimiento'),
+      'Listo para Entrega': t('estado_Listo_para_Entrega'),
+      'Entregado': t('estado_Entregado'),
+      'Disponible': t('estado_Disponible'),
+    };
+    return map[estado] || estado;
+  };
+
   const [dispositivos, setDispositivos] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
@@ -423,7 +447,7 @@ function Dispositivos() {
                 <tr key={d.id}>
                   <td>
                     <div className="disp-dev-name">{d.nombre}</div>
-                    <div className="disp-dev-type">{d.tipo}</div>
+                    <div className="disp-dev-type">{translateTipo(d.tipo)}</div>
                   </td>
                   <td>{d.serial}</td>
                   <td>{d.marca}</td>
@@ -435,7 +459,7 @@ function Dispositivos() {
                     </span>
                   </td>
                   <td>
-                    <span className={`disp-badge ${getBadgeClass(d.estado)}`}>{d.estado}</span>
+                    <span className={`disp-badge ${getBadgeClass(d.estado)}`}>{translateEstado(d.estado)}</span>
                   </td>
                   <td style={{ whiteSpace: 'nowrap' }}>
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>

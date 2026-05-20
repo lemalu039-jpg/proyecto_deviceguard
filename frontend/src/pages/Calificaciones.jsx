@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getCalificaciones } from "../services/api";
 import Pagination from "../components/Pagination";
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 const Estrellas = ({ valor }) => (
   <span>
@@ -13,6 +14,7 @@ const Estrellas = ({ valor }) => (
 const ITEMS_POR_PAGINA = 8;
 
 function Calificaciones() {
+  const { t } = useLanguage();
   const [calificaciones, setCalificaciones] = useState([]);
   const [filtroTecnico, setFiltroTecnico] = useState("");
   const [filtroEstrellas, setFiltroEstrellas] = useState("");
@@ -58,20 +60,20 @@ function Calificaciones() {
   return (
     <div style={{ padding: "2rem", maxWidth: "1100px" }}>
       <h1 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: "0.25rem", color: "var(--text-main)" }}>
-        Calificaciones
+        {t('calificaciones_titulo')}
       </h1>
       <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginBottom: "1.5rem" }}>
-        Reseñas de clientes sobre el servicio
+        {t('calificaciones_subtitulo')}
       </p>
 
       {/* Tarjetas resumen */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}>
         <div style={{ background: "var(--bg-card)", borderRadius: "12px", padding: "1.2rem", border: "1px solid var(--border)" }}>
-          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", margin: "0 0 4px" }}>Total reseñas</p>
+          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", margin: "0 0 4px" }}>{t('calificaciones_total_resenas')}</p>
           <p style={{ fontSize: "1.8rem", fontWeight: 800, color: "var(--text-main)", margin: 0 }}>{calificaciones.length}</p>
         </div>
         <div style={{ background: "var(--bg-card)", borderRadius: "12px", padding: "1.2rem", border: "1px solid var(--border)" }}>
-          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", margin: "0 0 4px" }}>Promedio empresa</p>
+          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", margin: "0 0 4px" }}>{t('calificaciones_promedio_empresa')}</p>
           <p style={{ fontSize: "1.8rem", fontWeight: 800, color: "var(--text-muted)", margin: 0 }}>
   <svg
     width="24"
@@ -86,7 +88,7 @@ function Calificaciones() {
 </p>
         </div>
         <div style={{ background: "var(--bg-card)", borderRadius: "12px", padding: "1.2rem", border: "1px solid var(--border)" }}>
-          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", margin: "0 0 4px" }}>Promedio técnicos</p>
+          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", margin: "0 0 4px" }}>{t('calificaciones_promedio_tecnicos')}</p>
           <p style={{ fontSize: "1.8rem", fontWeight: 800, color: "var(--text-muted)", margin: 0 }}>
   <svg
     width="24"
@@ -105,28 +107,28 @@ function Calificaciones() {
       {/* Filtros */}
       <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
         <input
-          placeholder="Buscar por serial, dispositivo o comentario..."
+          placeholder={t('calificaciones_buscar_ph')}
           value={busqueda}
           onChange={e => setBusqueda(e.target.value)}
           style={{ flex: 1, minWidth: "200px", padding: "0.5rem 0.75rem", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-main)", fontSize: "0.83rem", outline: "none" }}
         />
         <select value={filtroTecnico} onChange={e => setFiltroTecnico(e.target.value)}
           style={{ padding: "0.5rem 0.75rem", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-main)", fontSize: "0.83rem" }}>
-          <option value="">Todos los técnicos</option>
-          {tecnicos.map(t => <option key={t} value={t}>{t}</option>)}
+          <option value="">{t('calificaciones_todos_tecnicos')}</option>
+          {tecnicos.map(t_tec => <option key={t_tec} value={t_tec}>{t_tec}</option>)}
         </select>
         <select value={filtroEstrellas} onChange={e => setFiltroEstrellas(e.target.value)}
           style={{ padding: "0.5rem 0.75rem", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-main)", fontSize: "0.83rem" }}>
-          <option value="">Todas las estrellas</option>
+          <option value="">{t('calificaciones_todas_estrellas')}</option>
           {[5,4,3,2,1].map(n => <option key={n} value={n}>{n} ★</option>)}
         </select>
       </div>
 
       {/* Lista */}
       {loading ? (
-        <p style={{ color: "var(--text-muted)" }}>Cargando...</p>
+        <p style={{ color: "var(--text-muted)" }}>{t('calificaciones_cargando')}</p>
       ) : filtradas.length === 0 ? (
-        <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "2rem" }}>Sin calificaciones</p>
+        <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "2rem" }}>{t('calificaciones_sin_resultados')}</p>
       ) : (
         <>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>

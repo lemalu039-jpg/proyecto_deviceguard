@@ -13,6 +13,30 @@ import { useLanguage } from "../context/LanguageContext.jsx";
 
 function SalidaDispositivos() {
   const { t } = useLanguage();
+
+  const translateTipo = (tipo) => {
+    const map = {
+      'Portatil': t('tipo_Portatil'),
+      'Computadora': t('tipo_Computadora'),
+      'Tablet': t('tipo_Tablet'),
+      'Pantalla': t('tipo_Pantalla'),
+      'Proyector': t('tipo_Proyector'),
+      'Impresora': t('tipo_Impresora'),
+    };
+    return map[tipo] || tipo;
+  };
+
+  const translateEstado = (estado) => {
+    const map = {
+      'En Revision': t('estado_En_Revision'),
+      'En Mantenimiento': t('estado_En_Mantenimiento'),
+      'Listo para Entrega': t('estado_Listo_para_Entrega'),
+      'Entregado': t('estado_Entregado'),
+      'Disponible': t('estado_Disponible'),
+    };
+    return map[estado] || estado;
+  };
+
   const [salidas, setSalidas] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
   const [form, setForm] = useState({
@@ -102,7 +126,7 @@ function SalidaDispositivos() {
     // Validar costo antes de proceder
     const costoNum = parseFloat(costo);
     if (!costo || isNaN(costoNum) || costoNum < 0) {
-      setErrorCosto('Ingresa un monto válido (mayor o igual a 0).');
+      setErrorCosto(t('salida_modal_monto_invalido'));
       return;
     }
 
@@ -260,7 +284,7 @@ function SalidaDispositivos() {
                       }}>
                         <div style={{ fontWeight: 700, marginBottom: '.35rem' }}>{dispositivoEncontrado.nombre}</div>
                         <div style={{ color: 'var(--text-muted)', fontSize: '.72rem' }}>
-                          {dispositivoEncontrado.tipo} · {dispositivoEncontrado.serial}
+                          {translateTipo(dispositivoEncontrado.tipo)} · {dispositivoEncontrado.serial}
                         </div>
                         <div style={{ marginTop: '.4rem' }}>
                           <span style={{
@@ -268,7 +292,7 @@ function SalidaDispositivos() {
                             padding: '2px 9px', borderRadius: '20px',
                             background: 'rgba(192,132,252,0.15)', color: '#c084fc'
                           }}>
-                            {dispositivoEncontrado.estado}
+                            {translateEstado(dispositivoEncontrado.estado)}
                           </span>
                         </div>
                       </div>
@@ -278,7 +302,7 @@ function SalidaDispositivos() {
                   {/* ── Campo de costo — ahora en esta modal, no en GestionMantenimiento ── */}
                   <div className="col-12">
                     <label className="salida-modal-label">
-                      Costo del mantenimiento <span style={{ color: '#ef4444' }}>*</span>
+                      {t('salida_modal_costo_label')} <span style={{ color: '#ef4444' }}>*</span>
                     </label>
                     <div style={{
                       display: 'flex', alignItems: 'center',
@@ -320,7 +344,7 @@ function SalidaDispositivos() {
                       </div>
                     )}
                     <p style={{ fontSize: '.72rem', color: 'var(--text-muted)', marginTop: '.5rem', lineHeight: 1.5 }}>
-                      Este monto quedará como <strong>Pendiente de pago</strong>. El usuario podrá pagarlo desde su panel cuando el dispositivo esté listo para entrega.
+                      {t('salida_modal_costo_hint')}
                     </p>
                   </div>
 
@@ -399,7 +423,7 @@ function SalidaDispositivos() {
                       <br />
                       <span className="salida-hora">{s.hora_registro || new Date(s.fecha_registro).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</span>
                     </td>
-                    <td><span className={getBadgeClass(s.estado)}>{s.estado}</span></td>
+                    <td><span className={getBadgeClass(s.estado)}>{translateEstado(s.estado)}</span></td>
                     {esSuperAdmin && (
                       <td style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
                         {s.registrado_por || '-'}
