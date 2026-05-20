@@ -122,7 +122,7 @@ const usuariosFiltrados = usuarios
     { path: "/registrarsalida", label: t('registrar_salida'), icon: registrarsalida_ },
     { path: "/reportes", label: t('generar_reportes'), icon: generar_reportes_ },
     { path: "/estadisticas", label: t('estadisticas'), icon: estadisticas_ },
-    { path: "/papelera", label: "Papelera", icon: papelera_ },
+    { path: "/papelera", label: t('papelera_titulo'), icon: papelera_ },
     { path: "/ajustes-cuenta", label: t('ajustes_cuenta_nav'), icon: settings },
   ] : [
     { path: "/asignaciones", label: t('asignacion_title') || "Asignar Tareas", icon: gestion_mantenimiento }, 
@@ -130,9 +130,9 @@ const usuariosFiltrados = usuarios
     { path: "/registrarsalida", label: t('registrar_salida'), icon: registrarsalida_ },
     { path: "/estadisticas", label: t('estadisticas'), icon: estadisticas_ },
     ...(esSuperAdmin || rol === "admin" ? [{ path: "/equipo", label: t('equipo'), icon: equipo_ }] : []),
-    ...(esSuperAdmin || rol === "admin" ? [{ path: "/calificaciones", label: "Calificaciones", icon: estadisticas_ }] : []),
+    ...(esSuperAdmin || rol === "admin" ? [{ path: "/calificaciones", label: t('calificaciones_titulo'), icon: estadisticas_ }] : []),
     { path: "/gestion", label: t('gestion_mantenimiento'), icon: gestion_mantenimiento },
-    { path: "/papelera", label: "Papelera", icon: papelera_ },
+    { path: "/papelera", label: t('papelera_titulo'), icon: papelera_ },
     { path: "/ajustes-cuenta", label: t('ajustes_cuenta_nav'), icon: settings },
   ];
 
@@ -397,9 +397,9 @@ const usuariosFiltrados = usuarios
   ))}
 
   {/* Calificaciones recibidas */}
-  {calificaciones.length > 0 && (
+      {calificaciones.length > 0 && (
     <div style={{ padding: "0.4rem 1rem", fontSize: "0.65rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", background: "var(--table-head)" }}>
-      Calificaciones recibidas
+      {t('sidebar_nueva_calificacion')}
     </div>
   )}
   {calificaciones.map(c => (
@@ -426,7 +426,7 @@ const usuariosFiltrados = usuarios
 ))}
 
   {dispositivos.filter(d => d.estado === "En Revision").length === 0 && calificaciones.length === 0 && (
-    <p style={{ padding: "1rem", fontSize: "0.78rem", color: "var(--text-muted)", textAlign: "center" }}>Sin notificaciones</p>
+    <p style={{ padding: "1rem", fontSize: "0.78rem", color: "var(--text-muted)", textAlign: "center" }}>{t('sidebar_sin_notificaciones')}</p>
   )}
 </div>
           </div>

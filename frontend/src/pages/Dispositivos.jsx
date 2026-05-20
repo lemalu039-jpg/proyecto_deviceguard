@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getDispositivos, createDispositivo, updateDispositivo, deleteDispositivo, getDispositivoBySerial } from '../services/api';
 import { Modal } from 'bootstrap';
 import './css/Dispositivos.css';
@@ -14,30 +14,7 @@ const Icon = ({ d, size = 14 }) => (
 );
 
 function Dispositivos() {
-  const { t } = useLanguage();
-
-  const translateTipo = (tipo) => {
-    const map = {
-      'Portatil': t('tipo_Portatil'),
-      'Computadora': t('tipo_Computadora'),
-      'Tablet': t('tipo_Tablet'),
-      'Pantalla': t('tipo_Pantalla'),
-      'Proyector': t('tipo_Proyector'),
-      'Impresora': t('tipo_Impresora'),
-    };
-    return map[tipo] || tipo;
-  };
-
-  const translateEstado = (estado) => {
-    const map = {
-      'En Revision': t('estado_En_Revision'),
-      'En Mantenimiento': t('estado_En_Mantenimiento'),
-      'Listo para Entrega': t('estado_Listo_para_Entrega'),
-      'Entregado': t('estado_Entregado'),
-      'Disponible': t('estado_Disponible'),
-    };
-    return map[estado] || estado;
-  };
+  const { t, translateTipo, translateEstado, translateUbicacion } = useLanguage();
 
   const [dispositivos, setDispositivos] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -355,8 +332,8 @@ function Dispositivos() {
                     { label: t('nombre_dispositivo'), value: reingreso.dispositivo.nombre },
                     { label: t('disp_marca'), value: reingreso.dispositivo.marca },
                     { label: t('disp_serial'), value: reingreso.dispositivo.serial },
-                    { label: t('tipo_dispositivo'), value: reingreso.dispositivo.tipo },
-                    { label: t('estado_dispositivo'), value: reingreso.dispositivo.estado },
+                    { label: t('tipo_dispositivo'), value: translateTipo(reingreso.dispositivo.tipo) },
+                    { label: t('estado_dispositivo'), value: translateEstado(reingreso.dispositivo.estado) },
                   ].map(({ label, value }) => (
                     <div key={label} className="reingreso-info-row">
                       <span className="reingreso-info-label">{label}</span>
@@ -451,7 +428,7 @@ function Dispositivos() {
                   </td>
                   <td>{d.serial}</td>
                   <td>{d.marca}</td>
-                  <td>{d.ubicacion || 'N/A'}</td>
+                  <td>{translateUbicacion(d.ubicacion) || 'N/A'}</td>
                   <td>
                     {formatFecha(d.fecha_registro)}<br />
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>

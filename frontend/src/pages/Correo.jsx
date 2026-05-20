@@ -230,7 +230,7 @@ function Correo() {
               <Icon d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z" size={15} />
               <input
                 type="text"
-                placeholder={t('correo_buscar_historial') || "Buscar por destinatario, asunto o mensaje…"}
+                placeholder={t('correo_buscar_historial')}
                 value={busquedaHistorial}
                 onChange={e => setBusquedaHistorial(e.target.value)}
               />

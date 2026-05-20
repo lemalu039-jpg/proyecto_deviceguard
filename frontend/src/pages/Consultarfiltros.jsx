@@ -6,30 +6,7 @@ import TableSkeleton from "../components/TableSkeleton";
 import { useLanguage } from "../context/LanguageContext.jsx";
 
 function ConsultarFiltros() {
-  const { t } = useLanguage();
-
-  const translateTipo = (tipo) => {
-    const map = {
-      'Portatil': t('tipo_Portatil'),
-      'Computadora': t('tipo_Computadora'),
-      'Tablet': t('tipo_Tablet'),
-      'Pantalla': t('tipo_Pantalla'),
-      'Proyector': t('tipo_Proyector'),
-      'Impresora': t('tipo_Impresora'),
-    };
-    return map[tipo] || tipo;
-  };
-
-  const translateEstado = (estado) => {
-    const map = {
-      'En Revision': t('estado_En_Revision'),
-      'En Mantenimiento': t('estado_En_Mantenimiento'),
-      'Listo para Entrega': t('estado_Listo_para_Entrega'),
-      'Entregado': t('estado_Entregado'),
-      'Disponible': t('estado_Disponible'),
-    };
-    return map[estado] || estado;
-  };
+  const { t, translateTipo, translateEstado, translateUbicacion } = useLanguage();
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -160,7 +137,7 @@ function ConsultarFiltros() {
                     <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{translateTipo(d.tipo) || ''}</div>
                   </td>
                   <td style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial}</td>
-                  <td>{d.ubicacion}</td>
+                  <td>{translateUbicacion(d.ubicacion)}</td>
                   <td>
                     {d.fecha_registro
                       ? new Date(d.fecha_registro).toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: '2-digit', month: 'short', year: 'numeric' })

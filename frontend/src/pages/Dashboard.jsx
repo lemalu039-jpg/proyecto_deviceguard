@@ -94,30 +94,7 @@ const IconoTipoDispositivo = ({ tipo = "" }) => {
 };
 
 function Dashboard() {
-  const { t } = useLanguage();
-
-  const translateTipo = (tipo) => {
-    const map = {
-      'Portatil': t('tipo_Portatil'),
-      'Computadora': t('tipo_Computadora'),
-      'Tablet': t('tipo_Tablet'),
-      'Pantalla': t('tipo_Pantalla'),
-      'Proyector': t('tipo_Proyector'),
-      'Impresora': t('tipo_Impresora'),
-    };
-    return map[tipo] || tipo;
-  };
-
-  const translateEstado = (estado) => {
-    const map = {
-      'En Revision': t('estado_En_Revision'),
-      'En Mantenimiento': t('estado_En_Mantenimiento'),
-      'Listo para Entrega': t('estado_Listo_para_Entrega'),
-      'Entregado': t('estado_Entregado'),
-      'Disponible': t('estado_Disponible'),
-    };
-    return map[estado] || estado;
-  };
+  const { t, translateTipo, translateEstado, translateUbicacion } = useLanguage();
 
   useEffect(() => {
     const generador = estadosDispositivo();
@@ -576,7 +553,7 @@ function Dashboard() {
                       <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{translateTipo(d.tipo)}</div>
                     </td>
                     <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace', cursor: 'pointer' }} className="hover-link">{d.serial}</td>
-                    <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">{d.ubicacion || 'N/A'}</td>
+                    <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">{translateUbicacion(d.ubicacion) || 'N/A'}</td>
                     <td onClick={() => navigate(`/historial/${d.id}`)} style={{ ...tdStyle, fontSize: '.8rem', color: 'var(--text-muted)', cursor: 'pointer' }} className="hover-link">
                       {formatFecha(d.fecha_registro)}
                       {d.hora_registro && (
