@@ -11,6 +11,14 @@
   color: var(--text-muted);
 }
 
+/* En mobile el breadcrumb no necesita padding extra porque
+   .main-content ya tiene padding-top: 56px */
+@media (max-width: 768px) {
+  .breadcrumbs {
+    padding: 0.5rem 1rem;
+  }
+}
+
 .breadcrumb-link {
   display: flex;
   align-items: center;

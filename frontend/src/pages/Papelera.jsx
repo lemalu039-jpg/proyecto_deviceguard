@@ -190,24 +190,24 @@ function Papelera() {
                     .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                     .map(d => (
                       <tr key={d.id}>
-                        <td>
+                        <td data-label="">
                           <div className="papelera-dev-name">{d.nombre}</div>
                           <div className="papelera-dev-type">{translateTipo(d.tipo) || ""}</div>
                         </td>
-                        <td className="papelera-serial">{d.serial}</td>
-                        <td>{d.marca || "—"}</td>
-                        <td>{translateUbicacion(d.ubicacion) || "—"}</td>
-                        <td>
+                        <td data-label="Serial" className="papelera-serial">{d.serial}</td>
+                        <td data-label="Marca">{d.marca || "—"}</td>
+                        <td data-label="Ubicación">{translateUbicacion(d.ubicacion) || "—"}</td>
+                        <td data-label="Estado">
                           <span style={getBadgeStyle(d.estado)}>{translateEstado(d.estado) || "—"}</span>
                         </td>
-                        <td className="papelera-muted">{d.registrado_por || "—"}</td>
-                        <td>
+                        <td data-label="Registrado por" className="papelera-muted">{d.registrado_por || "—"}</td>
+                        <td data-label="Fecha">
                           {formatFecha(d.fecha_registro)}
                           {d.hora_registro && (
                             <div className="papelera-hora">{d.hora_registro}</div>
                           )}
                         </td>
-                        <td>
+                        <td data-label="">
                           <div className="papelera-acciones">
                             <button
                               className="papelera-btn-restaurar"

@@ -21,6 +21,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.3rem;
+  white-space: nowrap;
 }
 
 .pagination-btn:hover:not(:disabled) {
@@ -51,4 +53,44 @@
   color: var(--text-muted);
   font-weight: 600;
   padding: 0 0.5rem;
+}
+
+/* ── RESPONSIVE ────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .pagination-container {
+    gap: 0.35rem;
+    margin-top: 1.25rem;
+    /* Una sola línea centrada, sin wrap */
+    flex-wrap: nowrap;
+    justify-content: center;
+  }
+
+  .pagination-btn {
+    padding: 0.45rem 0.65rem;
+    font-size: 0.8rem;
+    min-width: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pagination-container {
+    gap: 0.25rem;
+    margin-top: 1rem;
+    flex-wrap: nowrap;
+    justify-content: center;
+  }
+
+  /* Anterior / Siguiente: solo el ícono, sin texto */
+  .pagination-btn.pagination-prev span,
+  .pagination-btn.pagination-next span {
+    display: none;
+  }
+
+  .pagination-btn {
+    padding: 0.4rem 0.55rem;
+    font-size: 0.78rem;
+    min-width: 32px;
+    min-height: 32px;
+  }
 }

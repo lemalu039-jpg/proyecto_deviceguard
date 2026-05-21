@@ -1,0 +1,97 @@
+/* ── DASHBOARD CARDS GRID ─────────────────────────────── */
+.dash-cards-grid {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  margin-bottom: 2rem;
+  padding-bottom: 4px; /* evita que el scrollbar tape sombras */
+}
+
+.dash-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 1.1rem 1rem 1rem 1.3rem;
+  position: relative;
+  overflow: hidden;
+  flex: 0 1 calc(25% - 0.75rem);
+  min-width: 160px;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .dash-cards-grid {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .dash-card {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .dash-cards-grid {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .dash-card {
+    flex: 1 1 100%;
+    /* Más padding horizontal para que el contenido respire */
+    padding: 1rem 1.1rem 0.9rem 1.2rem;
+  }
+
+  /* Etiqueta de la card */
+  .dash-card-label {
+    font-size: 0.78rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  /* Número grande */
+  .dash-card-value {
+    font-size: 1.7rem !important;
+  }
+
+  /* Ícono */
+  .dash-card-icon {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
+  }
+
+  .dash-card-icon svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+
+  /* Badge de estado */
+  .dash-card-badge {
+    font-size: 0.62rem !important;
+    padding: 2px 7px !important;
+  }
+
+  /* Sub-texto (usuarios registrados) */
+  .dash-card-sub {
+    font-size: 0.72rem !important;
+  }
+
+  /* Fila número + ícono */
+  .dash-card-row {
+    margin-bottom: 0.5rem !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .dash-card {
+    padding: 0.85rem 0.9rem 0.8rem 1rem;
+  }
+
+  .dash-card-value {
+    font-size: 1.5rem !important;
+  }
+}

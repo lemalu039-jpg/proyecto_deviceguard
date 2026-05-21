@@ -191,18 +191,7 @@ const usuariosFiltrados = usuarios
       </div>
 
       <aside
-        style={{
-          width: "260px",
-          background: "var(--bg-sidebar)",
-          borderRight: "1px solid var(--border)",
-          display: "flex",
-          flexDirection: "column",
-          flexShrink: 0,
-          height: "100vh",
-          position: "sticky",
-          top: 0,
-        }}
-        className={sidebarOpen ? "active" : ""}
+        className={`sidebar-aside ${sidebarOpen ? "active" : ""}`}
       >
         <div style={{ padding: "1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--border)", background: "var(--bg-sidebar)" }}>
   <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
