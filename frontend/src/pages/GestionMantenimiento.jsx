@@ -258,20 +258,20 @@ function GestionMantenimiento() {
                   .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                   .map(d => (
                     <tr key={d.id}>
-                      <td>
+                      <td data-label="">
                         <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
                         <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{translateTipo(d.tipo) || ''}</div>
                       </td>
-                      <td style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial}</td>
-                      <td style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
+                      <td data-label="Serial" style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial}</td>
+                      <td data-label="Registrado por" style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
                         {d.registrado_por || '—'}
                       </td>
-                      <td>
+                      <td data-label="Estado">
                         <span className={`mant-badge ${getBadgeClass(d.estado)}`}>
                           {translateEstado(d.estado)}
                         </span>
                       </td>
-                      <td>
+                      <td data-label="Pago">
                         {(() => {
                           const ep = estadosPago[d.id];
                           if (!ep) return <span style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>—</span>;
@@ -293,7 +293,7 @@ function GestionMantenimiento() {
                           );
                         })()}
                       </td>
-                      <td>
+                      <td data-label="Cambiar estado">
                         <select
                           className="mant-select"
                           value=""

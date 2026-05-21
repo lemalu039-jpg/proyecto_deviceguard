@@ -329,7 +329,141 @@
   cursor: not-allowed;
 }
 
-/* ── TOAST ───────────────────────────────────────────── */
+/* ── RESPONSIVE MOBILE ─────────────────────────────────── */
+
+@media (max-width: 768px) {
+  /* Tabla → tarjetas apiladas */
+  .papelera-table-wrap {
+    overflow-x: visible;
+  }
+
+  .papelera-table thead {
+    display: none;
+  }
+
+  .papelera-table,
+  .papelera-table tbody,
+  .papelera-table tr,
+  .papelera-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .papelera-table tbody tr {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .papelera-table td {
+    padding: 0.28rem 0;
+    border: none;
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  /* Etiqueta generada con data-label */
+  .papelera-table td::before {
+    content: attr(data-label);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 90px;
+  }
+
+  /* Primera celda (nombre + tipo): encabezado de la tarjeta */
+  .papelera-table td:first-child {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.55rem;
+    margin-bottom: 0.3rem;
+    justify-content: flex-start;
+    gap: 0;
+  }
+
+  .papelera-table td:first-child::before {
+    display: none;
+  }
+
+  /* Botones de acción: fila completa */
+  .papelera-acciones {
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 0.4rem;
+  }
+
+  .papelera-btn-restaurar,
+  .papelera-btn-eliminar {
+    flex: 1;
+    justify-content: center;
+    font-size: 0.78rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  /* Barra de filtros */
+  .papelera-card-title {
+    gap: 0.5rem;
+    padding: 0.75rem 0.9rem;
+  }
+
+  .papelera-search {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .papelera-count {
+    margin-left: 0;
+  }
+
+  /* Header de la página */
+  .papelera-header {
+    margin-bottom: 1rem;
+    gap: 0.75rem;
+  }
+
+  .papelera-titulo {
+    font-size: 1.3rem;
+  }
+
+  .papelera-header-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .papelera-table tbody tr {
+    padding: 0.65rem 0.75rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .papelera-table td {
+    font-size: 0.78rem;
+  }
+
+  .papelera-table td::before {
+    min-width: 80px;
+    font-size: 0.65rem;
+  }
+
+  .papelera-titulo {
+    font-size: 1.15rem;
+  }
+
+  .papelera-subtitulo {
+    font-size: 0.78rem;
+  }
+}
 .papelera-toast {
   position: fixed;
   bottom: 1.5rem;

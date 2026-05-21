@@ -261,7 +261,7 @@ function Equipo() {
 
                 return currentItems.map(u => (
                   <tr key={u.id}>
-                    <td>
+                    <td data-label={t('equipo_col_usuario')}>
                       <div className="equipo-tabla-user">
                         <div className="equipo-tabla-avatar" style={{ background: colorPorId(u.id) }}>
                           {iniciales(u.nombre)}
@@ -269,8 +269,8 @@ function Equipo() {
                         <span>{u.nombre}</span>
                       </div>
                     </td>
-                    <td>{u.correo}</td>
-                    <td>
+                    <td data-label={t('correo_col_correo') || 'Correo'}>{u.correo}</td>
+                    <td data-label={t('rol')}>
                      <span className={`equipo-badge ${
   u.activo === 0 ? "inactivo" :
   u.rol === "super_admin" ? "super-admin" : 
@@ -285,18 +285,18 @@ function Equipo() {
    t('usuario_normal')}
 </span>
                     </td>
-                    <td>{u.fecha_creacion ? (
+                    <td data-label={t('dash_col_fecha_reg')}>{u.fecha_creacion ? (
                       <>
                         <span>{new Date(u.fecha_creacion).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" })}</span>
                         <br />
                         <span className="equipo-hora">{new Date(u.fecha_creacion).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}</span>
                       </>
                     ) : "—"}</td>
-                    <td>
+                    <td data-label={t('equipo_col_acciones')}>
                       <div className="equipo-acciones">
                         <button className="equipo-btn-editar" onClick={() => abrirEditar(u)} title={t('editar')}>
                           <Icon d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" size={14} />
-                          {t('editar')}
+                          <span>{t('editar')}</span>
                         </button>
                         <button 
                           className="equipo-btn-suspender" 
@@ -305,7 +305,7 @@ function Equipo() {
                           style={{ background: u.activo === 0 ? "#16a34a" : "#dc2626" }}
                         >
                           <Icon d={u.activo === 0 ? "M5 13l4 4L19 7" : "M18.36 6.64a9 9 0 11-12.73 0M12 2v10"} size={14} />
-                          {u.activo === 0 ? t('equipo_activar') : t('equipo_suspender')}
+                          <span>{u.activo === 0 ? t('equipo_activar') : t('equipo_suspender')}</span>
                         </button>
                       </div>
                     </td>

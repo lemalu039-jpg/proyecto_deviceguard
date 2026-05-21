@@ -125,3 +125,87 @@
 .ajustes-btn-danger:hover {
   background: #b32424;
 }
+
+/* ─── Responsive ─────────────────────────────────────────── */
+
+/* Tablet (≤ 1024px) */
+@media (max-width: 1024px) {
+  .ajustes-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+  }
+}
+
+/* Tablet pequeña / móvil grande (≤ 768px) */
+@media (max-width: 768px) {
+  .ajustes-wrapper {
+    padding: 0 0.25rem;
+  }
+
+  .ajustes-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .ajustes-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .ajustes-header p {
+    font-size: 0.88rem;
+  }
+
+  .ajustes-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .ajustes-card {
+    padding: 1.25rem;
+  }
+
+  /* Desactiva el hover lift en touch para evitar que quede "pegado" */
+  .ajustes-card:hover {
+    transform: none;
+  }
+}
+
+/* Móvil (≤ 480px) */
+@media (max-width: 480px) {
+  .ajustes-header h1 {
+    font-size: 1.15rem;
+  }
+
+  .ajustes-card {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .ajustes-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+
+  .ajustes-card-title {
+    font-size: 1rem;
+  }
+
+  .ajustes-card-desc {
+    font-size: 0.82rem;
+  }
+
+  .ajustes-input {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.88rem;
+  }
+
+  .ajustes-btn {
+    padding: 0.65rem;
+    font-size: 0.9rem;
+  }
+
+  /* El toggle de tema no se desborda en pantallas pequeñas */
+  .cosmic-toggle {
+    transform: scale(1) !important;
+  }
+}

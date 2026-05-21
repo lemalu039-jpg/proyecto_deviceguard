@@ -8,6 +8,7 @@ import {
 } from "../services/api";
 import "./css/Correo.css";
 import { useLanguage } from "../context/LanguageContext.jsx";
+import Pagination from "../components/Pagination.jsx";
 
 // Íconos inline simples
 const Icon = ({ d, size = 16 }) => (
@@ -29,6 +30,8 @@ function Correo() {
   const [vista, setVista] = useState(VISTAS.ENVIADOS);
   const [correos, setCorreos] = useState([]);
   const [busquedaHistorial, setBusquedaHistorial] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const ITEMS_POR_PAGINA = 10;
   const [contactos, setContactos] = useState([]);
   const [contactoActivo, setContactoActivo] = useState(null);
   const contactoActivoRef = useRef(null);
@@ -153,7 +156,7 @@ function Correo() {
     nombre.split(" ").slice(0, 2).map(n => n[0]).join("").toUpperCase();
 
   return (
-    <div className="cmail-root">
+    <div className={`cmail-root${vista === VISTAS.CHAT && contactoActivo ? " chat-activo" : ""}`}>
       {/* ── SIDEBAR ── */}
       <aside className="cmail-sidebar">
         <div className="cmail-sidebar-top">
@@ -232,61 +235,75 @@ function Correo() {
                 type="text"
                 placeholder={t('correo_buscar_historial')}
                 value={busquedaHistorial}
-                onChange={e => setBusquedaHistorial(e.target.value)}
+                onChange={e => { setBusquedaHistorial(e.target.value); setPaginaActual(1); }}
               />
               {busquedaHistorial && (
-                <button onClick={() => setBusquedaHistorial("")}>
+                <button onClick={() => { setBusquedaHistorial(""); setPaginaActual(1); }}>
                   <Icon d="M18 6L6 18M6 6l12 12" size={13} />
                 </button>
               )}
             </div>
 
-            <div className="cmail-table-wrap">
-              <table className="cmail-table">
-                <thead>
-                  <tr>
-                    <th>{t('correo_destinatario')}</th>
-                    <th>{t('asunto')}</th>
-                    <th>{t('mensaje')}</th>
-                    <th>{t('fecha')}</th>
-                    <th>{t('hora')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(() => {
-                    const filtrados = correos.filter(c => {
-                      const q = busquedaHistorial.toLowerCase();
-                      return !q ||
-                        c.destinatario?.toLowerCase().includes(q) ||
-                        c.asunto?.toLowerCase().includes(q) ||
-                        c.mensaje?.toLowerCase().includes(q);
-                    });
-                    if (filtrados.length === 0) return (
-                      <tr>
-                        <td colSpan="5" className="cmail-empty">
-                          <Icon d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" size={32} />
-                          <p>{busquedaHistorial ? t('sin_resultados') || "Sin resultados" : t('correo_no_hay')}</p>
-                        </td>
-                      </tr>
-                    );
-                    return filtrados.map(c => (
-                      <tr key={c.id}>
-                        <td>
-                          <div className="cmail-dest-cell">
-                            <div className="cmail-avatar cmail-avatar-sm">{iniciales(c.destinatario)}</div>
-                            {c.destinatario}
-                          </div>
-                        </td>
-                        <td><span className="cmail-asunto">{c.asunto}</span></td>
-                        <td><span className="cmail-msg-preview">{c.mensaje}</span></td>
-                        <td>{formatFecha(c.fecha_envio)}</td>
-                        <td><span className="cmail-hora">{c.hora_envio}</span></td>
-                      </tr>
-                    ));
-                  })()}
-                </tbody>
-              </table>
-            </div>
+            {(() => {
+              const filtrados = correos.filter(c => {
+                const q = busquedaHistorial.toLowerCase();
+                return !q ||
+                  c.destinatario?.toLowerCase().includes(q) ||
+                  c.asunto?.toLowerCase().includes(q) ||
+                  c.mensaje?.toLowerCase().includes(q);
+              });
+              const inicio = (paginaActual - 1) * ITEMS_POR_PAGINA;
+              const paginados = filtrados.slice(inicio, inicio + ITEMS_POR_PAGINA);
+
+              return (
+                <>
+                  <div className="cmail-table-wrap">
+                    <table className="cmail-table">
+                      <thead>
+                        <tr>
+                          <th>{t('correo_destinatario')}</th>
+                          <th>{t('asunto')}</th>
+                          <th>{t('mensaje')}</th>
+                          <th>{t('fecha')}</th>
+                          <th>{t('hora')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginados.length === 0 ? (
+                          <tr>
+                            <td colSpan="5" className="cmail-empty">
+                              <Icon d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" size={32} />
+                              <p>{busquedaHistorial ? t('sin_resultados') || "Sin resultados" : t('correo_no_hay')}</p>
+                            </td>
+                          </tr>
+                        ) : (
+                          paginados.map(c => (
+                            <tr key={c.id}>
+                              <td data-label={t('correo_destinatario')}>
+                                <div className="cmail-dest-cell">
+                                  <div className="cmail-avatar cmail-avatar-sm">{iniciales(c.destinatario)}</div>
+                                  {c.destinatario}
+                                </div>
+                              </td>
+                              <td data-label={t('asunto')}><span className="cmail-asunto">{c.asunto}</span></td>
+                              <td data-label={t('mensaje')}><span className="cmail-msg-preview">{c.mensaje}</span></td>
+                              <td data-label={t('fecha')}>{formatFecha(c.fecha_envio)}</td>
+                              <td data-label={t('hora')}><span className="cmail-hora">{c.hora_envio}</span></td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  <Pagination
+                    totalItems={filtrados.length}
+                    itemsPerPage={ITEMS_POR_PAGINA}
+                    currentPage={paginaActual}
+                    onPageChange={setPaginaActual}
+                  />
+                </>
+              );
+            })()}
           </div>
         )}
 

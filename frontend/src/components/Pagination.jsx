@@ -17,7 +17,8 @@ const Pagination = ({ totalItems, itemsPerPage, currentPage, onPageChange }) => 
   };
 
   const getPageNumbers = () => {
-    const maxVisiblePages = 5;
+    const isMobile = window.innerWidth <= 480;
+    const maxVisiblePages = isMobile ? 3 : 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = startPage + maxVisiblePages - 1;
     if (endPage > totalPages) {
@@ -31,11 +32,11 @@ const Pagination = ({ totalItems, itemsPerPage, currentPage, onPageChange }) => 
 
   return (
     <div className="pagination-container animate-fade-in-up">
-      <button className="pagination-btn" onClick={handlePrev} disabled={currentPage === 1}>
+      <button className="pagination-btn pagination-prev" onClick={handlePrev} disabled={currentPage === 1}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="15 18 9 12 15 6"></polyline>
         </svg>
-        {t('pag_anterior') || 'Anterior'}
+        <span>{t('pag_anterior') || 'Anterior'}</span>
       </button>
 
       {getPageNumbers().map(page => (
@@ -48,8 +49,8 @@ const Pagination = ({ totalItems, itemsPerPage, currentPage, onPageChange }) => 
         </button>
       ))}
 
-      <button className="pagination-btn" onClick={handleNext} disabled={currentPage === totalPages}>
-        {t('pag_siguiente') || 'Siguiente'}
+      <button className="pagination-btn pagination-next" onClick={handleNext} disabled={currentPage === totalPages}>
+        <span>{t('pag_siguiente') || 'Siguiente'}</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="9 18 15 12 9 6"></polyline>
         </svg>

@@ -132,24 +132,24 @@ function ConsultarFiltros() {
             ) : (
               dataFiltrada.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((d) => (
                 <tr key={d.id}>
-                  <td>
+                  <td data-label={t('dash_col_nombre')}>
                     <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
                     <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{translateTipo(d.tipo) || ''}</div>
                   </td>
-                  <td style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial}</td>
-                  <td>{translateUbicacion(d.ubicacion)}</td>
-                  <td>
+                  <td data-label={t('dash_col_serial')} style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial}</td>
+                  <td data-label={t('dash_col_ubicacion')}>{translateUbicacion(d.ubicacion)}</td>
+                  <td data-label={t('dash_col_fecha_reg')}>
                     {d.fecha_registro
                       ? new Date(d.fecha_registro).toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: '2-digit', month: 'short', year: 'numeric' })
                       : '—'}
                     <br />
                     <span className="hora">{d.hora_registro || new Date(d.fecha_registro).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</span>
                   </td>
-                  <td>
+                  <td data-label={t('dash_col_estado')}>
                     <span className={` ${d.estado.toLowerCase()}`}>{translateEstado(d.estado)}</span>
                   </td>
                   {esSuperAdmin && (
-                    <td style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
+                    <td data-label={t('dash_col_reg_por')} style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
                       {d.registrado_por || '—'}
                     </td>
                   )}

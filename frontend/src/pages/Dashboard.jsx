@@ -8,6 +8,7 @@ import TableSkeleton from '../components/TableSkeleton';
 import { useLanguage } from '../context/LanguageContext.jsx';
 // ── CAMBIO 1: importar el modal en lugar de navegar a otra página ──────────────
 import PagoMantenimientoModal from './PagoMantenimiento';
+import './css/Dashboard.css';
 
 // Icono SVG según el tipo de dispositivo
 const IconoTipoDispositivo = ({ tipo = "" }) => {
@@ -331,29 +332,34 @@ function Dashboard() {
   const cardW = 'calc(25% - 0.75rem)';
 
   const renderCard = (card, i) => (
-    <div key={i} className={`card-3d animate-fade-in-up delay-${(i + 1) * 100}`} style={{
-      background: 'var(--bg-card)',
-      borderRadius: '12px',
-      border: '1px solid var(--border)',
-      padding: '1.1rem 1rem 1rem 1.3rem',
-      position: 'relative',
-      overflow: 'hidden',
-      flex: `0 1 ${cardW}`
-    }}>
+    <div key={i} className={`card-3d dash-card animate-fade-in-up delay-${(i + 1) * 100}`}>
+      {/* Barra de acento lateral */}
       <div style={{
         position: 'absolute', top: 0, left: 0,
         width: '4px', height: '100%',
         background: card.accentColor,
         borderRadius: '12px 0 0 12px'
       }} />
-      <p style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '.8rem', margin: '0 0 .4rem 0' }}>
+
+      {/* Etiqueta */}
+      <p className="dash-card-label" style={{
+        color: 'var(--text-muted)', fontWeight: 500,
+        fontSize: '.8rem', margin: '0 0 .4rem 0'
+      }}>
         {card.label}
       </p>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '.65rem' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: 700, margin: 0, color: card.textColor }}>
+
+      {/* Número + ícono */}
+      <div className="dash-card-row" style={{
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', marginBottom: '.65rem'
+      }}>
+        <h2 className="dash-card-value" style={{
+          fontSize: '2rem', fontWeight: 700, margin: 0, color: card.textColor
+        }}>
           {card.value}
         </h2>
-        <div style={{
+        <div className="dash-card-icon" style={{
           width: '36px', height: '36px', borderRadius: '10px',
           background: card.iconBg,
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
@@ -361,9 +367,11 @@ function Dashboard() {
           {card.icono}
         </div>
       </div>
+
+      {/* Badge / sub-texto */}
       <div>
         {card.badge ? (
-          <span style={{
+          <span className="dash-card-badge" style={{
             display: 'inline-block',
             background: card.badge.bg, color: card.badge.color,
             padding: '2px 8px', borderRadius: '20px',
@@ -372,7 +380,7 @@ function Dashboard() {
             {card.badge.label}
           </span>
         ) : (
-          <p style={{ fontSize: '.75rem', margin: 0, color: card.subColor, fontWeight: 600 }}>
+          <p className="dash-card-sub" style={{ fontSize: '.75rem', margin: 0, color: card.subColor, fontWeight: 600 }}>
             {JSON.parse(localStorage.getItem('usuario')||'{}').rol === 'usuario' ? null : card.sub}
           </p>
         )}
@@ -460,7 +468,7 @@ function Dashboard() {
         <p>{t('cargando_info')}</p>
       ) : (
         <div style={{ marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'nowrap', overflowX: 'auto' }}>
+          <div className="dash-cards-grid">
             {cards
               .filter(card => !(card.label === 'Total reportes' && JSON.parse(localStorage.getItem('usuario') || '{}').rol === 'usuario'))
               .map((card, i) => renderCard(card, i))}

@@ -444,57 +444,27 @@ aside:hover div {
 /* ── RESPONSIVE MOBILE ─────────────────────────────────── */
 
 @media (max-width: 768px) {
-  /* LAYOUT */
+  /* LAYOUT — el aside es position:fixed, no ocupa espacio en el flujo */
   .app-container {
-    flex-direction: column;
+    flex-direction: row; /* mantener row para que main-content ocupe todo */
+  }
+
+  /* El main-content ocupa el 100% porque el aside está fuera del flujo (fixed) */
+  .main-content {
+    width: 100%;
+    /* Espacio superior para el botón hamburger fijo (≈ 56px) */
+    padding-top: 56px;
   }
 
   .page-container {
     padding: 1.5rem 1rem;
   }
 
-  /* NAVBAR */
+  /* NAVBAR — compacto en móvil */
   header {
-    padding: 0.75rem 1rem !important;
-  }
-
-  /* SIDEBAR */
-  aside {
-    width: 100% !important;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    position: static !important;
-    height: auto !important;
-    border-right: none !important;
-    border-bottom: 1px solid var(--border);
-    z-index: 999;
-  }
-
-  aside.active {
-    max-height: 500px;
-  }
-
-  /* HAMBURGER - mostrar solo en mobile */
-  aside::before {
-    content: '☰';
-    display: flex;
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    z-index: 9999;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    color: var(--text-main);
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    font-size: 1.25rem;
-    cursor: pointer;
-  }
-
-  /* MAIN CONTENT */
-  .main-content {
-    flex: 1;
+    padding: 0.6rem 1rem !important;
+    gap: 0.5rem !important;
+    padding-left: 4rem !important;
   }
 
   /* BUTTONS */
@@ -535,7 +505,9 @@ aside:hover div {
 
   header {
     padding: 0.5rem 0.75rem !important;
-    flex-wrap: wrap;
+    padding-left: 3.75rem !important;
+    flex-wrap: nowrap !important;
+    gap: 0.5rem !important;
   }
 
   header div {
@@ -558,34 +530,5 @@ aside:hover div {
   }
 }
 
-/* ── HAMBURGER MENU FUNCTIONALITY ─────────────────────── */
-@media (max-width: 768px) {
-  /* Hidden by default */
-  aside {
-    max-height: 0;
-  }
 
-  /* Show when focused/active */
-  aside:focus-within {
-    max-height: 500px;
-  }
 
-  aside.active {
-    max-height: 500px;
-  }
-
-  /* Overlay en mobile */
-  .overlay-sidebar {
-    display: none;
-  }
-
-  @media (max-width: 768px) {
-    .overlay-sidebar.active {
-      display: block;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 998;
-    }
-  }
-}
