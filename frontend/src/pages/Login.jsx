@@ -7,6 +7,8 @@ import candado from '../assets/icons/candado.svg';
 import correo from '../assets/icons/correo.svg';
 import usuario from '../assets/icons/usuario.svg';
 
+const BASE_URL = `${window.location.protocol}//${window.location.hostname}:5000`;
+
 function Login({ onLogin }) {
   const { t } = useLanguage();
   const [vista, setVista] = useState('login');
@@ -96,7 +98,7 @@ function Login({ onLogin }) {
     if (!emailRecuperar) { setErrorRecuperar('Ingresa tu correo electrónico.'); return; }
     setLoadingRecuperar(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/usuarios/recuperar', { correo: emailRecuperar });
+      const res = await axios.post(`${BASE_URL}/api/usuarios/recuperar`, { correo: emailRecuperar });
       setExitoRecuperar(res.data.message || 'Se han enviado las instrucciones al correo.');
       setTimeout(() => irLogin(), 5000);
     } catch (err) {
@@ -115,7 +117,7 @@ function Login({ onLogin }) {
     if (nuevaContrasena.length < 6) { setErrorRestablecer('Mínimo 6 caracteres'); return; }
     setLoadingRestablecer(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/usuarios/restablecer', { token: resetToken, nuevaContrasena });
+      const res = await axios.post(`${BASE_URL}/api/usuarios/restablecer`, { token: resetToken, nuevaContrasena });
       setExitoRestablecer(res.data.message || 'Contraseña actualizada. Redirigiendo...');
       setTimeout(() => {
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -141,7 +143,7 @@ function Login({ onLogin }) {
   if (!email || !password) { setErrorLogin('Por favor ingresa tu correo y contraseña.'); return; }
   setLoadingLogin(true);
   try {
-    const response = await axios.post('http://localhost:5000/api/usuarios/login', {
+    const response = await axios.post(`${BASE_URL}/api/usuarios/login`, {
       correo: email,
       contrasena: password
     });
@@ -184,7 +186,7 @@ function Login({ onLogin }) {
     }
     setLoadingReg(true);
     try {
-      await axios.post('http://localhost:5000/api/usuarios/registro', {
+      await axios.post(`${BASE_URL}/api/usuarios/registro`, {
         nombre: form.nombre,
         correo: form.correo,
         contrasena: form.contrasena,
