@@ -294,6 +294,9 @@ function GestionMantenimiento() {
                         })()}
                       </td>
                       <td data-label="Cambiar estado">
+                        {d.estado === "Entregado" ? (
+                          <span style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>—</span>
+                        ) : (
                         <select
                           className="mant-select"
                           value=""
@@ -310,6 +313,7 @@ function GestionMantenimiento() {
                             <option value="Entregado">{t('dash_entregado')}</option>
                           )}
                         </select>
+                        )}
                       </td>
                     </tr>
                   ))

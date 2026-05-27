@@ -162,11 +162,15 @@ function Dashboard() {
         });
         setDispositivos(dispositivos);
 
-        // Cargar estado de pago para cada dispositivo del usuario
-        if (usuarioActual.rol === 'usuario' && dispositivos.length > 0) {
+        // Cargar estado de pago para dispositivos en Listo para Entrega o Entregado
+        // Para todos los roles (admin ve el estado, usuario puede pagar)
+        const dispositivosConPago = dispositivos.filter(
+          d => d.estado === 'Listo para Entrega' || d.estado === 'Entregado'
+        );
+        if (dispositivosConPago.length > 0) {
           const pagosMap = {};
           await Promise.all(
-            dispositivos.map(async (d) => {
+            dispositivosConPago.map(async (d) => {
               try {
                 const res = await api.get(`/pagos/datos/${d.id}`, {
                   headers: { 'x-usuario-id': usuarioActual.id }
@@ -388,14 +392,18 @@ function Dashboard() {
     </div>
   );
 
-  // ── Celda de pago para rol "usuario" ──────────────────────────────────────
+  // ── Celda de pago para todos los roles ───────────────────────────────────
   const renderCeldaPago = (d) => {
-    if (d.estado !== 'Listo para Entrega') {
+    const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
+
+    // Solo mostrar para dispositivos relevantes
+    if (d.estado !== 'Listo para Entrega' && d.estado !== 'Entregado') {
       return <td style={tdStyle}>—</td>;
     }
 
     const pago = pagosDispositivos[d.id];
 
+    // Sin datos de pago aún
     if (!pago || !pago.monto) {
       return (
         <td style={tdStyle}>
@@ -404,50 +412,71 @@ function Dashboard() {
       );
     }
 
+    // Ya pagado — todos los roles ven el badge verde
     if (pago.estado_pago === 'Pagado') {
       return (
         <td style={tdStyle}>
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: 4,
-            background: 'rgba(34,197,94,.12)', color: '#16a34a',
-            fontSize: '.68rem', fontWeight: 700,
-            padding: '3px 10px', borderRadius: 20,
-            cursor: 'default',
-          }}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            Pagado
-          </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              background: 'rgba(34,197,94,.12)', color: '#16a34a',
+              fontSize: '.68rem', fontWeight: 700,
+              padding: '3px 10px', borderRadius: 20,
+            }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Pagado
+            </span>
+            <span style={{ fontSize: '.68rem', color: 'var(--text-muted)' }}>
+              {Number(pago.monto).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 })}
+            </span>
+          </div>
         </td>
       );
     }
 
-    // ── CAMBIO 3: abrir modal en lugar de navegar ──────────────────────────
+    // Pendiente — solo el rol usuario ve el botón de pagar; admin/tecnico ven badge amarillo
+    if (usuarioActual.rol === 'usuario') {
+      return (
+        <td style={tdStyle}>
+          <button
+            onClick={(e) => { e.stopPropagation(); setPagoModalId(d.id); }}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              background: 'linear-gradient(135deg, #0492C2, #0369a1)',
+              color: '#fff', border: 'none', borderRadius: 8,
+              fontSize: '.72rem', fontWeight: 600,
+              padding: '5px 12px', cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <rect x="1" y="4" width="22" height="16" rx="2"/>
+              <line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+            Pagar {Number(pago.monto).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 })}
+          </button>
+        </td>
+      );
+    }
+
+    // Admin / tecnico / super_admin — badge amarillo "Pendiente"
     return (
       <td style={tdStyle}>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setPagoModalId(d.id);   // ← abre el modal
-          }}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 5,
-            background: 'linear-gradient(135deg, #0492C2, #0369a1)',
-            color: '#fff', border: 'none', borderRadius: 8,
-            fontSize: '.72rem', fontWeight: 600,
-            padding: '5px 12px', cursor: 'pointer',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <rect x="1" y="4" width="22" height="16" rx="2"/>
-            <line x1="1" y1="10" x2="23" y2="10"/>
-          </svg>
-          Pagar {Number(pago.monto).toLocaleString('es-CO', {
-            style: 'currency', currency: 'COP', minimumFractionDigits: 0
-          })}
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            background: 'rgba(245,158,11,.12)', color: '#d97706',
+            fontSize: '.68rem', fontWeight: 700,
+            padding: '3px 10px', borderRadius: 20,
+          }}>
+            ⏳ Pendiente
+          </span>
+          <span style={{ fontSize: '.68rem', color: 'var(--text-muted)' }}>
+            {Number(pago.monto).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 })}
+          </span>
+        </div>
       </td>
     );
   };
@@ -516,9 +545,7 @@ function Dashboard() {
                 <th style={thStyle}>{t('dash_col_fecha_reg')}</th>
                 <th style={thStyle}>{t('dash_col_estado')}</th>
                 {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='super_admin' && <th style={thStyle}>{t('dash_col_reg_por')}</th>}
-                {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='usuario' && (
-                  <th style={thStyle}>Pago</th>
-                )}
+                <th style={thStyle}>Pago</th>
               </tr>
             </thead>
             <tbody>
@@ -578,7 +605,7 @@ function Dashboard() {
                         {d.registrado_por || '—'}
                       </td>
                     )}
-                    {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='usuario' && renderCeldaPago(d)}
+                    {renderCeldaPago(d)}
                   </tr>
                 ));
               })()}
