@@ -140,6 +140,7 @@ function Mantenimiento() {
                 <th>{t('mant_col_costos')}</th>
                 <th>{t('mant_col_fechas')}</th>
                 <th>{t('dash_col_estado')}</th>
+                <th>Estado Pago</th>
                 <th>{t('equipo_col_acciones')}</th>
               </tr>
             </thead>
@@ -148,7 +149,11 @@ function Mantenimiento() {
                 <tr key={m.id}>
                   <td><strong>{m.dispositivo_nombre}</strong><br/><span style={{fontSize: '0.8rem', color: 'var(--text-muted)'}}>{m.dispositivo_serial}</span></td>
                   <td>{m.descripcion}</td>
-                  <td>${m.costo}</td>
+                  <td>
+                    {m.costo && parseFloat(m.costo) > 0
+                      ? Number(m.costo).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 })
+                      : '—'}
+                  </td>
                   <td>
                     <div style={{fontSize: '0.875rem'}}>
                       <strong>{t('mant_inicio')}</strong>{formatDate(m.fecha_inicio)}<br/>
@@ -161,13 +166,46 @@ function Mantenimiento() {
                     </span>
                   </td>
                   <td>
+                    {m.estado_pago === 'Pagado' ? (
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        background: 'rgba(34,197,94,.12)', color: '#16a34a',
+                        fontSize: '.72rem', fontWeight: 700,
+                        padding: '3px 10px', borderRadius: 20,
+                      }}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        Pagado
+                      </span>
+                    ) : m.estado_pago === 'Rechazado' ? (
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        background: 'rgba(239,68,68,.12)', color: '#dc2626',
+                        fontSize: '.72rem', fontWeight: 700,
+                        padding: '3px 10px', borderRadius: 20,
+                      }}>
+                        ✕ Rechazado
+                      </span>
+                    ) : m.estado_pago === 'Pendiente' ? (
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        background: 'rgba(245,158,11,.12)', color: '#d97706',
+                        fontSize: '.72rem', fontWeight: 700,
+                        padding: '3px 10px', borderRadius: 20,
+                      }}>
+                        ⏳ Pendiente
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>—</span>
+                    )}
+                  </td>
+                  <td>
                     <button className="btn" style={{ padding: '0.25rem 0.5rem', background: 'var(--border)', marginRight: '0.5rem', marginBottom: '0.5rem' }} onClick={() => handleEdit(m)}>{t('mant_ver_editar')}</button>
                     <button className="btn btn-danger" style={{ padding: '0.25rem 0.5rem' }} onClick={() => handleDelete(m.id)}>{t('eliminar')}</button>
                   </td>
                 </tr>
               ))}
               {mantenimientos.length === 0 && (
-                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>{t('mant_sin_registros')}</td></tr>
+                <tr><td colSpan="7" style={{ textAlign: 'center', padding: '2rem' }}>{t('mant_sin_registros')}</td></tr>
               )}
             </tbody>
           </table>

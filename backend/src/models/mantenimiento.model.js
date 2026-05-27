@@ -102,7 +102,9 @@ class MantenimientoModel {
     return result.affectedRows;
   }
 
-  // Buscar el registro de mantenimiento activo de un dispositivo
+  // Buscar el registro de mantenimiento más reciente de un dispositivo.
+  // Prioriza: En Proceso → Completado → cualquier otro estado.
+  // Esto permite mostrar datos de pago también para dispositivos ya Entregados.
   static async findActivoByDispositivo(dispositivo_id) {
     const [rows] = await pool.query(
       `SELECT m.*,
@@ -110,8 +112,15 @@ class MantenimientoModel {
               d.serial AS dispositivo_serial
        FROM mantenimiento m
        JOIN dispositivos d ON d.id = m.dispositivo_id
-       WHERE m.dispositivo_id = ? AND m.estado_mantenimiento = 'En Proceso'
-       ORDER BY m.id DESC LIMIT 1`,
+       WHERE m.dispositivo_id = ?
+       ORDER BY
+         CASE m.estado_mantenimiento
+           WHEN 'En Proceso'  THEN 1
+           WHEN 'Completado'  THEN 2
+           ELSE 3
+         END,
+         m.id DESC
+       LIMIT 1`,
       [dispositivo_id]
     );
     return rows[0] || null;

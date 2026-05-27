@@ -36,7 +36,17 @@ exports.getDatosPago = async (req, res) => {
     }
 
     if (mant.estado_pago === 'Pagado') {
-      return res.status(400).json({ error: 'Este mantenimiento ya fue pagado.' });
+      // Devolver los datos del pago completado para que el frontend muestre el badge
+      return res.json({
+        mantenimiento_id: mant.id,
+        monto:            parseFloat(mant.costo),
+        referencia:       mant.referencia_pago,
+        descripcion:      `Mantenimiento - ${mant.dispositivo_nombre} (${mant.dispositivo_serial})`,
+        public_key:       process.env.WOMPI_PUBLIC_KEY,
+        estado_pago:      'Pagado',
+        transaccion_id:   mant.transaccion_id,
+        fecha_pago:       mant.fecha_pago,
+      });
     }
 
     // Asegurarse de que tenga referencia — si no, generarla

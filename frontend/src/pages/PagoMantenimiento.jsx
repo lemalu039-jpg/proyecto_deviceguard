@@ -64,10 +64,20 @@ export default function PagoMantenimientoModal({ dispositivoId, onClose, onPagad
   // No renderizar nada si no hay dispositivoId
   if (!dispositivoId) return null;
 
-  // Bloquear scroll del body mientras el modal está abierto
-  document.body.style.overflow = 'hidden';
+  // Cuando Wompi está activo necesita scroll libre en TODA la página
+  // Cuando el modal propio está visible bloqueamos el scroll del body
+  if (estado === 'procesando') {
+    document.body.style.overflow = '';
+    document.body.style.height   = '';
+    document.documentElement.style.overflow = '';
+  } else {
+    document.body.style.overflow = 'hidden';
+  }
+
   const cerrar = () => {
     document.body.style.overflow = '';
+    document.body.style.height   = '';
+    document.documentElement.style.overflow = '';
     onClose();
   };
 
@@ -125,16 +135,18 @@ export default function PagoMantenimientoModal({ dispositivoId, onClose, onPagad
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop — se oculta completamente cuando Wompi está activo */}
+      {estado !== 'procesando' && (
       <div
-        onClick={estado === 'procesando' ? undefined : cerrar}
+        onClick={cerrar}
         style={{
           position: 'fixed', inset: 0,
           background: 'rgba(0,0,0,0.55)',
           backdropFilter: 'blur(4px)',
           zIndex: 1050,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
           padding: '1rem',
+          overflowY: 'auto',
           animation: 'fadeInBackdrop .18s ease',
         }}
       >
@@ -151,6 +163,7 @@ export default function PagoMantenimientoModal({ dispositivoId, onClose, onPagad
             boxShadow: '0 8px 48px rgba(0,0,0,.18)',
             position: 'relative',
             animation: 'slideUpModal .22s ease',
+            margin: 'auto',
           }}
         >
           {/* Botón cerrar — oculto mientras se procesa */}
@@ -303,11 +316,50 @@ export default function PagoMantenimientoModal({ dispositivoId, onClose, onPagad
 
         </div>
       </div>
+      )}
 
-      {/* Animaciones */}
+      {/* Animaciones + estilos globales para el widget de Wompi */}
       <style>{`
         @keyframes fadeInBackdrop { from { opacity: 0 } to { opacity: 1 } }
         @keyframes slideUpModal   { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: translateY(0) } }
+        @keyframes spin           { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+
+        /*
+         * El widget de Wompi inyecta su overlay directamente en <body>.
+         * Necesita posición fixed, z-index alto, y scroll libre.
+         * Forzamos que ningún ancestro lo recorte.
+         */
+        body > div[style*="position: fixed"],
+        body > div[style*="position:fixed"] {
+          overflow-y: auto !important;
+        }
+
+        /* Contenedor principal del widget de Wompi */
+        #widget-checkout,
+        [id^="widget-checkout"],
+        [class*="widget-checkout"],
+        [class*="wompi"],
+        [id*="wompi"] {
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          width: 100vw !important;
+          height: 100vh !important;
+          z-index: 999999 !important;
+          overflow-y: auto !important;
+          -webkit-overflow-scrolling: touch !important;
+        }
+
+        /* El iframe interno del widget */
+        #widget-checkout iframe,
+        [id^="widget-checkout"] iframe,
+        [class*="widget-checkout"] iframe,
+        [class*="wompi"] iframe {
+          width: 100% !important;
+          height: 100% !important;
+          min-height: 100vh !important;
+          border: none !important;
+        }
       `}</style>
     </>
   );
