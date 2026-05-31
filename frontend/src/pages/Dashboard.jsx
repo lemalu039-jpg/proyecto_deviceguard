@@ -207,11 +207,11 @@ function Dashboard() {
       letterSpacing: '.3px'
     };
     switch (estado) {
-      case 'Listo para Entrega': return { ...base, background: 'rgba(34,197,94,0.15)',   color: '#22c55e' };
-      case 'En Revision':        return { ...base, background: 'rgba(245,158,11,0.15)',  color: '#f59e0b' };
-      case 'En Mantenimiento':   return { ...base, background: 'rgba(192,132,252,0.15)', color: '#c084fc' };
-      case 'Entregado':          return { ...base, background: 'rgba(56,189,248,0.15)',  color: '#38bdf8' };
-      default:                   return { ...base, background: 'var(--input-bg)', color: 'var(--text-muted)' };
+      case 'Listo para Entrega': return { ...base, background: 'rgba(34,197,94,0.15)',   color: '#22c55e', whiteSpace: 'nowrap' };
+      case 'En Revision':        return { ...base, background: 'rgba(245,158,11,0.15)',  color: '#f59e0b', whiteSpace: 'nowrap' };
+      case 'En Mantenimiento':   return { ...base, background: 'rgba(192,132,252,0.15)', color: '#c084fc', whiteSpace: 'nowrap' };
+      case 'Entregado':          return { ...base, background: 'rgba(56,189,248,0.15)',  color: '#38bdf8', whiteSpace: 'nowrap' };
+      default:                   return { ...base, background: 'var(--input-bg)', color: 'var(--text-muted)', whiteSpace: 'nowrap' };
     }
   };
 
@@ -234,10 +234,11 @@ function Dashboard() {
   };
 
   const tdStyle = {
-    padding: '.65rem .85rem',
+    padding: '.5rem .75rem',
     borderBottom: '1px solid var(--border)',
     color: 'var(--text-main)',
-    verticalAlign: 'middle'
+    verticalAlign: 'middle',
+    fontSize: '.81rem',
   };
 
   const IconoTotal = () => (
@@ -400,7 +401,6 @@ function Dashboard() {
     if (d.estado !== 'Listo para Entrega' && d.estado !== 'Entregado') {
       return <td style={tdStyle}>—</td>;
     }
-
     const pago = pagosDispositivos[d.id];
 
     // Sin datos de pago aún
@@ -471,7 +471,7 @@ function Dashboard() {
             fontSize: '.68rem', fontWeight: 700,
             padding: '3px 10px', borderRadius: 20,
           }}>
-            ⏳ Pendiente
+            Pendiente
           </span>
           <span style={{ fontSize: '.68rem', color: 'var(--text-muted)' }}>
             {Number(pago.monto).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 })}
@@ -601,7 +601,7 @@ function Dashboard() {
                       <span style={getBadgeStyle(d.estado)}>{translateEstado(d.estado)}</span>
                     </td>
                     {JSON.parse(localStorage.getItem('usuario')||'{}').rol==='super_admin' && (
-                      <td style={{ ...tdStyle, fontSize: '.78rem', color: 'var(--text-muted)' }}>
+                      <td style={{ ...tdStyle, fontSize: '.78rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                         {d.registrado_por || '—'}
                       </td>
                     )}
@@ -625,7 +625,12 @@ function Dashboard() {
       </div>
 
       <Pagination
-        totalItems={(filtroEstado ? dispositivos.filter(d => d.estado === filtroEstado) : dispositivos).length}
+        totalItems={dispositivos.filter(d => {
+          const texto = `${d.nombre} ${d.serial} ${d.ubicacion}`.toLowerCase();
+          const okBusqueda = !filtroBusqueda || texto.includes(filtroBusqueda.toLowerCase());
+          const okEstado = !filtroEstado || d.estado === filtroEstado;
+          return okBusqueda && okEstado;
+        }).length}
         itemsPerPage={itemsPerPage}
         currentPage={currentPage}
         onPageChange={setCurrentPage}

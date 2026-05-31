@@ -429,9 +429,9 @@ function Dispositivos() {
                   <td>{d.serial}</td>
                   <td>{d.marca}</td>
                   <td>{translateUbicacion(d.ubicacion) || 'N/A'}</td>
-                  <td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
                     {formatFecha(d.fecha_registro)}<br />
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                       {d.hora_registro || '—'}
                     </span>
                   </td>

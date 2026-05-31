@@ -133,7 +133,7 @@
 }
 
 .papelera-table tbody td {
-  padding: 0.65rem 1rem;
+  padding: 0.5rem 0.75rem;
   color: var(--text-main);
   vertical-align: middle;
 }
@@ -159,6 +159,7 @@
 .papelera-muted {
   font-size: 0.78rem;
   color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .papelera-hora {

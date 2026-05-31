@@ -88,11 +88,11 @@ function Papelera() {
       padding: '2px 9px', borderRadius: '20px',
     };
     switch (estado) {
-      case 'Listo para Entrega': return { ...base, background: 'rgba(34,197,94,0.15)',   color: '#22c55e' };
-      case 'En Revision':        return { ...base, background: 'rgba(245,158,11,0.15)',  color: '#f59e0b' };
-      case 'En Mantenimiento':   return { ...base, background: 'rgba(192,132,252,0.15)', color: '#c084fc' };
-      case 'Entregado':          return { ...base, background: 'rgba(56,189,248,0.15)',  color: '#38bdf8' };
-      default:                   return { ...base, background: 'var(--input-bg)', color: 'var(--text-muted)' };
+      case 'Listo para Entrega': return { ...base, background: 'rgba(34,197,94,0.15)',   color: '#22c55e', whiteSpace: 'nowrap' };
+      case 'En Revision':        return { ...base, background: 'rgba(245,158,11,0.15)',  color: '#f59e0b', whiteSpace: 'nowrap' };
+      case 'En Mantenimiento':   return { ...base, background: 'rgba(192,132,252,0.15)', color: '#c084fc', whiteSpace: 'nowrap' };
+      case 'Entregado':          return { ...base, background: 'rgba(56,189,248,0.15)',  color: '#38bdf8', whiteSpace: 'nowrap' };
+      default:                   return { ...base, background: 'var(--input-bg)', color: 'var(--text-muted)', whiteSpace: 'nowrap' };
     }
   };
 

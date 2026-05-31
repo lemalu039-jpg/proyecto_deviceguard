@@ -69,6 +69,7 @@
   border-radius: 20px;
   font-size: .68rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .badge-revision {
@@ -79,6 +80,7 @@
   border-radius: 20px;
   font-size: .68rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .badge-mantenimiento {
@@ -89,6 +91,7 @@
   border-radius: 20px;
   font-size: .68rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .badge-listo-entrega {
@@ -99,6 +102,7 @@
   border-radius: 20px;
   font-size: .68rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .badge-entregado {
@@ -109,6 +113,7 @@
   border-radius: 20px;
   font-size: .68rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 /* SELECT BONITO */
