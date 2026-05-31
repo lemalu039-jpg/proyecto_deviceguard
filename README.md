@@ -1,4 +1,4 @@
-# DeviceGuard 🛡️
+# DeviceGuard
 
 Sistema web de gestión de dispositivos tecnológicos institucionales. Permite registrar, monitorear y controlar el ciclo de vida completo de equipos: desde su ingreso, mantenimiento, préstamos, pagos y entrega final.
 
