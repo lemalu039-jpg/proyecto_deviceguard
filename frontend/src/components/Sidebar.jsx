@@ -44,7 +44,13 @@ function Sidebar({ usuario: usuarioProp, onLogout, onImpersonate }) {
     u.nombre.toLowerCase().includes(busquedaUsuario.toLowerCase())
   );
 
-  
+  const administradores = usuarios
+  .filter(u => u.rol === "admin")
+  .filter(u =>
+    u.nombre.toLowerCase().includes(busquedaUsuario.toLowerCase())
+  );
+
+
 
   useEffect(() => {
   if (!esTecnico) return;
@@ -300,12 +306,24 @@ const usuariosFiltrados = usuarios
                         />
                       </div>
                       <div style={{ overflowY: 'auto', flex: 1 }}>
+                        {administradores.length > 0 && (
+                          <div style={{ padding: '4px 8px', fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', background: 'var(--table-head)' }}>{t('admin') || 'Administradores'}</div>
+                        )}
+                        {administradores.map(u => (
+                          <div key={u.id}
+                            onClick={() => { setSelectorAbierto(false); setBusquedaUsuario(''); iniciarImpersonacion(u.id); }}
+                            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--table-head)'}
+                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                            style={{ padding: '6px 12px', fontSize: '0.75rem', color: 'var(--text-main)', cursor: 'pointer', transition: 'background 0.2s' }}>
+                            {u.nombre}
+                          </div>
+                        ))}
                         {tecnicosFiltrados.length > 0 && (
                           <div style={{ padding: '4px 8px', fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', background: 'var(--table-head)' }}>{t('sidebar_tecnicos')}</div>
                         )}
                         {tecnicosFiltrados.map(u => (
-                          <div key={u.id} 
-                            onClick={() => { setSelectorAbierto(false); setBusquedaUsuario(''); iniciarImpersonacion(u.id); }} 
+                          <div key={u.id}
+                            onClick={() => { setSelectorAbierto(false); setBusquedaUsuario(''); iniciarImpersonacion(u.id); }}
                             onMouseEnter={(e) => e.currentTarget.style.background = 'var(--table-head)'}
                             onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                             style={{ padding: '6px 12px', fontSize: '0.75rem', color: 'var(--text-main)', cursor: 'pointer', transition: 'background 0.2s' }}>
@@ -316,8 +334,8 @@ const usuariosFiltrados = usuarios
                           <div style={{ padding: '4px 8px', fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', background: 'var(--table-head)' }}>{t('sidebar_usuarios')}</div>
                         )}
                         {usuariosFiltrados.map(u => (
-                          <div key={u.id} 
-                            onClick={() => { setSelectorAbierto(false); setBusquedaUsuario(''); iniciarImpersonacion(u.id); }} 
+                          <div key={u.id}
+                            onClick={() => { setSelectorAbierto(false); setBusquedaUsuario(''); iniciarImpersonacion(u.id); }}
                             onMouseEnter={(e) => e.currentTarget.style.background = 'var(--table-head)'}
                             onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                             style={{ padding: '6px 12px', fontSize: '0.75rem', color: 'var(--text-main)', cursor: 'pointer', transition: 'background 0.2s' }}>
