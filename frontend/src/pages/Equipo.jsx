@@ -50,7 +50,7 @@ function Equipo() {
     setLoadingData(true);
     try {
       const res = await getUsuarios();
-      setUsuarios(res.data);
+      setUsuarios(res.data.filter(u => u.rol !== "super_admin"));
     } catch (e) { console.error(e); }
     finally { setLoadingData(false); }
   };
@@ -293,21 +293,25 @@ function Equipo() {
                       </>
                     ) : "—"}</td>
                     <td data-label={t('equipo_col_acciones')}>
-                      <div className="equipo-acciones">
-                        <button className="equipo-btn-editar" onClick={() => abrirEditar(u)} title={t('editar')}>
-                          <Icon d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" size={14} />
-                          <span>{t('editar')}</span>
-                        </button>
-                        <button 
-                          className="equipo-btn-suspender" 
-                          onClick={() => handleToggleStatus(u)} 
-                          title={u.activo === 0 ? t('equipo_activar') : t('equipo_suspender')}
-                          style={{ background: u.activo === 0 ? "#16a34a" : "#dc2626" }}
-                        >
-                          <Icon d={u.activo === 0 ? "M5 13l4 4L19 7" : "M18.36 6.64a9 9 0 11-12.73 0M12 2v10"} size={14} />
-                          <span>{u.activo === 0 ? t('equipo_activar') : t('equipo_suspender')}</span>
-                        </button>
-                      </div>
+                      {u.rol === "super_admin" ? (
+                        <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>—</span>
+                      ) : (
+                        <div className="equipo-acciones">
+                          <button className="equipo-btn-editar" onClick={() => abrirEditar(u)} title={t('editar')}>
+                            <Icon d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" size={14} />
+                            <span>{t('editar')}</span>
+                          </button>
+                          <button
+                            className="equipo-btn-suspender"
+                            onClick={() => handleToggleStatus(u)}
+                            title={u.activo === 0 ? t('equipo_activar') : t('equipo_suspender')}
+                            style={{ background: u.activo === 0 ? "#16a34a" : "#dc2626" }}
+                          >
+                            <Icon d={u.activo === 0 ? "M5 13l4 4L19 7" : "M18.36 6.64a9 9 0 11-12.73 0M12 2v10"} size={14} />
+                            <span>{u.activo === 0 ? t('equipo_activar') : t('equipo_suspender')}</span>
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ));
