@@ -229,10 +229,11 @@
 }
 
 .disp-table td {
-  padding: .65rem .85rem;
+  padding: .5rem .75rem;
   border-bottom: 1px solid var(--input-bg);
   color: var(--text-main);
   vertical-align: middle;
+  font-size: .81rem;
 }
 
 .disp-table tbody tr:hover td {
@@ -270,21 +271,25 @@
 .badge-listo-entrega {
   background: rgba(34, 197, 94, 0.15);
   color: #22c55e;
+  white-space: nowrap;
 }
 
 .badge-revision {
   background: rgba(245, 158, 11, 0.15);
   color: #f59e0b;
+  white-space: nowrap;
 }
 
 .badge-mantenimiento {
   background: rgba(192, 132, 252, 0.15);
   color: #c084fc;
+  white-space: nowrap;
 }
 
 .badge-entregado {
   background: rgba(56, 189, 248, 0.15);
   color: #38bdf8;
+  white-space: nowrap;
 }
 
 
@@ -661,5 +666,7 @@
 .disp-hora {
   font-size: 0.7rem;
   color: var(--text-muted);
+  white-space: nowrap;
+}
   font-weight: 400;
 }

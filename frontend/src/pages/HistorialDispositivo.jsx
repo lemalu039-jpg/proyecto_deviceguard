@@ -58,7 +58,7 @@ function HistorialDispositivo() {
   };
 
   const getBadgeStyle = (estado) => {
-    const base = { display: 'inline-block', fontSize: '.75rem', fontWeight: 700, padding: '4px 12px', borderRadius: '20px' };
+    const base = { display: 'inline-block', fontSize: '.75rem', fontWeight: 700, padding: '4px 12px', borderRadius: '20px', whiteSpace: 'nowrap' };
     switch (estado) {
       case 'Listo para Entrega': return { ...base, background: 'rgba(34,197,94,0.15)',   color: '#22c55e' };
       case 'En Revision':        return { ...base, background: 'rgba(245,158,11,0.15)',  color: '#f59e0b' };

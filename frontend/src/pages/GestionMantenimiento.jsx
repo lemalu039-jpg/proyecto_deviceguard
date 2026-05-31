@@ -262,7 +262,7 @@ function GestionMantenimiento() {
                         <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '.82rem' }}>{d.nombre}</div>
                         <div style={{ fontSize: '.71rem', color: 'var(--text-muted)', marginTop: '1px' }}>{translateTipo(d.tipo) || ''}</div>
                       </td>
-                      <td data-label="Serial" style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace' }}>{d.serial}</td>
+                      <td data-label="Serial" style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>{d.serial}</td>
                       <td data-label="Registrado por" style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
                         {d.registrado_por || '—'}
                       </td>
@@ -273,6 +273,10 @@ function GestionMantenimiento() {
                       </td>
                       <td data-label="Pago">
                         {(() => {
+                          // Solo mostrar estado de pago para dispositivos listos o entregados
+                          if (d.estado === 'En Mantenimiento' || d.estado === 'En Revision') {
+                            return <span style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>—</span>;
+                          }
                           const ep = estadosPago[d.id];
                           if (!ep) return <span style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>—</span>;
                           if (ep === 'Pagado') return (

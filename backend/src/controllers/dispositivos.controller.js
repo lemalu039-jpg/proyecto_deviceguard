@@ -199,10 +199,14 @@ exports.getAsignados = async (req, res) => {
     try {
         const [rows] = await pool.query(`
             SELECT d.id, d.nombre, d.serial, d.marca, d.tipo,
+                   d.ubicacion, d.descripcion, d.archivo,
+                   d.hora_registro, d.fecha_registro,
+                   d.usuario_id, d.tecnico_id,
                    COALESCE(e.nombre, 'Sin estado') AS estado,
-                   d.fecha_registro
+                   u.nombre AS registrado_por
             FROM dispositivos d
             LEFT JOIN estados e ON d.estado_id = e.id
+            LEFT JOIN usuarios u ON d.usuario_id = u.id
             WHERE d.tecnico_id = ? AND d.activo = 1
             ORDER BY d.id DESC
         `, [req.params.tecnico_id]);
