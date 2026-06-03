@@ -8,12 +8,14 @@ const { verificarRol } = require('../middlewares/auth.middleware');
 router.get('/serial/:serial', dispositivosController.getBySerial);
 router.get('/papelera/todos', verificarRol('super_admin', 'admin', 'tecnico'), dispositivosController.getPapelera);
 router.get('/asignados/:tecnico_id', dispositivosController.getAsignados);
+router.get('/plantilla', dispositivosController.descargarPlantillaImport);
 router.get('/', dispositivosController.getAll);
 
 // Rutas con parámetro dinámico al final
 router.get('/:id', dispositivosController.getById);
 
 router.post('/', verificarRol('usuario', 'super_admin'), upload.single('archivo'), dispositivosController.create);
+router.post('/importar', verificarRol('super_admin', 'admin'), upload.single('archivoImport'), dispositivosController.importarDispositivos);
 
 router.put('/:id/restaurar', verificarRol('super_admin', 'admin'), dispositivosController.restore);
 router.put('/:id', dispositivosController.update);

@@ -50,6 +50,16 @@ export const createDispositivo = (data) => {
 };
 export const updateDispositivo = (id, data) => api.put(`/dispositivos/${id}`, data);
 export const deleteDispositivo = (id) => api.delete(`/dispositivos/${id}`);
+export const importarDispositivos = (data) => {
+    return apiMultipart.post('/dispositivos/importar', data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    });
+};
+export const descargarPlantillaImport = () => {
+    return apiMultipart.get('/dispositivos/plantilla', {
+        responseType: 'blob'
+    });
+};
 
 // Papelera
 export const getDispositivosPapelera = () => api.get('/dispositivos/papelera/todos');

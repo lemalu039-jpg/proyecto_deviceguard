@@ -606,6 +606,10 @@ const translations = {
     disp_col_nombre: "NOMBRE DEL DISPOSITIVO",
     disp_col_tipo: "Tipo",
     disp_col_nombre_disp: "Nombre del Dispositivo",
+    disp_importar_excel: "Importar Excel",
+    disp_descargar_plantilla: "Descargar Plantilla",
+    disp_importar: "Importar",
+    disp_err_eliminar: "Error al eliminar el dispositivo",
 
     // Claves adicionales
     correo_col_correo: "Correo",
