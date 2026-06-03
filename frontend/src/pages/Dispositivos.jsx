@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getDispositivos, createDispositivo, updateDispositivo, deleteDispositivo, getDispositivoBySerial } from '../services/api';
+import { getDispositivos, createDispositivo, updateDispositivo, deleteDispositivo, getDispositivoBySerial, importarDispositivos, descargarPlantillaImport } from '../services/api';
 import { Modal } from 'bootstrap';
 import './css/Dispositivos.css';
 import Pagination from '../components/Pagination';
@@ -41,6 +41,12 @@ function Dispositivos() {
   const [eliminando, setEliminando] = useState(false);
   const [toast, setToast] = useState(null);
 
+  // Modal importar Excel
+  const [modalImportar, setModalImportar] = useState(false);
+  const [cargandoImport, setCargandoImport] = useState(false);
+  const [archivoImport, setArchivoImport] = useState(null);
+  const [resultadoImport, setResultadoImport] = useState(null);
+
   const mostrarToast = (msg, error = false) => {
     setToast({ msg, error });
     setTimeout(() => setToast(null), 3000);
@@ -65,6 +71,7 @@ function Dispositivos() {
   };
 
   const esSuperAdmin = (JSON.parse(localStorage.getItem('usuario')||'{}')).rol === 'super_admin';
+  const usuarioActual = JSON.parse(localStorage.getItem('usuario') || '{}');
   const [filtroBusqueda, setFiltroBusqueda] = React.useState('');
   const [filtroEstadoDisp, setFiltroEstadoDisp] = React.useState('');
 
@@ -87,6 +94,74 @@ function Dispositivos() {
   const cerrarModal = () => {
     const modal = Modal.getInstance(document.getElementById('dispositivoModal'));
     if (modal) modal.hide();
+  };
+
+  const abrirImportModal = () => {
+    setModalImportar(true);
+    setArchivoImport(null);
+    setResultadoImport(null);
+    new Modal(document.getElementById('importarModal')).show();
+  };
+
+  const cerrarImportModal = () => {
+    const modal = Modal.getInstance(document.getElementById('importarModal'));
+    if (modal) modal.hide();
+    setModalImportar(false);
+    setArchivoImport(null);
+    setResultadoImport(null);
+  };
+
+  const handleArchivoChange = (e) => {
+    const file = e.target.files[0];
+    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+      setArchivoImport(file);
+    } else {
+      mostrarToast('Solo se permiten archivos Excel (.xlsx o .xls)', true);
+      e.target.value = '';
+    }
+  };
+
+  const descargarPlantilla = async () => {
+    try {
+      const res = await descargarPlantillaImport();
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'plantilla_importacion_dispositivos.xlsx';
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      mostrarToast('Error al descargar la plantilla', true);
+    }
+  };
+
+  const procesarImportacion = async () => {
+    if (!archivoImport) {
+      mostrarToast('Selecciona un archivo para importar', true);
+      return;
+    }
+
+    setCargandoImport(true);
+    try {
+      const formData = new FormData();
+      formData.append('archivoImport', archivoImport);
+
+      const res = await importarDispositivos(formData);
+
+      setResultadoImport(res.data.summary);
+      mostrarToast(`${res.data.summary.imported} dispositivos importados exitosamente`);
+
+      setTimeout(() => {
+        loadData();
+        cerrarImportModal();
+      }, 1000);
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || 'Error al importar dispositivos';
+      mostrarToast(errorMsg, true);
+      setResultadoImport(null);
+    } finally {
+      setCargandoImport(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -221,6 +296,12 @@ function Dispositivos() {
               <Icon d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" size={15} />
               {t('disp_reingresar')}
             </button>
+            {(usuarioActual.rol === 'super_admin' || usuarioActual.rol === 'admin') && (
+              <button className="disp-banner-btn-secondary" onClick={abrirImportModal} title="Importar múltiples dispositivos desde Excel">
+                <Icon d="M12 4v16m8-8H4" size={15} />
+                {t('disp_importar_excel')}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -363,6 +444,105 @@ function Dispositivos() {
                 </button>
               )}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal importar Excel */}
+      <div className="modal fade" id="importarModal" tabIndex="-1" aria-hidden="true">
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">{t('disp_importar_excel')}</h5>
+              <button type="button" className="btn-close btn-close-white" onClick={cerrarImportModal}></button>
+            </div>
+
+            {!resultadoImport ? (
+              <>
+                <div className="modal-body">
+                  <div style={{ background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.85rem', lineHeight: 1.6 }}>
+                    <p style={{ margin: '0 0 0.5rem 0', fontWeight: 600, color: 'var(--text-main)' }}>Pasos para importar:</p>
+                    <ol style={{ margin: '0', paddingLeft: '1.5rem', color: 'var(--text-main)' }}>
+                      <li>Descarga la plantilla haciendo clic en el botón "Descargar Plantilla"</li>
+                      <li>Llena los datos en el Excel siguiendo el formato indicado</li>
+                      <li>Selecciona el archivo completo y haz clic en "Importar"</li>
+                      <li>Revisa el resumen de importación para ver resultados y errores</li>
+                    </ol>
+                  </div>
+
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <label className="disp-modal-label">{t('disp_descargar_plantilla')}</label>
+                    <button onClick={descargarPlantilla} type="button" className="disp-modal-input" style={{ width: '100%', padding: '0.7rem', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-main)', fontSize: '0.9rem', fontWeight: 500, cursor: 'pointer', display: 'block' }}>
+                      ⬇ {t('disp_descargar_plantilla')}
+                    </button>
+                  </div>
+
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <label className="disp-modal-label">Selecciona archivo Excel</label>
+                    <input
+                      type="file"
+                      accept=".xlsx,.xls"
+                      onChange={handleArchivoChange}
+                      className="disp-modal-input"
+                    />
+                    {archivoImport && <span style={{ fontSize: '0.8rem', color: '#10b981', marginTop: '0.3rem', display: 'block' }}>✓ {archivoImport.name}</span>}
+                  </div>
+                </div>
+
+                <div className="modal-footer">
+                  <button type="button" className="disp-btn-cancel" onClick={cerrarImportModal}>{t('cancelar')}</button>
+                  <button type="button" className="disp-btn-primary" onClick={procesarImportacion} disabled={!archivoImport || cargandoImport}>
+                    {cargandoImport ? t('disp_procesando') : t('disp_importar')}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="modal-body">
+                  <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                    <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem', color: '#10b981' }}>
+                      <Icon d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" size={28} />
+                    </div>
+                    <h5 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', color: 'var(--text-main)' }}>Importación Completada</h5>
+                  </div>
+
+                  <div style={{ background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--text-main)' }}>
+                      <span>Total procesados:</span>
+                      <strong>{resultadoImport.total}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: '#10b981' }}>
+                      <span>Importados:</span>
+                      <strong>{resultadoImport.imported}</strong>
+                    </div>
+                    {resultadoImport.skipped > 0 && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', color: '#f97316' }}>
+                        <span>Omitidos:</span>
+                        <strong>{resultadoImport.skipped}</strong>
+                      </div>
+                    )}
+                  </div>
+
+                  {resultadoImport.errors && resultadoImport.errors.length > 0 && (
+                    <div style={{ background: '#fef2f2', border: '1px solid #fed7d7', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem', maxHeight: '200px', overflow: 'auto' }}>
+                      <p style={{ margin: '0 0 0.7rem 0', fontWeight: 600, color: '#dc2626', fontSize: '0.9rem' }}>Errores encontrados:</p>
+                      {resultadoImport.errors.slice(0, 5).map((err, idx) => (
+                        <div key={idx} style={{ fontSize: '0.8rem', color: '#991b1b', marginBottom: '0.3rem' }}>
+                          <strong>Fila {err.row}:</strong> {err.reason}
+                        </div>
+                      ))}
+                      {resultadoImport.errors.length > 5 && (
+                        <p style={{ fontSize: '0.75rem', color: '#991b1b', margin: '0.5rem 0 0 0' }}>...y {resultadoImport.errors.length - 5} errores más</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="modal-footer">
+                  <button type="button" className="disp-btn-primary" onClick={cerrarImportModal}>{t('cerrar')}</button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

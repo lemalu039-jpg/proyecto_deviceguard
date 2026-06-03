@@ -1,6 +1,8 @@
 const DispositivoModel = require('../models/dispositivos.model');
 const pool = require('../database/connection');
 const { enviarCorreo, EVENTOS } = require("../services/email.service");
+const ExcelJS = require('exceljs');
+const fs = require('fs');
 
 exports.getAll = async (req, res) => {
     try {
@@ -248,5 +250,193 @@ exports.permanentDelete = async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+exports.descargarPlantillaImport = async (req, res) => {
+    try {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("Plantilla");
+
+        worksheet.columns = [
+            { header: "nombre", key: "nombre", width: 25 },
+            { header: "tipo", key: "tipo", width: 20 },
+            { header: "serial", key: "serial", width: 20 },
+            { header: "marca", key: "marca", width: 15 },
+            { header: "ubicacion", key: "ubicacion", width: 20 },
+            { header: "descripcion", key: "descripcion", width: 40 }
+        ];
+
+        worksheet.getRow(1).font = { bold: true };
+
+        worksheet.addRow({
+            nombre: "Portátil HP",
+            tipo: "Portátil",
+            serial: "ABC-123456",
+            marca: "HP",
+            ubicacion: "Aula 101",
+            descripcion: "Pantalla 15.6\""
+        });
+
+        const nombreArchivo = `plantilla_dispositivos_${new Date().getTime()}.xlsx`;
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.setHeader("Content-Disposition", `attachment; filename=${nombreArchivo}`);
+
+        await workbook.xlsx.write(res);
+        res.end();
+    } catch (error) {
+        console.error("Error al descargar plantilla:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.importarDispositivos = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, error: "No se subió ningún archivo" });
+        }
+
+        const filePath = req.file.path;
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(filePath);
+
+        const worksheet = workbook.getWorksheet(1);
+        if (!worksheet) {
+            fs.unlinkSync(filePath);
+            return res.status(400).json({ success: false, error: "El archivo no contiene hojas de cálculo" });
+        }
+
+        // Validar headers
+        const expectedHeaders = ["nombre", "tipo", "serial", "marca", "ubicacion", "descripcion"];
+        const headerRow = worksheet.getRow(1);
+        const actualHeaders = headerRow.values.slice(1).map(h => h?.toLowerCase?.() || "");
+
+        const headersMismatch = !expectedHeaders.every((h, i) => actualHeaders[i] === h);
+        if (headersMismatch) {
+            fs.unlinkSync(filePath);
+            return res.status(400).json({
+                success: false,
+                error: "Formato de archivo inválido",
+                details: `Se esperan columnas: ${expectedHeaders.join(", ")}`
+            });
+        }
+
+        const summary = {
+            total: 0,
+            imported: 0,
+            skipped: 0,
+            errors: []
+        };
+
+        const seriaiesProcessados = new Set();
+
+        // Procesar filas
+        for (let rowNum = 2; rowNum <= worksheet.rowCount; rowNum++) {
+            const row = worksheet.getRow(rowNum);
+            const values = row.values.slice(1);
+
+            // Saltar filas completamente vacías
+            if (!values.some(v => v && String(v).trim())) {
+                continue;
+            }
+
+            summary.total++;
+
+            const nombre = values[0] ? String(values[0]).trim() : "";
+            const tipo = values[1] ? String(values[1]).trim() : "";
+            const serial = values[2] ? String(values[2]).trim() : "";
+            const marca = values[3] ? String(values[3]).trim() : "";
+            const ubicacion = values[4] ? String(values[4]).trim() : "";
+            const descripcion = values[5] ? String(values[5]).trim() : "";
+
+            // Validar campos requeridos
+            if (!nombre) {
+                summary.skipped++;
+                summary.errors.push({ row: rowNum, serial: serial || "N/A", reason: "Campo nombre requerido" });
+                continue;
+            }
+
+            if (!tipo) {
+                summary.skipped++;
+                summary.errors.push({ row: rowNum, serial: serial || "N/A", reason: "Campo tipo requerido" });
+                continue;
+            }
+
+            if (!serial) {
+                summary.skipped++;
+                summary.errors.push({ row: rowNum, serial: "N/A", reason: "Campo serial requerido" });
+                continue;
+            }
+
+            if (!marca) {
+                summary.skipped++;
+                summary.errors.push({ row: rowNum, serial, reason: "Campo marca requerido" });
+                continue;
+            }
+
+            // Validar formato serial (alphanumeric + hyphens)
+            if (!/^[a-zA-Z0-9-]{1,50}$/.test(serial)) {
+                summary.skipped++;
+                summary.errors.push({ row: rowNum, serial, reason: "Formato inválido de serial" });
+                continue;
+            }
+
+            // Chequear duplicado en batch
+            if (seriaiesProcessados.has(serial)) {
+                summary.skipped++;
+                summary.errors.push({ row: rowNum, serial, reason: "Serial duplicado en el archivo" });
+                continue;
+            }
+
+            // Chequear duplicado en BD
+            const existente = await DispositivoModel.findBySerial(serial);
+            if (existente) {
+                summary.skipped++;
+                summary.errors.push({ row: rowNum, serial, reason: "Serial duplicado en base de datos" });
+                continue;
+            }
+
+            try {
+                const data = {
+                    nombre,
+                    tipo,
+                    serial,
+                    marca,
+                    ubicacion: ubicacion || null,
+                    descripcion: descripcion || null,
+                    usuario_id: req.headers['x-usuario-id'] ? parseInt(req.headers['x-usuario-id']) : null
+                };
+
+                await DispositivoModel.create(data);
+                seriaiesProcessados.add(serial);
+                summary.imported++;
+            } catch (err) {
+                summary.skipped++;
+                summary.errors.push({ row: rowNum, serial, reason: `Error al insertar: ${err.message}` });
+            }
+        }
+
+        // Limpiar archivo temporal
+        fs.unlinkSync(filePath);
+
+        if (summary.total === 0) {
+            return res.status(400).json({
+                success: false,
+                error: "El archivo no contiene datos para importar"
+            });
+        }
+
+        res.status(201).json({
+            success: true,
+            summary,
+            message: `${summary.imported} dispositivos importados exitosamente`
+        });
+
+    } catch (error) {
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
+        console.error("Error al importar dispositivos:", error);
+        res.status(500).json({ success: false, error: error.message });
     }
 };
