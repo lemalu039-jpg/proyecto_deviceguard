@@ -397,6 +397,7 @@ exports.importarDispositivos = async (req, res) => {
             }
 
             try {
+                const ahora = new Date();
                 const data = {
                     nombre,
                     tipo,
@@ -404,7 +405,9 @@ exports.importarDispositivos = async (req, res) => {
                     marca,
                     ubicacion: ubicacion || null,
                     descripcion: descripcion || null,
-                    usuario_id: req.headers['x-usuario-id'] ? parseInt(req.headers['x-usuario-id']) : null
+                    usuario_id: req.headers['x-usuario-id'] ? parseInt(req.headers['x-usuario-id']) : null,
+                    fecha_registro: ahora.toISOString().split('T')[0],
+                    hora_registro: ahora.toTimeString().slice(0, 5)
                 };
 
                 await DispositivoModel.create(data);
