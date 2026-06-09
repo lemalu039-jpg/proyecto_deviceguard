@@ -1,4 +1,5 @@
 ﻿name: proyecto_deviceguard
+
 services:
   db:
     image: mysql:8.0
@@ -7,21 +8,24 @@ services:
     env_file:
       - ../backend/.env
     environment:
-      MYSQL_ROOT_PASSWORD: 
-      MYSQL_DATABASE: 
-      MYSQL_USER: 
-      MYSQL_PASSWORD: 
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: device_guard_db
+
     ports:
       - "3308:3306"
+
     volumes:
       - mysql_data:/var/lib/mysql
+
     networks:
       - app_network
+
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
+
   backend:
     build:
       context: ../backend
@@ -39,6 +43,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
   frontend:
     build:
       context: ../frontend
@@ -53,9 +58,11 @@ services:
       - app_network
     depends_on:
       - backend
+
 networks:
   app_network:
     driver: bridge
+
 volumes:
   mysql_data:
     driver: local

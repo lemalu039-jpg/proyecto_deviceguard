@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { getDispositivos, getDispositivosAsignados } from '../services/api';
-import './CSS/Estadisticas_responsive.css';
+import './css/Estadisticas_responsive.css';
 import Pagination from '../components/Pagination';
 import TableSkeleton from '../components/TableSkeleton';
 import {
