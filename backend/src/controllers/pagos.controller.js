@@ -1,33 +1,40 @@
 // src/controllers/pagos.controller.js
-// Adaptado a la tabla `mantenimiento` existente — NO crea tabla nueva
-
 const MantenimientoModel = require('../models/mantenimiento.model');
-const pool = require('../database/connection');
+const pool   = require('../database/connection');
+const crypto = require('crypto');
+
+// ─── Genera la firma de integridad requerida por Wompi ────────────────────────
+// SHA256( referencia + monto_en_centavos + moneda + integrity_secret )
+// Docs: https://docs.wompi.co/docs/colombia/widget-checkout-web/#firma-de-integridad
+function generarFirmaIntegridad(referencia, montoEnCentavos, moneda = 'COP') {
+  const secret = process.env.WOMPI_INTEGRITY_SECRET;
+  if (!secret) {
+    throw new Error('WOMPI_INTEGRITY_SECRET no está definido en .env');
+  }
+  const cadena = `${referencia}${montoEnCentavos}${moneda}${secret}`;
+  return crypto.createHash('sha256').update(cadena).digest('hex');
+}
 
 // ─── GET /api/pagos/datos/:dispositivoId ─────────────────────────────────────
-// El frontend llama esto al montar PagoMantenimiento.jsx
-// Busca el mantenimiento activo del dispositivo y devuelve los datos para Wompi
 exports.getDatosPago = async (req, res) => {
   try {
     const { dispositivoId } = req.params;
-    console.log(`[getDatosPago] Buscando mantenimiento para dispositivo ${dispositivoId}`);
+    console.log(`[getDatosPago] dispositivo=${dispositivoId}`);
 
     const mant = await MantenimientoModel.findActivoByDispositivo(dispositivoId);
 
     if (!mant) {
-      console.log(`[getDatosPago] ❌ No encontrado. Consultando todos los mantenimientos del dispositivo...`);
-      const todos = await (require('../database/connection')).query(
-        `SELECT * FROM mantenimiento WHERE dispositivo_id = ? ORDER BY id DESC`,
+      const [todos] = await pool.query(
+        'SELECT * FROM mantenimiento WHERE dispositivo_id = ? ORDER BY id DESC',
         [dispositivoId]
       );
-      console.log(`[getDatosPago] Mantenimientos encontrados:`, todos[0]);
-
+      console.log('[getDatosPago] Mantenimientos encontrados:', todos);
       return res.status(404).json({
         error: 'No se encontró un mantenimiento activo para este dispositivo.'
       });
     }
 
-    console.log(`[getDatosPago] ✅ Mantenimiento encontrado:`, mant.id, `- Costo: ${mant.costo}, Estado Pago: ${mant.estado_pago}`);
+    console.log(`[getDatosPago] encontrado id=${mant.id} costo=${mant.costo} estado_pago=${mant.estado_pago}`);
 
     if (!mant.costo || parseFloat(mant.costo) <= 0) {
       return res.status(400).json({
@@ -35,8 +42,8 @@ exports.getDatosPago = async (req, res) => {
       });
     }
 
+    // Pago ya completado — devolver datos sin recalcular firma
     if (mant.estado_pago === 'Pagado') {
-      // Devolver los datos del pago completado para que el frontend muestre el badge
       return res.json({
         mantenimiento_id: mant.id,
         monto:            parseFloat(mant.costo),
@@ -49,36 +56,56 @@ exports.getDatosPago = async (req, res) => {
       });
     }
 
-    // Asegurarse de que tenga referencia — si no, generarla
-    if (!mant.referencia_pago) {
+    // Normalizar: si estado_pago es null/undefined, forzarlo a 'Pendiente'
+    // y asegurarse de que tenga referencia de pago
+    const necesitaActualizar = !mant.referencia_pago || !mant.estado_pago;
+    if (necesitaActualizar) {
+      const nuevaRef = mant.referencia_pago || `MANT-${mant.id}`;
       await MantenimientoModel.update(mant.id, {
         descripcion:          mant.descripcion,
         costo:                mant.costo,
         estado_mantenimiento: mant.estado_mantenimiento,
         tecnico_id:           mant.tecnico_id,
         estado_pago:          'Pendiente',
-        referencia_pago:      `MANT-${mant.id}`
+        referencia_pago:      nuevaRef,
       });
-      mant.referencia_pago = `MANT-${mant.id}`;
+      mant.referencia_pago = nuevaRef;
+      mant.estado_pago     = 'Pendiente';
+      console.log(`[getDatosPago] Normalizado: ref=${nuevaRef} estado_pago=Pendiente`);
+    }
+
+    const montoEnCentavos = Math.round(parseFloat(mant.costo) * 100);
+
+    // Generar firma SHA256 (requerida por Wompi para abrir el widget)
+    let integrity = null;
+    try {
+      integrity = generarFirmaIntegridad(mant.referencia_pago, montoEnCentavos, 'COP');
+      console.log(`[getDatosPago] integrity generado para ref=${mant.referencia_pago}`);
+    } catch (err) {
+      // No bloqueamos: si falta el secret, igual devolvemos los datos
+      // El error de firma aparecerá solo al intentar abrir el widget
+      console.warn('[getDatosPago] No se pudo generar integrity:', err.message);
     }
 
     return res.json({
-      mantenimiento_id: mant.id,
-      monto:            parseFloat(mant.costo),
-      referencia:       mant.referencia_pago,
-      descripcion:      `Mantenimiento - ${mant.dispositivo_nombre} (${mant.dispositivo_serial})`,
-      public_key:       process.env.WOMPI_PUBLIC_KEY,
-      estado_pago:      mant.estado_pago || 'Pendiente'
+      mantenimiento_id:  mant.id,
+      monto:             parseFloat(mant.costo),
+      monto_en_centavos: montoEnCentavos,
+      referencia:        mant.referencia_pago,
+      descripcion:       `Mantenimiento - ${mant.dispositivo_nombre} (${mant.dispositivo_serial})`,
+      public_key:        process.env.WOMPI_PUBLIC_KEY,
+      integrity:         integrity,
+      moneda:            'COP',
+      estado_pago:       mant.estado_pago || 'Pendiente',
     });
 
   } catch (error) {
-    console.error('getDatosPago:', error);
+    console.error('getDatosPago error:', error);
     return res.status(500).json({ error: error.message });
   }
 };
 
 // ─── POST /api/pagos/confirmar ────────────────────────────────────────────────
-// El frontend llama esto después de que Wompi aprueba el pago en el widget
 exports.confirmarPago = async (req, res) => {
   try {
     const { referencia, transaccion_id, estado_wompi } = req.body;
@@ -107,20 +134,19 @@ exports.confirmarPago = async (req, res) => {
       estado_pago:          nuevoEstado,
       referencia_pago:      mant.referencia_pago,
       transaccion_id:       transaccion_id,
-      fecha_pago:           estado_wompi === 'APPROVED' ? new Date() : null
+      fecha_pago:           estado_wompi === 'APPROVED' ? new Date() : null,
     });
 
     return res.json({ ok: true, message: `Pago actualizado a ${nuevoEstado}.` });
 
   } catch (error) {
-    console.error('confirmarPago:', error);
+    console.error('confirmarPago error:', error);
     return res.status(500).json({ error: error.message });
   }
 };
 
 // ─── POST /api/pagos/webhook ──────────────────────────────────────────────────
-// Wompi llama este endpoint directamente cuando el pago cambia de estado.
-// Funciona aunque el usuario cierre el navegador — es el respaldo más confiable.
+// Wompi llama este endpoint cuando el estado de una transacción cambia.
 // Registrar en: https://dashboard.wompi.co → Desarrolladores → Webhooks
 exports.webhookWompi = async (req, res) => {
   try {
@@ -147,7 +173,7 @@ exports.webhookWompi = async (req, res) => {
             estado_pago:          nuevoEstado,
             referencia_pago:      mant.referencia_pago,
             transaccion_id:       tx.id,
-            fecha_pago:           tx.status === 'APPROVED' ? new Date() : null
+            fecha_pago:           tx.status === 'APPROVED' ? new Date() : null,
           });
 
           console.log(`[Wompi Webhook] ref=${tx.reference} → ${nuevoEstado}`);
@@ -159,7 +185,7 @@ exports.webhookWompi = async (req, res) => {
     return res.status(200).json({ received: true });
 
   } catch (error) {
-    console.error('webhookWompi:', error);
+    console.error('webhookWompi error:', error);
     return res.status(200).json({ received: true });
   }
 };

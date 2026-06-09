@@ -88,10 +88,13 @@ export default function PagoMantenimientoModal({ dispositivoId, onClose, onPagad
 
     // eslint-disable-next-line no-undef
     const checkout = new WidgetCheckout({
-      currency:      'COP',
-      amountInCents: Math.round(datosPago.monto * 100),
-      reference:     datosPago.referencia,
-      publicKey:     datosPago.public_key,
+      currency:        'COP',
+      amountInCents:   datosPago.monto_en_centavos ?? Math.round(datosPago.monto * 100),
+      reference:       datosPago.referencia,
+      publicKey:       datosPago.public_key,
+      // Firma de integridad requerida por Wompi Sandbox
+      // SHA256( referencia + monto_en_centavos + moneda + integrity_secret )
+      signature:       { integrity: datosPago.integrity },
     });
 
     checkout.open((result) => {

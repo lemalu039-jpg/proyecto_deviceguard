@@ -99,11 +99,21 @@ exports.registrarCosto = async (req, res) => {
                 estado_mantenimiento: 'En Proceso',
                 tecnico_id,
                 estado_pago: 'Pendiente',
-                referencia_pago: null
+                referencia_pago: `MANT-${Date.now()}` // temporal, se reemplaza abajo
+            });
+
+            // Actualizar con la referencia definitiva basada en el ID real
+            await MantenimientoModel.update(nuevoId, {
+                descripcion:          'Mantenimiento registrado en salida',
+                costo:                costoNum,
+                estado_mantenimiento: 'En Proceso',
+                tecnico_id,
+                estado_pago:          'Pendiente',
+                referencia_pago:      `MANT-${nuevoId}`,
             });
 
             mant = await MantenimientoModel.findById(nuevoId);
-            console.log(`[registrarCosto] ✅ Mantenimiento CREADO: id=${nuevoId}, estado=${mant.estado_mantenimiento}, costo=${mant.costo}`);
+            console.log(`[registrarCosto] ✅ Mantenimiento CREADO: id=${nuevoId}, ref=MANT-${nuevoId}, costo=${mant.costo}`);
 
             return res.status(201).json({
                 message: 'Mantenimiento creado y costo registrado exitosamente',

@@ -13,7 +13,7 @@ const ITEMS_PER_PAGE = 7;
 
 function Reportes() {
   const { t } = useLanguage();
-  const [fechaUsuarios, setFechaUsuarios] = useState({ desde: "", hasta: "", rol: "todos" });
+  const [fechaUsuarios, setFechaUsuarios] = useState({ rol: "todos" });
   const [fechaDispositivos, setFechaDispositivos] = useState({ desde: "", hasta: "", estado: "todos" });
 
   // ── Preview state ──
@@ -49,7 +49,7 @@ function Reportes() {
   };
 
   const resetFiltros = () => {
-    setFechaUsuarios({ desde: "", hasta: "", rol: "todos" });
+    setFechaUsuarios({ rol: "todos" });
     setFechaDispositivos({ desde: "", hasta: "", estado: "todos" });
   };
 
@@ -112,17 +112,11 @@ function Reportes() {
 
   // ── Generadores ──
   const generarUsuariosExcel = async () => {
-    if (!fechaUsuarios.desde || !fechaUsuarios.hasta) {
-      alert(t('reportes_err_fechas'));
-      return;
-    }
     try {
       const res = await axios.get(`${API}/usuarios-excel`, {
         responseType: "blob",
-        params: { desde: fechaUsuarios.desde, hasta: fechaUsuarios.hasta, rol: fechaUsuarios.rol, _t: Date.now() },
-  headers: {
-    'x-usuario-id': usuario?.id
-  }
+        params: { rol: fechaUsuarios.rol, _t: Date.now() },
+        headers: { 'x-usuario-id': usuario?.id }
       });
       descargar(res.data, res.headers, "reporte_usuarios", "xlsx");
       recargarContador();
@@ -132,17 +126,11 @@ function Reportes() {
   };
 
   const generarUsuariosPdf = async () => {
-    if (!fechaUsuarios.desde || !fechaUsuarios.hasta) {
-      alert(t('reportes_err_fechas'));
-      return;
-    }
     try {
       const res = await axios.get(`${API}/usuarios-pdf`, {
         responseType: "blob",
-        params: { desde: fechaUsuarios.desde, hasta: fechaUsuarios.hasta, rol: fechaUsuarios.rol, _t: Date.now() },
-        headers: {
-  'x-usuario-id': usuario?.id
-}
+        params: { rol: fechaUsuarios.rol, _t: Date.now() },
+        headers: { 'x-usuario-id': usuario?.id }
       });
       descargar(res.data, res.headers, "reporte_usuarios", "pdf");
       recargarContador();
@@ -369,20 +357,12 @@ function Reportes() {
                         <option value="tecnico">{t('reportes_tecnicos')}</option>
                       </select>
                     </label>
-                    <label>{t('reportes_desde')}
-                      <input type="date" value={fechaUsuarios.desde}
-                        onChange={e => setFechaUsuarios(f => ({ ...f, desde: e.target.value }))} />
-                    </label>
-                    <label>{t('reportes_hasta')}
-                      <input type="date" value={fechaUsuarios.hasta}
-                        onChange={e => setFechaUsuarios(f => ({ ...f, hasta: e.target.value }))} />
-                    </label>
                   </div>
                   <div className="btn-group">
-                    <button onClick={generarUsuariosExcel} disabled={!fechaUsuarios.desde || !fechaUsuarios.hasta}>
+                    <button onClick={generarUsuariosExcel}>
                       {t('reportes_gen_excel')}
                     </button>
-                    <button onClick={generarUsuariosPdf} disabled={!fechaUsuarios.desde || !fechaUsuarios.hasta}>
+                    <button onClick={generarUsuariosPdf}>
                       {t('reportes_gen_pdf')}
                     </button>
                   </div>

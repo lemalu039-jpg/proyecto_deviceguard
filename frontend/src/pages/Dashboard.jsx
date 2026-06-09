@@ -179,8 +179,15 @@ function Dashboard() {
               } catch (err) {
                 const msg = err.response?.data?.error || '';
                 if (msg.includes('no ha registrado')) {
+                  // Técnico aún no puso el costo
+                  pagosMap[d.id] = { sinMonto: true };
+                } else if (err.response?.status === 404) {
+                  // No hay mantenimiento registrado para este dispositivo
                   pagosMap[d.id] = { sinMonto: true };
                 } else {
+                  // Error inesperado — marcar como pendiente sin monto conocido
+                  // para que no quede silenciado indefinidamente
+                  console.warn(`[Dashboard] Error cargando pago dispositivo ${d.id}:`, msg);
                   pagosMap[d.id] = null;
                 }
               }
@@ -401,10 +408,16 @@ function Dashboard() {
     if (d.estado !== 'Listo para Entrega' && d.estado !== 'Entregado') {
       return <td style={tdStyle}>—</td>;
     }
+
     const pago = pagosDispositivos[d.id];
 
-    // Sin datos de pago aún
-    if (!pago || !pago.monto) {
+    // Aún cargando (no hay entrada en el mapa todavía)
+    if (pago === undefined) {
+      return <td style={tdStyle}><span style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>…</span></td>;
+    }
+
+    // Error de carga o técnico no registró costo
+    if (!pago || pago.sinMonto || !pago.monto) {
       return (
         <td style={tdStyle}>
           <span style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>—</span>
