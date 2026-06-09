@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./CSS/Consultarfiltros.css";
+import "./css/Consultarfiltros.css";
 import { getDispositivos, getDispositivosAsignados } from "../services/api";
 import Pagination from "../components/Pagination";
 import TableSkeleton from "../components/TableSkeleton";

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getDispositivos, getDispositivosAsignados, updateDispositivo, deleteDispositivo, registrarCostoMantenimiento } from '../services/api';
-import './CSS/Calendario_responsive.css';
+import './css/Calendario_responsive.css';
 import { useLanguage } from '../context/LanguageContext.jsx';
 
 function Calendario() {
