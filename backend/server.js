@@ -50,8 +50,20 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}.`);
+
+    // ── Verificación de variables de Wompi al arrancar ────────────────────
+    const pubKey     = process.env.WOMPI_PUBLIC_KEY;
+    const privKey    = process.env.WOMPI_PRIVATE_KEY;
+    const integrity  = process.env.WOMPI_INTEGRITY_SECRET;
+
+    console.log('');
+    console.log('══ Wompi config ══════════════════════════════════════');
+    console.log(`  PUBLIC_KEY        : ${pubKey     ? pubKey.slice(0,20) + '...' : '❌ NO CARGADA'}`);
+    console.log(`  PRIVATE_KEY       : ${privKey    ? privKey.slice(0,20) + '...' : '❌ NO CARGADA'}`);
+    console.log(`  INTEGRITY_SECRET  : ${integrity  ? (integrity.includes('REEMPLAZAR') ? '⚠️  AÚN NO CONFIGURADA' : integrity.slice(0,20) + '...') : '❌ NO CARGADA'}`);
+    console.log('══════════════════════════════════════════════════════');
+    console.log('');
 });
 
