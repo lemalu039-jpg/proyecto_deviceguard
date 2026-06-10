@@ -150,11 +150,7 @@ function Dispositivos() {
 
       setResultadoImport(res.data.summary);
       mostrarToast(`${res.data.summary.imported} dispositivos importados exitosamente`);
-
-      setTimeout(() => {
-        loadData();
-        cerrarImportModal();
-      }, 1000);
+      loadData();
     } catch (err) {
       const errorMsg = err.response?.data?.error || 'Error al importar dispositivos';
       mostrarToast(errorMsg, true);
