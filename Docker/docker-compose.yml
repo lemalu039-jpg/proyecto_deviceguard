@@ -37,7 +37,7 @@ services:
     environment:
       DB_HOST: db
     ports:
-      - "6500:5000"
+      - "5000:5000"
     networks:
       - app_network
     depends_on:
